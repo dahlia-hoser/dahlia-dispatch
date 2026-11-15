@@ -105,3 +105,12 @@ test('other flowers and farm extras are not dahlias', () => {
     assert.notEqual(kindFromTitle(t), 'other', t);
   assert.equal(varietyNameFromTitle('Dahli Ferncliff Thunder'), 'Ferncliff Thunder');
 });
+
+test('potted plants', () => {
+  assert.equal(varietyNameFromTitle('Dahlia - Potted - Café au Lait'), 'Café au Lait');
+  assert.equal(varietyNameFromTitle('Potted Dahlia - Bishop of Llandaff'), 'Bishop of Llandaff');
+  assert.equal(varietyNameFromTitle('Café au Lait - Potted Plant'), 'Café au Lait');
+  assert.equal(varietyNameFromTitle('Labyrinth - 1 Gallon Pot'), 'Labyrinth');
+  assert.equal(kindFromTitle('Dahlia - Potted - Café au Lait'), 'plant');
+  assert.equal(kindFromTitle('Café au Lait'), 'tuber');
+});

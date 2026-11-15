@@ -10,7 +10,7 @@ export type Product = {
   price_cents: number | null;
   currency: string;
   in_stock: boolean;
-  kind: 'tuber' | 'cutting' | 'other';
+  kind: 'tuber' | 'cutting' | 'plant' | 'other';
   hints?: Hints; // tags and description, used to guess colour and form
 };
 

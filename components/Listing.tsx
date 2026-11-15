@@ -17,6 +17,7 @@ export function ListingRow({ r, groupName }: { r: Row; groupName: string }) {
           {r.farm.place}
           {different && <> · {fill(text.listedAs, { name: r.listing.title })}</>}
           {r.listing.kind === 'cutting' && <> · {text.cutting}</>}
+          {r.listing.kind === 'plant' && <> · {text.pottedPlant}</>}
         </span>
       </div>
       <span className="price">{money(r.listing.price_cents)}</span>

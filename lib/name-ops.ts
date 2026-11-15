@@ -130,3 +130,39 @@ export async function syncSocieties(t: Tables, societies: any[]): Promise<number
   }
   return n;
 }
+
+/**
+ * When the name-cleaning rules improve, listings already saved under a wrong name
+ * (like "Potted") are moved to the right variety, and leftover empty varieties the
+ * checker made are removed. The starting list and anything Confirmed are never removed.
+ */
+export async function reconcileNames(t: Tables, book: NameBook, keepSlugs: Set<string>): Promise<{ moved: number; removed: number }> {
+  const [listings, varieties, aliases, farms] = await Promise.all([t.all('listings'), t.all('varieties'), t.all('aliases'), t.all('farms')]);
+  const farmName = new Map(farms.map((f) => [f.id, f.name]));
+  const spellings = new Map<number, string[]>();
+  for (const v of varieties) spellings.set(v.id, [v.name]);
+  for (const a of aliases) spellings.get(a.variety_id)?.push(a.alias);
+  let moved = 0;
+  for (const l of listings) {
+    if (!l.variety_id || String(l.product_key).startsWith('manual-')) continue;
+    const clean = varietyNameFromTitle(l.title);
+    const own = spellings.get(l.variety_id) ?? [];
+    if (own.some((sp) => normalize(sp) === normalize(clean) || sameEnough(sp, clean))) continue;
+    const id = await book.resolve(l.title, farmName.get(l.farm_id) ?? '');
+    if (id !== l.variety_id) {
+      await t.update('listings', { id: l.id }, { variety_id: id });
+      moved++;
+    }
+  }
+  // Empty checker-made varieties.
+  const used = new Set((await t.all('listings')).map((l) => l.variety_id));
+  const empty = varieties.filter((v) => !used.has(v.id) && !keepSlugs.has(v.slug) && v.status !== 'Confirmed' && v.status !== 'Not a dahlia');
+  if (empty.length) {
+    const slugs = new Set(empty.map((v) => v.slug));
+    const questions = (await t.where('review_items', { kind: 'details' })).filter((r) => r.status !== 'done' && slugs.has(r.data?.variety));
+    await t.removeIn('review_items', 'id', questions.map((r) => r.id));
+    await t.removeIn('aliases', 'variety_id', empty.map((v) => v.id));
+    await t.removeIn('varieties', 'id', empty.map((v) => v.id));
+  }
+  return { moved, removed: empty.length };
+}

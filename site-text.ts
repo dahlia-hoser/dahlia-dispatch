@@ -50,6 +50,7 @@ export const text = {
   opensOn: 'Opens {date}',
   noPrice: 'Price TBA',
   cutting: 'Rooted cutting',
+  pottedPlant: 'Potted plant',
   listedAs: 'Listed as “{name}”',
 
   // Variety page

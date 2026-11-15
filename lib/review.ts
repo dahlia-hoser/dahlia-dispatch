@@ -63,10 +63,13 @@ export async function reviewCards(): Promise<Card[]> {
       const v = vBySlug.get(r.data.variety);
       if (!v || detailsLeft <= 0) continue;
       detailsLeft--;
-      const seenAt = listings
-        .filter((l) => l.variety_id === v.id && l.active)
-        .slice(0, 4)
-        .map((l) => ({ farm: farmName.get(l.farm_id) ?? '', title: l.title, url: l.url }));
+      // One link per farm, so the same farm doesn't repeat.
+      const seenAt: { farm: string; title: string; url: string | null }[] = [];
+      for (const l of listings.filter((x) => x.variety_id === v.id && x.active)) {
+        const farm = farmName.get(l.farm_id) ?? '';
+        if (!seenAt.some((x) => x.farm === farm)) seenAt.push({ farm, title: l.title, url: l.url });
+        if (seenAt.length >= 4) break;
+      }
       cards.push({ id: r.id, kind: 'details', slug: v.slug, name: v.name, isNew: !!r.data.isNew, guessed: !!r.data.guessed, colour1: v.colour1, colour2: v.colour2, form: v.form, seenAt });
     }
   }

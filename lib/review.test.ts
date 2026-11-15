@@ -70,3 +70,20 @@ test('things that are not dahlias get hidden with their questions', async () => 
   const groups = groupAll(await loadAll());
   assert.ok(!groups.some((g) => g.name.startsWith('Agrostemma')));
 });
+
+import { NameBook, reconcileNames } from './name-ops';
+test('listings saved under a wrong name move to the right variety', async () => {
+  const t = db();
+  const tw = (await t.all('farms')).find((f) => f.code === 'TW')!;
+  const [bad] = await t.insert('varieties', { slug: 'potted', name: 'Potted', status: 'Suggested' });
+  await t.insert('aliases', { alias: 'potted', variety_id: bad.id, shown: null });
+  await t.insert('review_items', { kind: 'details', status: 'open', data: { variety: 'potted', isNew: true } });
+  const [l] = await t.insert('listings', { farm_id: tw.id, product_key: 'pot1', variety_id: bad.id, title: 'Dahlia - Potted - Labyrinth', url: null, price_cents: 2500, in_stock: true, kind: 'plant', active: true, first_seen: new Date().toISOString(), last_changed: new Date().toISOString() });
+  const book = await new NameBook(t).load();
+  const r = await reconcileNames(t, book, new Set(['labyrinth']));
+  assert.ok(r.moved >= 1);
+  const lab = (await t.where('varieties', { slug: 'labyrinth' }))[0];
+  assert.equal((await t.where('listings', { id: l.id }))[0].variety_id, lab.id);
+  assert.equal((await t.where('varieties', { slug: 'potted' })).length, 0);
+  assert.ok(!(await t.where('review_items', { kind: 'details' })).some((x) => x.data?.variety === 'potted'));
+});

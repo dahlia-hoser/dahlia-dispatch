@@ -2,7 +2,9 @@
 // Run it yourself with:  npm run check-farms            (farms that are due)
 //                        npm run check-farms -- --all   (every farm now)
 import { db } from '../lib/db';
-import { NameBook, autoAnswerSlips, hideNonDahlias, syncSocieties } from '../lib/name-ops';
+import { NameBook, autoAnswerSlips, hideNonDahlias, reconcileNames, syncSocieties } from '../lib/name-ops';
+import startingVarieties from '../data/varieties.json';
+import { slugify } from '../lib/names';
 import societies from '../data/societies.json';
 import { detectPlatform, readShopify, readWoo } from './sources';
 import { readWix } from './wix';
@@ -27,6 +29,9 @@ async function main() {
   const slips = await autoAnswerSlips(t);
   if (slips) console.log(`Merged ${slips} small spelling slips without asking.`);
   const book = await new NameBook(t).load();
+  const keep = new Set((startingVarieties as any[]).map((v) => slugify(v[0])));
+  const fixed = await reconcileNames(t, book, keep);
+  if (fixed.moved || fixed.removed) console.log(`Tidied names: moved ${fixed.moved} listings, removed ${fixed.removed} empty varieties.`);
   let changes = 0, errors = 0;
   const notes: string[] = [];
 
