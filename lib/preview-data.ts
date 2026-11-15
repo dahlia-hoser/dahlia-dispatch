@@ -4,6 +4,7 @@ import varietiesJson from '../data/varieties.json';
 import salesJson from '../data/sales.json';
 import candidatesJson from '../data/candidates.json';
 import manualJson from '../data/manual-listings.json';
+import societiesJson from '../data/societies.json';
 import previewListingsJson from '../data/preview-listings.json';
 import { normalize, slugify } from './names';
 
@@ -64,5 +65,10 @@ export function buildPreviewTables(): Record<string, Row[]> {
 
   const sales = (salesJson as any[]).map((s) => ({ id: id++, farm_id: farmId(s.farm), label: s.label, starts_at: s.starts_at, when_text: s.when_text, time_text: s.time_text, url: s.url, note: s.note || null }));
 
+  for (const c of societiesJson as any[]) {
+    const f = { id: id++, code: c.code, name: c.name, place: c.place, province: c.province, site: c.site, platform: 'society', collection: null, active: false, last_checked_at: null, last_error: null };
+    farms.push(f);
+    sales.push({ id: id++, farm_id: f.id, label: c.label, starts_at: null, when_text: c.when_text, time_text: c.time_text, url: c.site, note: c.note });
+  }
   return { farms, varieties, aliases, listings, sale_events: sales, review_items: review, farm_candidates: candidates, check_runs: [] };
 }

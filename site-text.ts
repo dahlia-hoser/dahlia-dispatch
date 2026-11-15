@@ -67,6 +67,13 @@ export const text = {
   calendarOpenNow: 'Open now',
   calendarComingUp: 'Coming up',
   calendarLater: 'Date not set yet',
+  calendarShowAll: 'All sales',
+  calendarShowFarms: 'Farms',
+  calendarShowClubs: 'Clubs & societies',
+  calendarFarmChip: 'Farm',
+  calendarClubChip: 'Club sale',
+  calendarMoreInfo: 'More info',
+  calendarClubNote: 'Club and society sales are run by local dahlia growers, mostly in person, and often sell out in the first hour. Dates are based on past years until the club announces them.',
 
   // Footer
   footer: 'For Hosers by a Hoser. Still in beta.',

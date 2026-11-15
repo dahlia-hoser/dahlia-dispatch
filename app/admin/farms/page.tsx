@@ -41,6 +41,7 @@ export default async function Farms({ searchParams }: { searchParams: Promise<{ 
               <option value="shopify">Shopify</option>
               <option value="woocommerce">WooCommerce</option>
               <option value="wix">Wix</option>
+              <option value="society">Club or society (calendar only)</option>
               <option value="manual">Price list only (not checked)</option>
             </select>
           </label>

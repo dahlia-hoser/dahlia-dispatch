@@ -1,0 +1,68 @@
+[
+  {
+    "code": "S-VDS",
+    "name": "Vancouver Dahlia Society",
+    "place": "VanDusen Botanical Garden, Vancouver, BC",
+    "province": "BC",
+    "site": "https://www.todocanada.ca/city/vancouver/event/tuber-sale-vancouver-dahlia-society/",
+    "label": "Tuber sale (in person)",
+    "when_text": "Usually mid-April",
+    "time_text": "Last sale: Apr 18, 2026, 10 am–2:30 pm",
+    "note": "Tubers from local competitive growers, about $8 each. Sold out the year before, so go early."
+  },
+  {
+    "code": "S-VICDS",
+    "name": "Victoria Dahlia Society",
+    "place": "Prospect Lake Community Hall, Victoria, BC",
+    "province": "BC",
+    "site": "https://www.victoriadahliasociety.org/tuber-sale/",
+    "label": "Plant and tuber sale (in person)",
+    "when_text": "Usually mid-April",
+    "time_text": "Last listed: Apr 12, 2025",
+    "note": "Tubers and plants, including rare varieties. On until sold out."
+  },
+  {
+    "code": "S-NGDS",
+    "name": "Nanaimo Gladiolus & Dahlia Society",
+    "place": "Country Club Mall, Nanaimo, BC",
+    "province": "BC",
+    "site": "https://nanaimogladiolusanddahliasociety.ca",
+    "label": "Tuber and corm sale (in person)",
+    "when_text": "Usually late April",
+    "time_text": "Last listed: Apr 26, 2025",
+    "note": "Dahlia tubers and gladiolus corms. Cash, debit or credit."
+  },
+  {
+    "code": "S-ADGS",
+    "name": "Alberta Dahlia & Glad Society",
+    "place": "Red Deer, AB",
+    "province": "AB",
+    "site": "https://albertadahliaandgladsociety.com/",
+    "label": "Tuber sale (online)",
+    "when_text": "Usually early April",
+    "time_text": "Last listed: Apr 5, 2025",
+    "note": "Online sale of tubers. Has also held in-person sales in Lacombe and Red Deer."
+  },
+  {
+    "code": "S-HDCDS",
+    "name": "Hamilton & District Chrysanthemum and Dahlia Society",
+    "place": "Hamilton, ON",
+    "province": "ON",
+    "site": "https://www.dahlia.org/?p=15212",
+    "label": "Tuber sale (online, ships in Canada)",
+    "when_text": "Usually late April",
+    "time_text": "Members first, then open to the public a few days later",
+    "note": "Online sale; shipping within Canada only."
+  },
+  {
+    "code": "S-DSNS",
+    "name": "Dahlia Society of Nova Scotia",
+    "place": "Bedford Leisure Centre, Bedford, NS",
+    "province": "NS",
+    "site": "https://sites.google.com/view/nova-scotia-dahlia-society/home",
+    "label": "Annual tuber sale (in person)",
+    "when_text": "Usually early May",
+    "time_text": "Last listed: May 3, 2025, 9 am–noon",
+    "note": "Over 4,000 tubers, but they sell out quickly."
+  }
+]

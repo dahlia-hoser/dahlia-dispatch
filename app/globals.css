@@ -104,6 +104,12 @@ footer .wrap { padding-top: 18px; padding-bottom: 24px; }
 .cal-list { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
 .cal-item { display: flex; flex-wrap: wrap; gap: 6px 20px; padding: 14px 20px; border-top: 1px solid #f1ece3; align-items: center; }
 .cal-item:first-child { border-top: 0; }
+.cal-item.is-farm { border-left: 6px solid var(--accent); }
+.cal-item.is-club { border-left: 6px solid var(--sage); background: #fbfbf5; }
+.chip.farm { background: var(--blush); }
+.chip.club { background: var(--sage); }
+.pill.on { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; }
+a.pill { text-decoration: none; color: var(--text); display: inline-flex; align-items: center; }
 .cal-when { flex: 0 0 170px; display: flex; flex-direction: column; }
 .cal-when b { font-size: 17px; }
 .cal-when span { font-size: 13px; color: var(--muted); }

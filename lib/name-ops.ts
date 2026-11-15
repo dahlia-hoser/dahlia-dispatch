@@ -117,3 +117,16 @@ export async function hideNonDahlias(t: Tables): Promise<number> {
   }
   return n;
 }
+
+/** Clubs and societies from data/societies.json: added once, then edited on the site like any sale. */
+export async function syncSocieties(t: Tables, societies: any[]): Promise<number> {
+  const farms = await t.all('farms');
+  let n = 0;
+  for (const s of societies) {
+    if (farms.some((f) => f.code === s.code)) continue;
+    const [f] = await t.insert('farms', { code: s.code, name: s.name, place: s.place, province: s.province, site: s.site, platform: 'society', active: false });
+    await t.insert('sale_events', { farm_id: f.id, label: s.label, starts_at: null, when_text: s.when_text, time_text: s.time_text, url: s.site, note: s.note });
+    n++;
+  }
+  return n;
+}

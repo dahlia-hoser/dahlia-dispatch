@@ -19,7 +19,7 @@ export function isInSeason(now: number): boolean {
 }
 
 export function whyDue(f: FarmTiming, sales: SaleTiming[], now: number, force = false): string | null {
-  if (!f.active || !f.site || f.platform === 'manual') return null;
+  if (!f.active || !f.site || f.platform === 'manual' || f.platform === 'society') return null;
   const last = f.last_checked_at ? new Date(f.last_checked_at).getTime() : 0;
   const since = now - last;
   if (force) return 'asked';

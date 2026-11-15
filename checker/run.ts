@@ -2,7 +2,8 @@
 // Run it yourself with:  npm run check-farms            (farms that are due)
 //                        npm run check-farms -- --all   (every farm now)
 import { db } from '../lib/db';
-import { NameBook, autoAnswerSlips, hideNonDahlias } from '../lib/name-ops';
+import { NameBook, autoAnswerSlips, hideNonDahlias, syncSocieties } from '../lib/name-ops';
+import societies from '../data/societies.json';
 import { detectPlatform, readShopify, readWoo } from './sources';
 import { readWix } from './wix';
 import { save, weeklyHousekeeping } from './save';
@@ -21,6 +22,8 @@ async function main() {
   const due = farms.map((f) => ({ f, why: whyDue(f as any, sales as any, now, force) })).filter((x) => x.why);
   console.log(`${due.length} of ${farms.length} farms due.`);
 
+  const added = await syncSocieties(t, societies as any[]);
+  if (added) console.log(`Added ${added} clubs and societies to the calendar.`);
   const slips = await autoAnswerSlips(t);
   if (slips) console.log(`Merged ${slips} small spelling slips without asking.`);
   const book = await new NameBook(t).load();
