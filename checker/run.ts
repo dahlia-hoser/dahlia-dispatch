@@ -2,7 +2,7 @@
 // Run it yourself with:  npm run check-farms            (farms that are due)
 //                        npm run check-farms -- --all   (every farm now)
 import { db } from '../lib/db';
-import { NameBook, autoAnswerSlips, hideNonDahlias, reconcileNames, syncSocieties } from '../lib/name-ops';
+import { NameBook, autoAnswerSlips, hideNonDahlias, reconcileNames, syncSocieties, tidyForms } from '../lib/name-ops';
 import startingVarieties from '../data/varieties.json';
 import { slugify } from '../lib/names';
 import societies from '../data/societies.json';
@@ -26,6 +26,8 @@ async function main() {
 
   const added = await syncSocieties(t, societies as any[]);
   if (added) console.log(`Added ${added} clubs and societies to the calendar.`);
+  const reformed = await tidyForms(t);
+  if (reformed) console.log(`Updated ${reformed} varieties to the new form list.`);
   const slips = await autoAnswerSlips(t);
   if (slips) console.log(`Merged ${slips} small spelling slips without asking.`);
   const book = await new NameBook(t).load();

@@ -79,8 +79,9 @@ export type AllData = {
   pending?: { spelling: string; slug: string }[];
 };
 
-export const COLOURS = ['White', 'Cream', 'Yellow', 'Orange', 'Peach', 'Pink', 'Blush', 'Red', 'Burgundy', 'Purple', 'Lavender'];
-export const FORMS = ['Ball', 'Pompon', 'Waterlily', 'Decorative', 'Cactus', 'Semi-cactus', 'Anemone', 'Collarette', 'Single', 'Stellar', 'Novelty', 'Orchid', 'Peony', 'Bicolour', 'Laciniated'];
+export const COLOURS = ['White', 'Cream', 'Yellow', 'Orange', 'Peach', 'Pink', 'Blush', 'Red', 'Burgundy', 'Purple', 'Lavender', 'Bicolour'];
+// Anemone counts as Single. Bicolour is a colour, not a form.
+export const FORMS = ['Ball', 'Pompon', 'Waterlily', 'Decorative', 'Cactus', 'Semi-cactus', 'Collarette', 'Single', 'Stellar', 'Novelty', 'Orchid', 'Peony', 'Laciniated'];
 export const PROVINCES = ['BC', 'AB', 'SK', 'MB', 'ON', 'QC', 'NB', 'NS', 'PE', 'NL'];
 
 /** Status for things farms list that turned out not to be dahlias. Hidden from the site. */

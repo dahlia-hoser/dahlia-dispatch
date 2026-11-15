@@ -3,6 +3,7 @@
 import { COLOURS, FORMS } from './types';
 
 const COLOUR_WORDS: [RegExp, string][] = [
+  [/\bbi-?colou?r(ed)?\b|\btwo[- ]tone\b|\bbicolore\b/, 'Bicolour'],
   [/\b(pale|light|soft) pink\b|\bblush\b/, 'Blush'],
   [/\b(dark|deep) red\b|\bburgundy\b|\bwine\b|\bmaroon\b|\boxblood\b|\bblack\b|\bchocolate\b|\bmerlot\b/, 'Burgundy'],
   [/\bwhite\b|\bblanc(he)?\b/, 'White'],
@@ -23,7 +24,7 @@ const FORM_WORDS: [RegExp, string][] = [
   [/\bpom ?pons?\b|\bpom ?poms?\b/, 'Pompon'],
   [/\bminiature ball\b|\bball\b|\bboule\b/, 'Ball'],
   [/\bcollarette\b/, 'Collarette'],
-  [/\banemone\b/, 'Anemone'],
+  [/\banemone\b/, 'Single'],
   [/\bstellar\b/, 'Stellar'],
   [/\borchid\b|\borchidée\b/, 'Orchid'],
   [/\bpeony\b|\bpivoine\b/, 'Peony'],

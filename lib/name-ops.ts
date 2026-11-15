@@ -166,3 +166,20 @@ export async function reconcileNames(t: Tables, book: NameBook, keepSlugs: Set<s
   }
   return { moved, removed: empty.length };
 }
+
+/** Form list changes: Anemone now counts as Single; Bicolour moves from form to colour. */
+export async function tidyForms(t: Tables): Promise<number> {
+  let n = 0;
+  for (const v of await t.where('varieties', { form: 'Anemone' })) {
+    await t.update('varieties', { id: v.id }, { form: 'Single' });
+    n++;
+  }
+  for (const v of await t.where('varieties', { form: 'Bicolour' })) {
+    const patch: Record<string, any> = { form: null };
+    if (!v.colour1) patch.colour1 = 'Bicolour';
+    else if (!v.colour2) patch.colour2 = 'Bicolour';
+    await t.update('varieties', { id: v.id }, patch);
+    n++;
+  }
+  return n;
+}
