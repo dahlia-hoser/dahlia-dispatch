@@ -1,5 +1,5 @@
 import { db } from '../../../lib/db';
-import { ago } from '../../../lib/catalogue';
+import { ago, gettingIt } from '../../../lib/catalogue';
 import { saveFarm, suggestMoreFarms } from '../actions';
 import type { Farm } from '../../../lib/types';
 import { PROVINCES } from '../../../lib/types';
@@ -55,6 +55,10 @@ export default async function Farms({ searchParams }: { searchParams: Promise<{ 
             </select>
           </label>
           <label>Shopify collection (optional, e.g. dahlia-tubers)<input name="collection" defaultValue={editing.collection ?? ''} /></label>
+          <label>Ships to (all = across Canada, or provinces like BC, AB)<input name="ships_to" defaultValue={editing.ships_to ?? ''} placeholder="all" /></label>
+          <label>Shipping window<input name="ship_window" defaultValue={editing.ship_window ?? ''} placeholder="April–May" /></label>
+          <label>Shipping cost<input name="ship_cost" defaultValue={editing.ship_cost ?? ''} placeholder="$18, free over $250" /></label>
+          <label>Pickup (leave empty if none)<input name="pickup" defaultValue={editing.pickup ?? ''} placeholder="At the farm, early May" /></label>
           <label className="inline" style={{ flexDirection: 'row' }}><input type="checkbox" name="active" defaultChecked={editing.active} /> Check this farm</label>
           <div className="inline"><button className="btn" type="submit">Save</button><a href="/admin/farms">Cancel</a></div>
         </form>
@@ -67,7 +71,7 @@ export default async function Farms({ searchParams }: { searchParams: Promise<{ 
         <tbody>
           {(farms as Farm[]).map((f) => (
             <tr key={f.id}>
-              <td><b>{f.name}</b><br /><span className="note">{f.place}</span></td>
+              <td><b>{f.name}</b><br /><span className="note">{f.place}</span>{gettingIt(f) && <><br /><span className="note">{gettingIt(f)}</span></>}</td>
               <td>{f.active ? f.platform : 'off'}</td>
               <td>{count(f.id)}</td>
               <td>{ago(f.last_checked_at)}</td>

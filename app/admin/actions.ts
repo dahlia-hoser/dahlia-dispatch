@@ -37,6 +37,12 @@ export async function saveVariety(fd: FormData) {
     form: val(fd, 'form'),
     status: val(fd, 'status') ?? v.status,
     notes: val(fd, 'notes'),
+    ...((await t.probe('varieties', 'intro_year'))
+      ? {
+          intro_year: Number(val(fd, 'intro_year')) || null,
+          canadian_bred: val(fd, 'canadian_bred') === 'yes' ? true : val(fd, 'canadian_bred') === 'no' ? false : null,
+        }
+      : {}),
   });
   // "Also sold as": one spelling per line.
   const wanted = String(fd.get('aka') ?? '').split('\n').map((s) => s.trim()).filter(Boolean);
@@ -97,6 +103,9 @@ export async function saveFarm(fd: FormData) {
     platform: val(fd, 'platform') ?? 'unknown',
     collection: val(fd, 'collection'),
     active: fd.get('active') === 'on',
+    ...((await t.probe('farms', 'ships_to'))
+      ? { ships_to: val(fd, 'ships_to'), ship_window: val(fd, 'ship_window'), ship_cost: val(fd, 'ship_cost'), pickup: val(fd, 'pickup') }
+      : {}),
   });
   revalidatePath('/', 'layout');
   redirect('/admin/farms?saved=1');

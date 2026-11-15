@@ -235,3 +235,38 @@ export async function applyTrustedDetails(
   }
   return n;
 }
+
+/** Farms' own words like "2026 introduction" set the variety's introduction year (the latest one wins). */
+export async function applyIntroYears(t: Tables, farmId: number, products: { key: string; title: string; hints?: { text: string } }[]): Promise<number> {
+  const { introYear } = await import('./badges');
+  const listings = await t.where('listings', { farm_id: farmId });
+  const varietyOf = new Map(listings.map((l) => [String(l.product_key), l.variety_id]));
+  const varieties = new Map((await t.all('varieties')).map((v) => [v.id, v]));
+  let n = 0;
+  for (const p of products) {
+    const year = introYear(`${p.title} ${p.hints?.text ?? ''}`);
+    const v = varieties.get(varietyOf.get(p.key));
+    if (!year || !v || (v.intro_year && v.intro_year >= year)) continue;
+    await t.update('varieties', { id: v.id }, { intro_year: year });
+    v.intro_year = year;
+    n++;
+  }
+  return n;
+}
+
+/** Shipping and pickup details from data/farm-details.json, filling only blanks. */
+export async function syncFarmDetails(t: Tables, details: any[]): Promise<number> {
+  const farms = await t.all('farms');
+  let n = 0;
+  for (const d of details) {
+    const f = farms.find((x) => x.code === d.farm);
+    if (!f) continue;
+    const patch: Record<string, string> = {};
+    for (const k of ['ships_to', 'ship_window', 'ship_cost', 'pickup']) if (d[k] && !f[k]) patch[k] = d[k];
+    if (Object.keys(patch).length) {
+      await t.update('farms', { id: f.id }, patch);
+      n++;
+    }
+  }
+  return n;
+}

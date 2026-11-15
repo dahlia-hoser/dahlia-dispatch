@@ -3,6 +3,7 @@ import { db } from './db';
 import { kindFromTitle, normalize, varietyNameFromTitle } from './names';
 import type { AllData, Farm, Listing, SaleEvent, Variety } from './types';
 import { NOT_DAHLIA } from './types';
+import { isCanadianBred, isNewIntro } from './badges';
 import { text, fill } from '../site-text';
 
 export async function loadAll(): Promise<AllData> {
@@ -79,9 +80,9 @@ export function status(l: Listing, farm: Farm, sales: SaleEvent[], now = Date.no
 }
 
 export type Row = { listing: Listing; farm: Farm; avail: Avail; label: string; isNew: boolean };
-export type Group = { key: string; variety: Variety | null; name: string; aka: string[]; rows: Row[] };
+export type Group = { key: string; variety: Variety | null; name: string; aka: string[]; rows: Row[]; rare?: boolean; newIntro?: boolean; canadian?: boolean };
 
-export type Filters = { q?: string; farm?: string; avail?: string; form?: string; colour?: string; prov?: string };
+export type Filters = { q?: string; farm?: string; avail?: string; form?: string; colour?: string; prov?: string; get?: string; only?: string };
 
 export function groupAll(data: AllData, now = Date.now()): Group[] {
   const farmById = new Map(data.farms.map((f) => [f.id, f]));
@@ -130,7 +131,31 @@ export function groupAll(data: AllData, now = Date.now()): Group[] {
       }
     }
   }
+  for (const g of groups.values()) {
+    g.rare = new Set(g.rows.map((r) => r.farm.id)).size === 1;
+    g.newIntro = isNewIntro(g.variety?.intro_year, now);
+    g.canadian = isCanadianBred(g.name, g.variety?.canadian_bred);
+  }
   return [...groups.values()].sort((a, b) => a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }));
+}
+
+/** Can someone in this province get it from this farm, by shipping or pickup? */
+export function canGetIn(farm: Farm, prov: string): boolean {
+  const to = (farm.ships_to ?? '').toUpperCase();
+  if (to === 'ALL' || to.split(/[\s,]+/).includes(prov)) return true;
+  return !!farm.pickup && farm.province === prov;
+}
+
+/** One line about getting it: "Ships across Canada · April–May · $18, free over $250 · Pickup: at the farm" */
+export function gettingIt(farm: Farm): string {
+  const parts: string[] = [];
+  const to = (farm.ships_to ?? '').trim();
+  if (to.toLowerCase() === 'all') parts.push(text.shipsAcross);
+  else if (to) parts.push(fill(text.shipsTo, { provinces: to.toUpperCase().split(/[\s,]+/).join(', ') }));
+  if (farm.ship_window) parts.push(farm.ship_window);
+  if (farm.ship_cost) parts.push(farm.ship_cost);
+  if (farm.pickup) parts.push(fill(text.pickupAt, { where: farm.pickup }));
+  return parts.join(' · ');
 }
 
 export function search(groups: Group[], f: Filters): Group[] {
@@ -143,6 +168,11 @@ export function search(groups: Group[], f: Filters): Group[] {
     let rows = g.rows;
     if (f.farm) rows = rows.filter((r) => r.farm.code === f.farm);
     if (f.prov) rows = rows.filter((r) => r.farm.province === f.prov);
+    if (f.get) rows = rows.filter((r) => canGetIn(r.farm, f.get!));
+    if (f.only === 'pickup') rows = rows.filter((r) => !!r.farm.pickup);
+    if (f.only === 'new' && !g.newIntro) continue;
+    if (f.only === 'rare' && !g.rare) continue;
+    if (f.only === 'canadian' && !g.canadian) continue;
     if (f.avail && f.avail !== 'all') rows = rows.filter((r) => r.avail === f.avail);
     if (!rows.length) continue;
     if (q) {

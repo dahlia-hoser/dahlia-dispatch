@@ -10,6 +10,10 @@ export type Farm = {
   active: boolean;
   last_checked_at: string | null;
   last_error: string | null;
+  ships_to?: string | null;
+  ship_window?: string | null;
+  ship_cost?: string | null;
+  pickup?: string | null;
 };
 
 export type Variety = {
@@ -21,6 +25,8 @@ export type Variety = {
   form: string | null;
   status: string;
   notes: string | null;
+  intro_year?: number | null;
+  canadian_bred?: boolean | null;
 };
 
 export type Alias = { alias: string; variety_id: number; shown: string | null };

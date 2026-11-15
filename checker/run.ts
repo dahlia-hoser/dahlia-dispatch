@@ -5,7 +5,9 @@ import { db } from '../lib/db';
 import { NameBook, autoAnswerSlips, hideNonDahlias, reconcileNames, syncSocieties, tidyForms, applyOwnerDecisions } from '../lib/name-ops';
 import decisions from '../data/owner-decisions.json';
 import trusted from '../data/trusted-sources.json';
-import { applyTrustedDetails } from '../lib/name-ops';
+import { applyTrustedDetails, applyIntroYears, syncFarmDetails } from '../lib/name-ops';
+import farmDetails from '../data/farm-details.json';
+import { refreshShipping } from './shipping-read';
 import startingVarieties from '../data/varieties.json';
 import { slugify } from '../lib/names';
 import societies from '../data/societies.json';
@@ -27,6 +29,10 @@ async function main() {
   const due = farms.map((f) => ({ f, why: whyDue(f as any, sales as any, now, force) })).filter((x) => x.why);
   console.log(`${due.length} of ${farms.length} farms due.`);
 
+  // Update 2 columns exist only after supabase/update-2.sql has been run.
+  const v2 = await t.probe('farms', 'ships_to');
+  if (!v2) console.log('Note: run supabase/update-2.sql in Supabase to turn on shipping details and new-introduction tracking.');
+  if (v2) await syncFarmDetails(t, farmDetails as any[]);
   const added = await syncSocieties(t, societies as any[]);
   if (added) console.log(`Added ${added} clubs and societies to the calendar.`);
   await applyOwnerDecisions(t, decisions as any[]);
@@ -58,7 +64,11 @@ async function main() {
         const known = new Set((await t.where('listings', { farm_id: f.id })).map((l) => String(l.product_key)));
         ({ products, allKeys } = await readWix(src, { known, perRun: why === 'sale day' ? 150 : 80 }));
       } else products = platform === 'woocommerce' ? await readWoo(src) : await readShopify(src);
-      const n = await save(t, book, f, products, allKeys);
+      const n = await save(t, book, f, products, allKeys, v2);
+      if (v2) {
+        const intros = await applyIntroYears(t, f.id, products);
+        if (intros) console.log(`  ${f.name}: ${intros} new introductions spotted.`);
+      }
       const trust = (trusted as any[]).find((x) => x.farm === f.code);
       if (trust) {
         const updated = await applyTrustedDetails(t, f as any, products, trust.fields);
@@ -76,6 +86,7 @@ async function main() {
     await new Promise((r) => setTimeout(r, 1000));
   }
 
+  if (v2) for (const note of await refreshShipping(t, 3)) console.log(`Shipping: ${note}`);
   const hiddenCount = await hideNonDahlias(t);
   if (hiddenCount) console.log(`Hid ${hiddenCount} things that aren't dahlias.`);
   await weeklyHousekeeping(t, now);

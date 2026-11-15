@@ -5,7 +5,8 @@ import type { Product } from './sources';
 
 /** Saves one farm's listings. Returns how many changed. */
 /** allKeys: every product the shop has, when only some were read this time (Wix). */
-export async function save(t: Tables, book: NameBook, farm: any, products: Product[], allKeys?: string[]): Promise<number> {
+export async function save(t: Tables, book: NameBook, farm: any, products: Product[], allKeys?: string[], withDescriptions = false): Promise<number> {
+  const desc = (p: Product) => (withDescriptions && p.hints?.text ? { description: p.hints.text.slice(0, 600) } : {});
   const existing = await t.where('listings', { farm_id: farm.id });
   const byKey = new Map(existing.map((l) => [l.product_key, l]));
   const now = new Date().toISOString();
@@ -21,14 +22,18 @@ export async function save(t: Tables, book: NameBook, farm: any, products: Produ
       fresh.push({
         farm_id: farm.id, product_key: p.key, variety_id, title: p.title, url: p.url,
         price_cents: p.price_cents, currency: p.currency, in_stock: p.in_stock, kind: p.kind,
-        active: true, first_seen: now, last_seen: now, last_changed: now,
+        active: true, first_seen: now, last_seen: now, last_changed: now, ...desc(p),
       });
       changed++;
       continue;
     }
     const differs = old.title !== p.title || old.kind !== p.kind || old.price_cents !== p.price_cents || old.in_stock !== p.in_stock || !old.active || old.url !== p.url;
-    if (!differs) continue; // only write when something changed, to keep the checker quick
-    const patch: Record<string, any> = { title: p.title, url: p.url, price_cents: p.price_cents, in_stock: p.in_stock, kind: p.kind, active: true, last_seen: now, last_changed: now };
+    if (!differs) {
+      // Fill in a missing description once (for spotting new introductions), without counting it as a change.
+      if (withDescriptions && old.description == null && p.hints?.text) await t.update('listings', { id: old.id }, desc(p));
+      continue; // only write when something changed, to keep the checker quick
+    }
+    const patch: Record<string, any> = { ...desc(p), title: p.title, url: p.url, price_cents: p.price_cents, in_stock: p.in_stock, kind: p.kind, active: true, last_seen: now, last_changed: now };
     if (old.title !== p.title && old.variety_id == null && p.kind !== 'other') patch.variety_id = await book.resolve(p.title, farm.name, p.hints);
     await t.update('listings', { id: old.id }, patch);
     changed++;

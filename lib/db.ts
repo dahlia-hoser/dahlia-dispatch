@@ -15,6 +15,8 @@ export interface Tables {
   update(table: string, match: Match, patch: Row): Promise<void>;
   remove(table: string, match: Match): Promise<void>;
   removeIn(table: string, column: string, values: (string | number)[]): Promise<void>;
+  /** Does this column exist yet? (False until the matching update SQL has been run.) */
+  probe(table: string, column: string): Promise<boolean>;
 }
 
 class SupabaseTables implements Tables {
@@ -46,6 +48,10 @@ class SupabaseTables implements Tables {
   async remove(table: string, match: Match) {
     const { error } = await this.sb.from(table).delete().match(match as any);
     if (error) throw new Error(`${table}: ${error.message}`);
+  }
+  async probe(table: string, column: string) {
+    const { error } = await this.sb.from(table).select(column).limit(1);
+    return !error;
   }
   async removeIn(table: string, column: string, values: (string | number)[]) {
     for (let i = 0; i < values.length; i += 200) {
@@ -88,6 +94,9 @@ class MemoryTables implements Tables {
   }
   async remove(table: string, match: Match) {
     this.t[table] = this.rows(table).filter((r) => !same(r, match));
+  }
+  async probe() {
+    return true;
   }
   async removeIn(table: string, column: string, values: (string | number)[]) {
     const set = new Set(values);

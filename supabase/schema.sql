@@ -115,3 +115,13 @@ grant usage on schema public to service_role;
 grant all on all tables in schema public to service_role;
 grant all on all sequences in schema public to service_role;
 revoke all on all tables in schema public from anon, authenticated;
+
+-- Update 2 columns (also in update-2.sql for databases set up before Nov 15, 2026).
+alter table farms add column if not exists ships_to text;
+alter table farms add column if not exists ship_window text;
+alter table farms add column if not exists ship_cost text;
+alter table farms add column if not exists pickup text;
+alter table farms add column if not exists shipping_checked_at timestamptz;
+alter table listings add column if not exists description text;
+alter table varieties add column if not exists intro_year integer;
+alter table varieties add column if not exists canadian_bred boolean;

@@ -1,5 +1,5 @@
 import type { Group, Row } from '../lib/catalogue';
-import { money } from '../lib/catalogue';
+import { money, gettingIt } from '../lib/catalogue';
 import { text, fill } from '../site-text';
 import { normalize } from '../lib/names';
 
@@ -19,6 +19,7 @@ export function ListingRow({ r, groupName }: { r: Row; groupName: string }) {
           {r.listing.kind === 'cutting' && <> · {text.cutting}</>}
           {r.listing.kind === 'plant' && <> · {text.pottedPlant}</>}
         </span>
+        {gettingIt(r.farm) && <span className="ship">{gettingIt(r.farm)}</span>}
       </div>
       <span className="price">{money(r.listing.price_cents)}</span>
       <span className="inline">
@@ -40,8 +41,20 @@ export function GroupCard({ g }: { g: Group }) {
         <h3>{v ? <a href={`/v/${v.slug}`}>{g.name}</a> : g.name}</h3>
         {meta && <span className="meta">{meta}</span>}
         {g.aka.length > 0 && <span className="meta">{text.alsoSoldAs}: {g.aka.join(', ')}</span>}
+        <Badges g={g} />
       </div>
       {g.rows.map((r) => <ListingRow key={r.listing.id} r={r} groupName={g.name} />)}
     </section>
+  );
+}
+
+export function Badges({ g }: { g: Group }) {
+  if (!g.rare && !g.newIntro && !g.canadian) return null;
+  return (
+    <span className="inline" style={{ gap: 6 }}>
+      {g.newIntro && <span className="chip intro">{fill(text.badgeNewIntro, { year: g.variety?.intro_year ?? '' })}</span>}
+      {g.canadian && <span className="chip canada">{text.badgeCanadian}</span>}
+      {g.rare && <span className="chip rare">{text.badgeRare}</span>}
+    </span>
   );
 }

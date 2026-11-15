@@ -33,6 +33,14 @@ export default async function EditVariety({ params, searchParams }: { params: Pr
         </div>
         <label>Form<Pick name="form" options={FORMS} value={v.form} /></label>
         <label>Status<Pick name="status" options={['Suggested', 'Needs you', 'Confirmed', 'Not a dahlia']} value={v.status} /></label>
+        <label>Introduced in (year, if it’s a new introduction)<input name="intro_year" type="number" min="1900" max="2100" defaultValue={v.intro_year ?? ''} /></label>
+        <label>Canadian-bred
+          <select name="canadian_bred" defaultValue={v.canadian_bred === true ? 'yes' : v.canadian_bred === false ? 'no' : ''}>
+            <option value="">Decide from the name</option>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+        </label>
         <label>Private notes<textarea name="notes" rows={3} defaultValue={v.notes ?? ''} /></label>
         <div><button className="btn" type="submit">Save</button></div>
       </form>

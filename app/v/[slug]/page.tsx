@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { loadAll, groupAll, lastChecked, ago } from '../../../lib/catalogue';
-import { ListingRow } from '../../../components/Listing';
+import { ListingRow, Badges } from '../../../components/Listing';
 import { text, fill } from '../../../site-text';
 import { isAdmin } from '../../../lib/is-admin';
 
@@ -18,6 +18,7 @@ export default async function VarietyPage({ params }: { params: Promise<{ slug: 
       <div className="vhead">
         <div className="left">
           <h1>{v.name}</h1>
+          <Badges g={g} />
           {g.aka.length > 0 && <p className="note">{text.alsoSoldAs}: {g.aka.join(', ')}</p>}
           <dl className="facts">
             <div><dt>{text.varietyForm}</dt><dd>{v.form ?? text.varietyUnknown}</dd></div>

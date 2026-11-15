@@ -1,0 +1,15 @@
+[
+  { "farm": "LW", "ships_to": "all" },
+  { "farm": "TW", "ships_to": "all", "ship_window": "April" },
+  { "farm": "ABP", "ships_to": "all" },
+  { "farm": "DM", "ships_to": "all" },
+  { "farm": "FA", "ships_to": "all" },
+  { "farm": "TWC", "ships_to": "all", "ship_window": "April or May" },
+  { "farm": "DG", "ships_to": "all", "ship_window": "April–May" },
+  { "farm": "PF", "ships_to": "all", "ship_cost": "$18, free over $250", "pickup": "At the farm" },
+  { "farm": "LS", "ship_window": "From mid-April", "pickup": "At the store" },
+  { "farm": "BM", "ship_window": "April 19–26", "pickup": "At the farm, early May" },
+  { "farm": "SV", "ships_to": "all", "pickup": "Local pickup in Langley" },
+  { "farm": "NSF", "ship_window": "Late April to early May" },
+  { "farm": "VH", "ships_to": "all", "ship_window": "Mid-April to May", "pickup": "Farm pickup days" }
+]

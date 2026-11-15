@@ -5,6 +5,7 @@ import salesJson from '../data/sales.json';
 import candidatesJson from '../data/candidates.json';
 import manualJson from '../data/manual-listings.json';
 import societiesJson from '../data/societies.json';
+import farmDetailsJson from '../data/farm-details.json';
 import previewListingsJson from '../data/preview-listings.json';
 import { normalize, slugify } from './names';
 
@@ -20,6 +21,10 @@ export function buildPreviewTables(): Record<string, Row[]> {
     last_checked_at: f.site ? new Date(now - (5 + i * 3) * 60000).toISOString() : null,
     last_error: null,
   }));
+  for (const d of farmDetailsJson as any[]) {
+    const f = farms.find((x) => x.code === d.farm);
+    if (f) Object.assign(f, { ships_to: d.ships_to ?? null, ship_window: d.ship_window ?? null, ship_cost: d.ship_cost ?? null, pickup: d.pickup ?? null });
+  }
   const farmId = (code: string) => farms.find((f) => f.code === code)!.id;
 
   const varieties: Row[] = [];

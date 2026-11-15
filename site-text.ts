@@ -30,6 +30,13 @@ export const text = {
   filterColour: 'Colour',
   filterProvince: 'Province',
   filterAny: 'Any',
+  filterGetIn: 'Can get it in',
+  filterOnly: 'Show only',
+  onlyNew: 'New introductions',
+  onlyRare: 'Rare finds (1 farm)',
+  onlyCanadian: 'Canadian-bred',
+  onlyPickup: 'Farm pickup',
+  getInNote: 'Farms we don’t have shipping details for yet are left out of this filter.',
   clearFilters: 'Clear filters',
   availAll: 'All',
   availInStock: 'In stock',
@@ -39,6 +46,8 @@ export const text = {
 
   // Results
   resultsCount: '{varieties} varieties at {farms} farms',
+  resultsCountOne: '1 variety at 1 farm',
+  resultsCountOneVariety: '1 variety at {farms} farms',
   showMore: 'Show more ({n})',
   resultsNone: 'Nothing matches yet. Try a different spelling, or clear the filters.',
   notAvailableNote:
@@ -51,6 +60,12 @@ export const text = {
   noPrice: 'Price TBA',
   cutting: 'Rooted cutting',
   pottedPlant: 'Potted plant',
+  badgeRare: 'Only at 1 farm in Canada',
+  badgeNewIntro: 'New introduction {year}',
+  badgeCanadian: '🍁 Canadian-bred',
+  shipsAcross: 'Ships across Canada',
+  shipsTo: 'Ships to {provinces}',
+  pickupAt: 'Pickup: {where}',
   listedAs: 'Listed as “{name}”',
 
   // Variety page
