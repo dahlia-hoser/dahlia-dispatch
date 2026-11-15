@@ -7,7 +7,7 @@
 
 export const text = {
   siteName: 'The Hosers’ Dahlia Dispatch',
-  tagline: 'Dahlia tubers from small Canadian growers, all in one place.',
+  tagline: 'Dahlia tubers from Canadian growers & suppliers, all in one place.',
   byline: 'For Hosers by a Hoser',
   betaNote: 'Beta: we’re still testing, so some prices or names may be missing or wrong.',
   betaLink: 'Tell us what you think',
