@@ -93,10 +93,31 @@ function canon(n: string) {
   return n.replace(/\bavenue\b/g, 'ave').replace(/\bsaint\b/g, 'st').replace(/\bmount\b/g, 'mt').replace(/\band\b/g, 'n');
 }
 
+/**
+ * Spellings that only differ in ways farms commonly slip on, safe to merge without asking:
+ * spaces and punctuation, a doubled letter (Sanne/Sane), an "s" on the end of a word
+ * (KA's/KA, Pinelands/Pineland), -re/-er (Sceptre/Scepter), -our/-or (Splendour/Splendor),
+ * -ie/-y (Debbie/Debby) and th/t (Nathalie/Natalie).
+ */
+export function looseKey(n: string): string {
+  return canon(normalize(n))
+    .split(' ')
+    .map((w) => (w.length > 3 ? w.replace(/s$/, '') : w.replace(/^(\w+)s$/, '$1')))
+    .map((w) => w.replace(/re$/, 'er').replace(/our/g, 'or').replace(/ie$/, 'y').replace(/th/g, 't'))
+    .join('')
+    .replace(/(.)\1+/g, '$1');
+}
+
+export function sameEnough(a: string, b: string): boolean {
+  return looseKey(a) === looseKey(b);
+}
+
 export function matchName(name: string, aliases: Map<string, number>): MatchResult {
   const n = normalize(name);
   const hit = aliases.get(n);
   if (hit != null) return { kind: 'exact', varietyId: hit };
+  const loose = looseKey(n);
+  for (const [alias, id] of aliases) if (looseKey(alias) === loose) return { kind: 'exact', varietyId: id };
   const squash = canon(n).replace(/\s/g, '');
   let best: { id: number; alias: string; d: number } | null = null;
   for (const [alias, id] of aliases) {

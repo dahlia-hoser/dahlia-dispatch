@@ -54,7 +54,7 @@ export type SaleEvent = {
 
 export type ReviewItem = {
   id: number;
-  kind: 'name' | 'details' | 'farm';
+  kind: 'name' | 'details' | 'farm' | 'feedback';
   status: 'open' | 'later' | 'done';
   data: any;
   created_at: string;
@@ -76,6 +76,7 @@ export type AllData = {
   aliases: Alias[];
   listings: Listing[];
   sales: SaleEvent[];
+  pending?: { spelling: string; slug: string }[];
 };
 
 export const COLOURS = ['White', 'Cream', 'Yellow', 'Orange', 'Peach', 'Pink', 'Blush', 'Red', 'Burgundy', 'Purple', 'Lavender'];

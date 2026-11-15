@@ -8,7 +8,7 @@ import { NameBook } from '../lib/name-ops';
 
 const shopify = [
   { id: 1, title: "Dahlia 'Maarn' Tuber", handle: 'maarn', product_type: 'Dahlia Tubers', tags: ['dahlia'], variants: [{ price: '10.00', available: false }] },
-  { id: 2, title: 'Caitlyn’s Joy', handle: 'caitlyns-joy', product_type: 'Dahlia Tubers', tags: [], variants: [{ price: '12.00', available: true }, { price: '9.00', available: false }] },
+  { id: 2, title: 'Bloomquist Allen', handle: 'bloomquist-allen', product_type: 'Dahlia Tubers', tags: [], variants: [{ price: '12.00', available: true }, { price: '9.00', available: false }] },
   { id: 3, title: 'Gift Card', handle: 'gift-card', product_type: 'Gift Card', tags: [], variants: [{ price: '25.00', available: true }] },
   { id: 4, title: 'Brand New Seedling', handle: 'seedling', product_type: 'Dahlia Tubers', tags: [], variants: [{ price: '30.00', available: true }] },
   { id: 5, title: 'Alloway Candy - Rooted Cutting', handle: 'ac-cut', product_type: 'Dahlia Cuttings', tags: [], variants: [{ price: '8.00', available: true }] },
@@ -70,11 +70,11 @@ test('saving listings: match, new variety, question, restock, removal', async ()
   const varieties = await t.all('varieties');
   const slugOf = (id: number | null) => varieties.find((v) => v.id === id)?.slug ?? null;
   assert.equal(slugOf(mine.find((l) => l.product_key === '1')!.variety_id), 'maarn');
-  assert.equal(slugOf(mine.find((l) => l.product_key === '2')!.variety_id), null, 'Caitlyn’s Joy waits for review');
+  assert.equal(slugOf(mine.find((l) => l.product_key === '2')!.variety_id), null, 'Bloomquist Allen waits for review');
   assert.equal(slugOf(mine.find((l) => l.product_key === '4')!.variety_id), 'brand-new-seedling', 'new variety gets a page');
   assert.equal(slugOf(mine.find((l) => l.product_key === '5')!.variety_id), 'alloway-candy');
   const reviewAfter = await t.all('review_items');
-  assert.equal(reviewAfter.length, reviewBefore + 2);
+  assert.equal(reviewAfter.length, reviewBefore + 1); // new variety's colour question; Bloomquist Allen was already asked
 
   // Restock of Maarn, Brand New Seedling removed from the shop.
   const next = items.filter((i) => i.key !== '4').map((i) => (i.key === '1' ? { ...i, in_stock: true } : i));

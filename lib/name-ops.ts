@@ -1,6 +1,6 @@
 // Deciding which variety a farm's listing belongs to, and asking the owner when unsure.
 import type { Tables } from './db';
-import { matchName, normalize, slugify, tidyName, varietyNameFromTitle } from './names';
+import { matchName, normalize, sameEnough, slugify, tidyName, varietyNameFromTitle } from './names';
 import { guessDetails, type Hints } from './guess';
 
 export class NameBook {
@@ -77,4 +77,22 @@ export async function makeSeparate(t: Tables, spelling: string) {
 async function attachWaiting(t: Tables, alias: string, varietyId: number) {
   const waiting = (await t.all('listings')).filter((l) => l.variety_id == null && normalize(varietyNameFromTitle(l.title)) === alias);
   for (const l of waiting) await t.update('listings', { id: l.id }, { variety_id: varietyId });
+}
+
+/** Answers "same flower?" questions that turn out to be small spelling slips. Returns how many. */
+export async function autoAnswerSlips(t: Tables): Promise<number> {
+  const open = (await t.where('review_items', { kind: 'name' })).filter((r) => r.status !== 'done');
+  if (!open.length) return 0;
+  const [varieties, aliases] = await Promise.all([t.all('varieties'), t.all('aliases')]);
+  let n = 0;
+  for (const r of open) {
+    const v = varieties.find((x) => x.slug === r.data?.suggestion);
+    if (!v) continue;
+    const spellings = [v.name, ...aliases.filter((a) => a.variety_id === v.id).map((a) => a.alias)];
+    if (!spellings.some((sp) => sameEnough(sp, r.data.spelling))) continue;
+    await confirmSame(t, r.data.spelling, v.id);
+    await t.update('review_items', { id: r.id }, { status: 'done', resolved_at: new Date().toISOString(), answer: { choice: 'yes', auto: true } });
+    n++;
+  }
+  return n;
 }

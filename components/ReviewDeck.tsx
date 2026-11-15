@@ -52,6 +52,7 @@ export function ReviewDeck({ cards, more = 0 }: { cards: Card[]; more?: number }
         )
       ) : (
         <div className="rcard" aria-busy={busy} key={card.id}>
+          {card.kind === 'feedback' && <FeedbackCard card={card} busy={busy} go={go} />}
           {card.kind === 'farm' && <FarmCard card={card} busy={busy} go={go} />}
           {card.kind === 'name' && <NameCard card={card} busy={busy} go={go} />}
           {card.kind === 'details' && <DetailsCard card={card} busy={busy} go={go} />}
@@ -62,6 +63,24 @@ export function ReviewDeck({ cards, more = 0 }: { cards: Card[]; more?: number }
 }
 
 type Go = (a: any) => void;
+
+function FeedbackCard({ card, busy, go }: { card: Extract<Card, { kind: 'feedback' }>; busy: boolean; go: Go }) {
+  return (
+    <>
+      <span className="kicker">{text.reviewFeedback}</span>
+      <p style={{ whiteSpace: 'pre-wrap', color: 'var(--text)', fontSize: 18 }}>{card.message}</p>
+      <p className="note">
+        {new Date(card.at).toLocaleString('en-CA', { timeZone: 'America/Toronto', dateStyle: 'medium', timeStyle: 'short' })}
+        {card.contact && <> · {card.contact}</>}
+        {card.page && <> · from {card.page}</>}
+      </p>
+      <div className="choices">
+        <button className="btn" disabled={busy} onClick={() => go({ choice: 'yes' })}>{text.reviewFeedbackDone}</button>
+        <button className="linkbtn" disabled={busy} onClick={() => go({ choice: 'later' })}>{text.reviewLater}</button>
+      </div>
+    </>
+  );
+}
 
 function FarmCard({ card, busy, go }: { card: Extract<Card, { kind: 'farm' }>; busy: boolean; go: Go }) {
   const [site, setSite] = useState(card.site ?? '');

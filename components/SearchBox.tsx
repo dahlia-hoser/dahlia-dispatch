@@ -14,14 +14,22 @@ export function SearchBox({ items, initial, hidden }: { items: Suggestion[]; ini
 
   const list = useMemo(() => {
     const n = norm(q.trim());
-    if (n.length < 1) return [];
-    const starts: Suggestion[] = [], contains: Suggestion[] = [];
+    if (n.length < 1) return [] as { s: Suggestion; via: string | null }[];
+    const score = (l: string) => {
+      const x = norm(l);
+      return x.startsWith(n) ? 0 : x.split(' ').some((w) => w.startsWith(n)) ? 1 : x.includes(n) ? 2 : 9;
+    };
+    const hits: { s: Suggestion; via: string | null; rank: number }[] = [];
     for (const s of items) {
-      const l = norm(s.label);
-      if (l.startsWith(n) || l.split(' ').some((w) => w.startsWith(n))) starts.push(s);
-      else if (l.includes(n)) contains.push(s);
+      const own = score(s.label);
+      let best = own, via: string | null = null;
+      for (const a of s.alts) {
+        const r = score(a);
+        if (r < best) { best = r; via = a; }
+      }
+      if (best < 9) hits.push({ s, via, rank: best });
     }
-    return [...starts, ...contains].slice(0, 8);
+    return hits.sort((a, b) => a.rank - b.rank || a.s.label.localeCompare(b.s.label)).slice(0, 8);
   }, [q, items]);
 
   const go = (s: Suggestion) => {
@@ -30,7 +38,7 @@ export function SearchBox({ items, initial, hidden }: { items: Suggestion[]; ini
 
   return (
     <form ref={form} role="search" className="search" action="/" method="get" onSubmit={(e) => {
-      if (open && active >= 0 && list[active]) { e.preventDefault(); go(list[active]); }
+      if (open && active >= 0 && list[active]) { e.preventDefault(); go(list[active].s); }
     }}>
       {Object.entries(hidden).map(([k, v]) => v && k !== 'q' && k !== 'farm' ? <input key={k} type="hidden" name={k} value={v} /> : null)}
       <div className="search-box">
@@ -60,11 +68,12 @@ export function SearchBox({ items, initial, hidden }: { items: Suggestion[]; ini
       </div>
       {open && list.length > 0 && (
         <ul id="sugg" role="listbox" className="sugg">
-          {list.map((s, i) => (
+          {list.map(({ s, via }, i) => (
             <li key={s.kind + s.label + s.href} id={`s${i}`} role="option" aria-selected={i === active} onMouseDown={(e) => { e.preventDefault(); go(s); }} onMouseEnter={() => setActive(i)}>
               <span>
                 <b>{s.label}</b>
-                {s.sub && <span className="sub">{s.kind === 'variety' ? `${text.suggestionAlsoSoldAs} ${s.sub}` : s.sub}</span>}
+                {s.kind === 'farm' && s.sub && <span className="sub">{s.sub}</span>}
+                {via && <span className="sub">{text.suggestionAlsoSoldAs} {via}</span>}
               </span>
               <span className="kind">{s.kind === 'farm' ? text.suggestionFarm : text.suggestionVariety}</span>
             </li>

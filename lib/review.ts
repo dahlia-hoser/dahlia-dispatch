@@ -13,6 +13,7 @@ export async function openReviewCount() {
 }
 
 export type Card =
+  | { id: number; kind: 'feedback'; message: string; contact: string | null; page: string | null; at: string }
   | { id: number; kind: 'farm'; name: string; place: string | null; site: string | null; platform: string | null }
   | { id: number; kind: 'name'; spelling: string; farm: string; note: string | null; suggestion: { slug: string; name: string; detail: string } | null }
   | { id: number; kind: 'details'; slug: string; name: string; isNew: boolean; guessed: boolean; colour1: string | null; colour2: string | null; form: string | null; seenAt: { farm: string; title: string; url: string | null }[] };
@@ -33,7 +34,7 @@ export async function reviewCards(): Promise<Card[]> {
   ]);
   const vBySlug = new Map(varieties.map((v) => [v.slug, v]));
   const farmName = new Map(farms.map((f) => [f.id, f.name]));
-  const order = { farm: 0, name: 1, details: 2 } as Record<string, number>;
+  const order = { feedback: 0, farm: 1, name: 2, details: 3 } as Record<string, number>;
   const vIdBySlug = new Map(varieties.map((v) => [v.slug, v.id]));
   const sellers = new Map<number, number>();
   for (const l of listings) if (l.active && l.variety_id) sellers.set(l.variety_id, (sellers.get(l.variety_id) ?? 0) + 1);
@@ -43,7 +44,9 @@ export async function reviewCards(): Promise<Card[]> {
 
   const cards: Card[] = [];
   for (const r of items) {
-    if (r.kind === 'farm') {
+    if (r.kind === 'feedback') {
+      cards.push({ id: r.id, kind: 'feedback', message: r.data.message, contact: r.data.contact ?? null, page: r.data.page ?? null, at: r.created_at });
+    } else if (r.kind === 'farm') {
       const c = candidates.find((x) => x.id === r.data.candidate);
       if (c) cards.push({ id: r.id, kind: 'farm', name: c.name, place: c.place, site: c.site, platform: c.platform });
     } else if (r.kind === 'name') {

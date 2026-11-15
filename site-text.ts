@@ -8,6 +8,9 @@
 export const text = {
   siteName: 'The Hosers’ Dahlia Dispatch',
   tagline: 'Dahlia tubers from small Canadian growers, all in one place.',
+  byline: 'For Hosers by a Hoser',
+  betaNote: 'Beta: we’re still testing, so some prices or names may be missing or wrong.',
+  betaLink: 'Tell us what you think',
 
   // Top menu
   navSearch: 'Search',
@@ -19,7 +22,7 @@ export const text = {
   searchButton: 'Search',
   suggestionVariety: 'Variety',
   suggestionFarm: 'Farm',
-  suggestionAlsoSoldAs: 'same flower as',
+  suggestionAlsoSoldAs: 'also sold as',
 
   // Filters
   filterAvailability: 'Availability',
@@ -66,7 +69,17 @@ export const text = {
   calendarLater: 'Date not set yet',
 
   // Footer
-  footer: 'A private test version. Not shared with anyone yet.',
+  footer: 'For Hosers by a Hoser. Still in beta.',
+  footerFeedback: 'Send feedback',
+
+  // Feedback page
+  feedbackTitle: 'Send feedback',
+  feedbackIntro: 'Spotted a wrong price, a missing farm, or a name that’s off? Ideas welcome too.',
+  feedbackMessage: 'Your message',
+  feedbackContact: 'Your email or name, if you’d like a reply (optional)',
+  feedbackPrivacy: 'Only the person who runs this site sees your message. It’s never shown on the site or shared.',
+  feedbackSend: 'Send',
+  feedbackThanks: 'Thanks! Your message is on its way.',
 
   // Review list (only you see this)
   reviewTitle: 'Review list',
@@ -75,6 +88,8 @@ export const text = {
   reviewDoneTitle: 'All caught up.',
   reviewDoneText: 'Go enjoy your coffee.',
   reviewFarmQuestion: 'Add this farm?',
+  reviewFeedback: 'Feedback',
+  reviewFeedbackDone: 'Done',
   reviewNameQuestion: 'Same flower?',
   reviewDetailsQuestion: 'Colour and form',
   reviewYes: 'Yes',

@@ -89,3 +89,11 @@ test('third batch', () => {
   assert.equal(kindFromTitle('All White Dahlia Kit'), 'other');
   assert.equal(varietyNameFromTitle('Dahlia ‘Platinum Blonde’'), 'Platinum Blonde');
 });
+
+import { sameEnough } from './names';
+test('small spelling slips merge on their own, real differences still ask', () => {
+  for (const [a, b] of [['Golden Sceptre', 'Golden Scepter'], ['Sweet Sane', 'Sweet Sanne'], ['Camano Buz', 'Camano Buzz'], ['Clearview Debby', 'Clearview Debbie'], ["Gabbie's Wish", "Gabby's Wish"], ['Quiet Splendour', 'Quiet Splendor'], ['KA Champagne', 'KA’s Champagne'], ['Pineland Princess', 'Pinelands Princess'], ['Natalie G', 'Nathalie G'], ['20th Ave Softer Peach', '20th Avenue Softer Peach']])
+    assert.ok(sameEnough(a, b), `${a} = ${b}`);
+  for (const [a, b] of [['Bloomquist Crave', 'Bloomquist Dave'], ['Van Isle Bold', 'Van Isle Blood'], ['Cafe au Lait Rose', 'Cafe au Lait'], ['Cornel', 'Cornel Bronze'], ['Bloomquist Jean', 'Bloomquist Alan'], ['Rose Toscano', 'Rose Toscana'], ['Boom Boom White', 'Boom Boom Yellow'], ['Sandia Molly', 'Sandia Holly']])
+    assert.ok(!sameEnough(a, b), `${a} != ${b}`);
+});

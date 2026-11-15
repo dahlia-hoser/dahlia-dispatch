@@ -22,15 +22,26 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link href="https://fonts.googleapis.com/css2?family=Carlito:wght@400;700&display=swap" rel="stylesheet" />
       </head>
       <body>
+        <div className="beta">
+          <div className="wrap">
+            {text.betaNote} <a href="/feedback">{text.betaLink}</a>
+          </div>
+        </div>
         <header className="top">
           <div className="wrap">
-            <a className="brand" href="/">{text.siteName}</a>
+            <a className="brand" href="/">
+              {text.siteName}
+              <span className="byline">{text.byline}</span>
+            </a>
             <Nav reviewCount={count} />
           </div>
         </header>
         <main className="wrap">{children}</main>
         <footer>
-          <div className="wrap">{text.footer}</div>
+          <div className="wrap inline" style={{ justifyContent: 'space-between' }}>
+            <span>{text.footer}</span>
+            <a href="/feedback">{text.footerFeedback}</a>
+          </div>
         </footer>
       </body>
     </html>

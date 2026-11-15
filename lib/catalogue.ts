@@ -1,17 +1,18 @@
 // Reading the data for the public pages: statuses, search, grouping by variety.
 import { db } from './db';
-import { normalize } from './names';
+import { normalize, varietyNameFromTitle } from './names';
 import type { AllData, Farm, Listing, SaleEvent, Variety } from './types';
 import { text, fill } from '../site-text';
 
 export async function loadAll(): Promise<AllData> {
   const t = db();
-  const [farms, varieties, aliases, listings, sales] = await Promise.all([
+  const [farms, varieties, aliases, listings, sales, questions] = await Promise.all([
     t.all('farms'),
     t.all('varieties'),
     t.all('aliases'),
     t.all('listings'),
     t.all('sale_events'),
+    t.where('review_items', { kind: 'name' }),
   ]);
   return {
     farms: farms as Farm[],
@@ -19,6 +20,8 @@ export async function loadAll(): Promise<AllData> {
     aliases: aliases as any,
     listings: (listings as Listing[]).filter((l) => l.active && l.kind !== 'other'),
     sales: sales as SaleEvent[],
+    // While a "same flower?" question waits, show those listings under the suggested name.
+    pending: questions.filter((q) => q.status !== 'done' && q.data?.suggestion).map((q) => ({ spelling: q.data.spelling, slug: q.data.suggestion })),
   };
 }
 
@@ -86,6 +89,8 @@ export function groupAll(data: AllData, now = Date.now()): Group[] {
     const t = new Date(l.first_seen).getTime();
     firstImport.set(l.farm_id, Math.min(firstImport.get(l.farm_id) ?? t, t));
   }
+  const bySlug = new Map(data.varieties.map((v) => [v.slug, v.id]));
+  const pending = new Map((data.pending ?? []).map((p) => [normalize(p.spelling), bySlug.get(p.slug)]));
   const groups = new Map<string, Group>();
   for (const v of data.varieties) {
     groups.set('v' + v.id, {
@@ -99,8 +104,10 @@ export function groupAll(data: AllData, now = Date.now()): Group[] {
   for (const l of data.listings) {
     const farm = farmById.get(l.farm_id);
     if (!farm) continue;
-    const key = l.variety_id && varietyById.has(l.variety_id) ? 'v' + l.variety_id : 't' + normalize(l.title);
-    if (!groups.has(key)) groups.set(key, { key, variety: null, name: l.title, aka: [], rows: [] });
+    const clean = varietyNameFromTitle(l.title);
+    const guessId = l.variety_id ?? pending.get(normalize(clean)) ?? null;
+    const key = guessId && varietyById.has(guessId) ? 'v' + guessId : 't' + normalize(clean);
+    if (!groups.has(key)) groups.set(key, { key, variety: null, name: clean, aka: [], rows: [] });
     const st = status(l, farm, data.sales, now);
     const first = new Date(l.first_seen).getTime();
     const isNew = now - first < 7 * 86400000 && first - (firstImport.get(l.farm_id) ?? first) > 3600000;
@@ -109,7 +116,16 @@ export function groupAll(data: AllData, now = Date.now()): Group[] {
   const order: Record<Avail, number> = { in: 0, soon: 1, list: 2, out: 3 };
   for (const g of groups.values()) {
     g.rows.sort((a, b) => order[a.avail] - order[b.avail] || (a.listing.price_cents ?? 1e9) - (b.listing.price_cents ?? 1e9));
-    for (const r of g.rows) if (r.listing.title !== g.name && !g.aka.includes(r.listing.title) && normalize(r.listing.title) !== normalize(g.name)) g.aka.push(r.listing.title);
+    // "Also sold as": other spellings farms use, cleaned of shop talk, each once.
+    const have = new Set([normalize(g.name), ...g.aka.map(normalize)]);
+    for (const r of g.rows) {
+      const n = varietyNameFromTitle(r.listing.title);
+      const k = normalize(n);
+      if (!have.has(k) && k.replace(/\s/g, '') !== normalize(g.name).replace(/\s/g, '')) {
+        have.add(k);
+        g.aka.push(n);
+      }
+    }
   }
   return [...groups.values()].sort((a, b) => a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }));
 }
@@ -140,17 +156,17 @@ export function search(groups: Group[], f: Filters): Group[] {
   return out;
 }
 
-export type Suggestion = { label: string; sub: string; href: string; kind: 'variety' | 'farm' };
+export type Suggestion = { label: string; alts: string[]; sub: string; href: string; kind: 'variety' | 'farm' };
 
 export function suggestions(data: AllData, groups: Group[]): Suggestion[] {
+  // One row per variety. Other spellings are used for matching, not shown as extra rows.
   const list: Suggestion[] = [];
   for (const g of groups) {
     if (!g.rows.length && !g.variety) continue;
     const href = g.variety ? `/v/${g.variety.slug}` : `/?q=${encodeURIComponent(g.name)}`;
-    list.push({ label: g.name, sub: '', href, kind: 'variety' });
-    for (const a of g.aka) list.push({ label: a, sub: g.name, href, kind: 'variety' });
+    list.push({ label: g.name, alts: g.aka, sub: '', href, kind: 'variety' });
   }
-  for (const f of data.farms) if (f.active) list.push({ label: f.name, sub: f.place ?? '', href: `/?farm=${f.code}`, kind: 'farm' });
+  for (const f of data.farms) if (f.active) list.push({ label: f.name, alts: [], sub: f.place ?? '', href: `/?farm=${f.code}`, kind: 'farm' });
   return list;
 }
 
