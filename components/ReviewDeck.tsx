@@ -148,7 +148,7 @@ function DetailsCard({ card, busy, go }: { card: Extract<Card, { kind: 'details'
       <div className="pills">
         {COLOURS.map((c) => <button key={c} type="button" className="pill" aria-pressed={cols.includes(c)} onClick={() => toggle(c)}>{c}</button>)}
       </div>
-      <p><b>{text.varietyForm}</b></p>
+      <p><b>{text.varietyForm}</b>{card.formFrom && <span className="note"> ({fill(text.reviewFormFrom, { farm: card.formFrom })})</span>}</p>
       <div className="pills">
         {FORMS.map((f) => <button key={f} type="button" className="pill" aria-pressed={form === f} onClick={() => setForm(form === f ? null : f)}>{f}</button>)}
       </div>

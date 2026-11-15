@@ -110,6 +110,7 @@ export const text = {
   reviewLater: 'Ask me later',
   reviewSave: 'Save',
   reviewNotDahlia: 'Not a dahlia: hide it',
+  reviewFormFrom: 'from {farm}’s label',
   reviewNewVariety: 'New variety',
   reviewGuessed: 'Filled in from the farm’s own description. Check it, then Save.',
   reviewBatchDone: 'Nice work. That’s a batch done.',

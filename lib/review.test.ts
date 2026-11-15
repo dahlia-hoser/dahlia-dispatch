@@ -87,3 +87,18 @@ test('listings saved under a wrong name move to the right variety', async () => 
   assert.equal((await t.where('varieties', { slug: 'potted' })).length, 0);
   assert.ok(!(await t.where('review_items', { kind: 'details' })).some((x) => x.data?.variety === 'potted'));
 });
+
+import { applyTrustedDetails } from './name-ops';
+test("a trusted farm's form label becomes the default", async () => {
+  const t = db();
+  const dg = (await t.all('farms')).find((f) => f.code === 'DG')!;
+  const [v] = await t.insert('varieties', { slug: 'test-trust', name: 'Test Trust', form: 'Decorative', status: 'Suggested' });
+  const [q] = await t.insert('review_items', { kind: 'details', status: 'open', data: { variety: 'test-trust', isNew: true } });
+  await t.insert('listings', { farm_id: dg.id, product_key: 'tt1', variety_id: v.id, title: 'Test Trust Dahlia Tuber - TT', url: null, price_cents: 1000, in_stock: false, kind: 'tuber', active: true, first_seen: new Date().toISOString(), last_changed: new Date().toISOString() });
+  const n = await applyTrustedDetails(t, dg as any, [{ key: 'tt1', title: 'Test Trust', hints: { tags: ['Ball'], text: '' } }], ['form']);
+  assert.equal(n, 1);
+  assert.equal((await t.where('varieties', { id: v.id }))[0].form, 'Ball');
+  assert.equal((await t.where('review_items', { id: q.id }))[0].data.formFrom, 'Deva’s Gardens');
+  await t.update('varieties', { id: v.id }, { status: 'Confirmed', form: 'Single' });
+  assert.equal(await applyTrustedDetails(t, dg as any, [{ key: 'tt1', title: 'Test Trust', hints: { tags: ['Ball'], text: '' } }], ['form']), 0);
+});

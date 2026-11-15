@@ -4,6 +4,8 @@
 import { db } from '../lib/db';
 import { NameBook, autoAnswerSlips, hideNonDahlias, reconcileNames, syncSocieties, tidyForms, applyOwnerDecisions } from '../lib/name-ops';
 import decisions from '../data/owner-decisions.json';
+import trusted from '../data/trusted-sources.json';
+import { applyTrustedDetails } from '../lib/name-ops';
 import startingVarieties from '../data/varieties.json';
 import { slugify } from '../lib/names';
 import societies from '../data/societies.json';
@@ -57,6 +59,11 @@ async function main() {
         ({ products, allKeys } = await readWix(src, { known, perRun: why === 'sale day' ? 150 : 80 }));
       } else products = platform === 'woocommerce' ? await readWoo(src) : await readShopify(src);
       const n = await save(t, book, f, products, allKeys);
+      const trust = (trusted as any[]).find((x) => x.farm === f.code);
+      if (trust) {
+        const updated = await applyTrustedDetails(t, f as any, products, trust.fields);
+        if (updated) console.log(`  ${f.name}: used its labels for ${updated} varieties (${trust.fields.join(', ')}).`);
+      }
       changes += n;
       await t.update('farms', { id: f.id }, { last_checked_at: new Date().toISOString(), last_error: null });
       console.log(`✓ ${f.name} (${why}): ${products.length} listings, ${n} changes`);

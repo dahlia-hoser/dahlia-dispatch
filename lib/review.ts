@@ -16,7 +16,7 @@ export type Card =
   | { id: number; kind: 'feedback'; message: string; contact: string | null; page: string | null; at: string }
   | { id: number; kind: 'farm'; name: string; place: string | null; site: string | null; platform: string | null }
   | { id: number; kind: 'name'; spelling: string; farm: string; note: string | null; suggestion: { slug: string; name: string; detail: string } | null }
-  | { id: number; kind: 'details'; slug: string; name: string; isNew: boolean; guessed: boolean; colour1: string | null; colour2: string | null; form: string | null; seenAt: { farm: string; title: string; url: string | null }[] };
+  | { id: number; kind: 'details'; slug: string; name: string; isNew: boolean; guessed: boolean; formFrom: string | null; colour1: string | null; colour2: string | null; form: string | null; seenAt: { farm: string; title: string; url: string | null }[] };
 
 export async function waitingDetails(): Promise<number> {
   const open = await db().where('review_items', { status: 'open' });
@@ -70,7 +70,7 @@ export async function reviewCards(): Promise<Card[]> {
         if (!seenAt.some((x) => x.farm === farm)) seenAt.push({ farm, title: l.title, url: l.url });
         if (seenAt.length >= 4) break;
       }
-      cards.push({ id: r.id, kind: 'details', slug: v.slug, name: v.name, isNew: !!r.data.isNew, guessed: !!r.data.guessed, colour1: v.colour1, colour2: v.colour2, form: v.form, seenAt });
+      cards.push({ id: r.id, kind: 'details', slug: v.slug, name: v.name, isNew: !!r.data.isNew, guessed: !!r.data.guessed, formFrom: r.data.formFrom ?? null, colour1: v.colour1, colour2: v.colour2, form: v.form, seenAt });
     }
   }
   return cards;

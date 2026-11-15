@@ -200,3 +200,38 @@ export async function applyOwnerDecisions(t: Tables, decisions: { slug: string; 
   }
   return n;
 }
+
+/**
+ * Farms the owner trusts for certain details (data/trusted-sources.json), e.g. Deva's for form.
+ * Their label becomes the variety's default, even if another farm said something else first.
+ * Confirmed varieties are never changed. Returns how many varieties were updated.
+ */
+export async function applyTrustedDetails(
+  t: Tables,
+  farm: { id: number; name: string },
+  products: { key: string; title: string; hints?: { tags: string[]; text: string } }[],
+  fields: string[]
+): Promise<number> {
+  const { guessDetails } = await import('./guess');
+  const listings = await t.where('listings', { farm_id: farm.id });
+  const varietyOf = new Map(listings.map((l) => [String(l.product_key), l.variety_id]));
+  const varieties = new Map((await t.all('varieties')).map((v) => [v.id, v]));
+  const openCards = (await t.where('review_items', { kind: 'details' })).filter((r) => r.status !== 'done');
+  let n = 0;
+  for (const p of products) {
+    const id = varietyOf.get(p.key);
+    const v = id ? varieties.get(id) : null;
+    if (!v || v.status === 'Confirmed' || v.status === 'Not a dahlia' || !p.hints) continue;
+    const g = guessDetails(v.name, p.hints) as Record<string, string | null>;
+    const patch: Record<string, string> = {};
+    for (const f of fields) if (g[f] && v[f] !== g[f]) patch[f] = g[f]!;
+    if (!Object.keys(patch).length) continue;
+    await t.update('varieties', { id: v.id }, patch);
+    Object.assign(v, patch);
+    for (const r of openCards.filter((r) => r.data?.variety === v.slug)) {
+      await t.update('review_items', { id: r.id }, { data: { ...r.data, guessed: true, formFrom: fields.includes('form') && patch.form ? farm.name : r.data?.formFrom } });
+    }
+    n++;
+  }
+  return n;
+}
