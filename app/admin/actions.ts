@@ -5,6 +5,7 @@ import { db } from '../../lib/db';
 import { answer, undoAnswer, type Answer } from '../../lib/review';
 import { normalize } from '../../lib/names';
 import { requireAdmin } from '../../lib/is-admin';
+import { suggestFarms } from '../../checker/save';
 
 export async function answerAction(id: number, a: Answer) {
   await requireAdmin();
@@ -109,4 +110,11 @@ function easternToUtc(local: string): string {
   const asToronto = Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour % 24, +p.minute);
   const offset = asToronto - guess.getTime();
   return new Date(guess.getTime() - offset).toISOString();
+}
+
+export async function suggestMoreFarms() {
+  await requireAdmin();
+  await suggestFarms(db(), 3);
+  revalidatePath('/', 'layout');
+  redirect('/admin');
 }

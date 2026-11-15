@@ -1,13 +1,14 @@
 import { db } from '../../../lib/db';
 import { ago } from '../../../lib/catalogue';
-import { saveFarm } from '../actions';
+import { saveFarm, suggestMoreFarms } from '../actions';
 import type { Farm } from '../../../lib/types';
 import { PROVINCES } from '../../../lib/types';
 
 export default async function Farms({ searchParams }: { searchParams: Promise<{ saved?: string; edit?: string }> }) {
   const { saved, edit } = await searchParams;
   const t = db();
-  const [farms, listings, runs] = await Promise.all([t.all('farms'), t.all('listings'), t.all('check_runs')]);
+  const [farms, listings, runs, candidates] = await Promise.all([t.all('farms'), t.all('listings'), t.all('check_runs'), t.all('farm_candidates')]);
+  const countOf = (st: string) => candidates.filter((c) => c.status === st).length;
   (farms as Farm[]).sort((a, b) => a.name.localeCompare(b.name));
   const count = (id: number) => listings.filter((l) => l.farm_id === id && l.active).length;
   const lastRun = runs.sort((a, b) => b.id - a.id)[0];
@@ -17,6 +18,14 @@ export default async function Farms({ searchParams }: { searchParams: Promise<{ 
     <>
       <a className="back" href="/admin">← Review list</a>
       <h1 style={{ fontSize: 32 }}>Farms</h1>
+      <form className="card" action={suggestMoreFarms}>
+        <b>New farm suggestions</b>
+        <span className="note">
+          {countOf('waiting')} waiting · {countOf('suggested')} on your review list now · {countOf('later')} asked later · {countOf('yes')} added · {countOf('no')} said no.
+          Three new ones come each week by themselves.
+        </span>
+        <div><button className="btn ghost" type="submit" disabled={countOf('waiting') === 0}>Suggest 3 more now</button></div>
+      </form>
       {saved && <p className="saved">Saved.</p>}
       <p className="note">
         Last checker run: {lastRun ? `${ago(lastRun.ran_at)} — ${lastRun.checked} farms, ${lastRun.changes} changes, ${lastRun.errors} problems. ${lastRun.summary ?? ''}` : 'not yet'}
