@@ -2,7 +2,7 @@
 // Run it yourself with:  npm run check-farms            (farms that are due)
 //                        npm run check-farms -- --all   (every farm now)
 import { db } from '../lib/db';
-import { NameBook, autoAnswerSlips } from '../lib/name-ops';
+import { NameBook, autoAnswerSlips, hideNonDahlias } from '../lib/name-ops';
 import { detectPlatform, readShopify, readWoo } from './sources';
 import { readWix } from './wix';
 import { save, weeklyHousekeeping } from './save';
@@ -57,6 +57,8 @@ async function main() {
     await new Promise((r) => setTimeout(r, 1000));
   }
 
+  const hiddenCount = await hideNonDahlias(t);
+  if (hiddenCount) console.log(`Hid ${hiddenCount} things that aren't dahlias.`);
   await weeklyHousekeeping(t, now);
 
   if (due.length) {

@@ -153,6 +153,7 @@ function DetailsCard({ card, busy, go }: { card: Extract<Card, { kind: 'details'
       </div>
       <div className="choices">
         <button className="btn" disabled={busy} onClick={() => go({ choice: 'save', colour1: cols[0] ?? null, colour2: cols[1] ?? null, form })}>{text.reviewSave}</button>
+        <button className="btn ghost" disabled={busy} onClick={() => go({ choice: 'notdahlia' })}>{text.reviewNotDahlia}</button>
         <button className="linkbtn" disabled={busy} onClick={() => go({ choice: 'later' })}>{text.reviewLater}</button>
       </div>
     </>

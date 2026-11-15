@@ -77,7 +77,8 @@ export type Answer =
   | { choice: 'later' }
   | { choice: 'yes'; site?: string }
   | { choice: 'no' }
-  | { choice: 'save'; colour1: string | null; colour2: string | null; form: string | null };
+  | { choice: 'save'; colour1: string | null; colour2: string | null; form: string | null }
+  | { choice: 'notdahlia' };
 
 export async function answer(id: number, a: Answer) {
   const t = db();
@@ -122,6 +123,14 @@ export async function answer(id: number, a: Answer) {
       const before = new Set((await t.all('varieties')).map((v) => v.id));
       await makeSeparate(t, spelling);
       undo.varietyIds = (await t.all('varieties')).filter((v) => !before.has(v.id)).map((v) => v.id);
+    }
+  }
+
+  if (r.kind === 'details' && a.choice === 'notdahlia') {
+    const [v] = await t.where('varieties', { slug: r.data.variety });
+    if (v) {
+      undo.variety = { id: v.id, colour1: v.colour1, colour2: v.colour2, form: v.form, status: v.status };
+      await t.update('varieties', { id: v.id }, { status: 'Not a dahlia' });
     }
   }
 

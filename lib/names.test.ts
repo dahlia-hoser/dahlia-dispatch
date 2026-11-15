@@ -97,3 +97,11 @@ test('small spelling slips merge on their own, real differences still ask', () =
   for (const [a, b] of [['Bloomquist Crave', 'Bloomquist Dave'], ['Van Isle Bold', 'Van Isle Blood'], ['Cafe au Lait Rose', 'Cafe au Lait'], ['Cornel', 'Cornel Bronze'], ['Bloomquist Jean', 'Bloomquist Alan'], ['Rose Toscano', 'Rose Toscana'], ['Boom Boom White', 'Boom Boom Yellow'], ['Sandia Molly', 'Sandia Holly']])
     assert.ok(!sameEnough(a, b), `${a} != ${b}`);
 });
+
+test('other flowers and farm extras are not dahlias', () => {
+  for (const t of ['Agrostemma (Corn Cockle)', 'Breadseed Poppy', 'Cosmos', 'Delphinium', 'Earl Grey Gladiolus', 'Larkspur', 'Orlaya White Finch', 'Zinnia', 'Bunny Tails', 'Chinese Forget-Me-Not', 'Chocolate Lace Flower', 'Clarkia', 'Lavatera', 'Mignonette', "Queen Anne's Lace", 'Soapwort', 'Pivoine ‘Coral Charm’', 'Anemone ‘Mauve’', 'A Full Season of Hard Scrabble - 2027', 'Blooms & Brews: August Edition (London)', 'Holiday Centerpieces Preorder'])
+    assert.equal(kindFromTitle(t), 'other', t);
+  for (const t of ['Lupin Chris Tuber', 'Lavender Perfection', 'Skipley Spot of Gold', 'Irish Gnome Tuber', 'Jabberbox', 'Verkist Cosmic', 'Bees’ Choice Anemone'])
+    assert.notEqual(kindFromTitle(t), 'other', t);
+  assert.equal(varietyNameFromTitle('Dahli Ferncliff Thunder'), 'Ferncliff Thunder');
+});

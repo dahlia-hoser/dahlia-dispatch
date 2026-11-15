@@ -30,7 +30,7 @@ export function varietyNameFromTitle(title: string): string {
   if (quoted) t = quoted[1];
   t = t.replace(/[®™]/g, '');
   t = t.replace(/[\u0000-\u001f​-‏￼�]/g, ' ');
-  t = t.replace(/\b(dahlias?|dhalias?|dahilas?)\b/gi, ' ');
+  t = t.replace(/\b(dahlias?|dhalias?|dahilas?|dahli)\b/gi, ' ');
   t = t.replace(/\b(rooted )?cuttings?\b|\bboutures?\b/gi, ' ');
   t = t.replace(/\b(tubers?|tubercules?|tubes?|clumps?)\b/gi, ' ');
   t = t.replace(/^\s*(de|du|d’|d')\s+/i, '');
@@ -45,7 +45,7 @@ export function varietyNameFromTitle(title: string): string {
 }
 
 // Products that are not dahlia tubers or cuttings. Checked against the title and product type only.
-const NOT_DAHLIA = /gift ?card|carte[- ]cadeau|bouquet|subscription|\bcsa\b|workshop|atelier|\bseeds?\b|graines?|t-?shirt|\bshirt|hoodie|sweater|crewneck|\bhats?\b|\btote|canvas bag|\bmugs?\b|stickers?|shipping|tulipes?|tulips?|narcisses?|renoncules?|\bbulbs?\b|\bcorms?\b|ranunculus|\bsnips?\b|holster|\btags?\b|vinyl|compost|fertili[sz]er|\bsoil\b|bucket of|\bkits?\b|\bbulk\b|mystery (tuber|grab|bag|box|pack)|myst[eè]res?|ensemble de|grab bag|giveaway|cut flower|grower.?s choice|\bmix(ed)?\b|assort|\bnoid\b|value pack|\bcollection\b|gloves|\bvases?\b|twine|labels?\b|\bbooks?\b|chrysanth|\bmums?\b|garlic|peony roots?|sweet ?peas?|lisianthus|snapdragon/i;
+const NOT_DAHLIA = /gift ?card|carte[- ]cadeau|bouquet|subscription|\bcsa\b|workshop|atelier|\bseeds?\b|graines?|t-?shirt|\bshirt|hoodie|sweater|crewneck|\bhats?\b|\btote|canvas bag|\bmugs?\b|stickers?|shipping|tulipes?|tulips?|narcisses?|renoncules?|\bbulbs?\b|\bcorms?\b|ranunculus|\bsnips?\b|holster|\btags?\b|vinyl|compost|fertili[sz]er|\bsoil\b|bucket of|\bkits?\b|\bbulk\b|mystery (tuber|grab|bag|box|pack)|myst[eè]res?|ensemble de|grab bag|giveaway|cut flower|grower.?s choice|\bmix(ed)?\b|assort|\bnoid\b|value pack|\bcollection\b|gloves|\bvases?\b|twine|labels?\b|\bbooks?\b|chrysanth|\bmums?\b|garlic|peony roots?|sweet ?peas?|lisianthus|snapdragon|agrostemma|corn cockle|breadseed|papaver|\bpoppies\b|\bcosmos\b|delphinium|larkspur|gladiol|zinnia|orlaya|clarkia|lavatera|mignonette|soapwort|forget-me-not|queen anne|lace flower|bunny tails|^\s*pivoines?\b|^\s*an[ée]mones?\s+['‘’"“]|season of|centerpiece|brews/i;
 
 /** tuber, cutting or other (mums, seeds, gift cards, tulip bulbs, tools...). */
 export function kindFromTitle(title: string, type = '', tags: string[] = []): 'tuber' | 'cutting' | 'other' {

@@ -1,7 +1,8 @@
 // Reading the data for the public pages: statuses, search, grouping by variety.
 import { db } from './db';
-import { normalize, varietyNameFromTitle } from './names';
+import { kindFromTitle, normalize, varietyNameFromTitle } from './names';
 import type { AllData, Farm, Listing, SaleEvent, Variety } from './types';
+import { NOT_DAHLIA } from './types';
 import { text, fill } from '../site-text';
 
 export async function loadAll(): Promise<AllData> {
@@ -14,11 +15,13 @@ export async function loadAll(): Promise<AllData> {
     t.all('sale_events'),
     t.where('review_items', { kind: 'name' }),
   ]);
+  // Varieties marked "Not a dahlia" are hidden, with their listings.
+  const hidden = new Set(varieties.filter((v) => v.status === NOT_DAHLIA).map((v) => v.id));
   return {
     farms: farms as Farm[],
-    varieties: varieties as Variety[],
+    varieties: (varieties as Variety[]).filter((v) => !hidden.has(v.id)),
     aliases: aliases as any,
-    listings: (listings as Listing[]).filter((l) => l.active && l.kind !== 'other'),
+    listings: (listings as Listing[]).filter((l) => l.active && l.kind !== 'other' && kindFromTitle(l.title) !== 'other' && !hidden.has(l.variety_id as number)),
     sales: sales as SaleEvent[],
     // While a "same flower?" question waits, show those listings under the suggested name.
     pending: questions.filter((q) => q.status !== 'done' && q.data?.suggestion).map((q) => ({ spelling: q.data.spelling, slug: q.data.suggestion })),

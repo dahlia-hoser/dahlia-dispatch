@@ -32,7 +32,7 @@ export default async function EditVariety({ params, searchParams }: { params: Pr
           <label>Colour 2<Pick name="colour2" options={COLOURS} value={v.colour2} /></label>
         </div>
         <label>Form<Pick name="form" options={FORMS} value={v.form} /></label>
-        <label>Status<Pick name="status" options={['Suggested', 'Needs you', 'Confirmed']} value={v.status} /></label>
+        <label>Status<Pick name="status" options={['Suggested', 'Needs you', 'Confirmed', 'Not a dahlia']} value={v.status} /></label>
         <label>Private notes<textarea name="notes" rows={3} defaultValue={v.notes ?? ''} /></label>
         <div><button className="btn" type="submit">Save</button></div>
       </form>

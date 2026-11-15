@@ -1,6 +1,6 @@
 // Deciding which variety a farm's listing belongs to, and asking the owner when unsure.
 import type { Tables } from './db';
-import { matchName, normalize, sameEnough, slugify, tidyName, varietyNameFromTitle } from './names';
+import { kindFromTitle, matchName, normalize, sameEnough, slugify, tidyName, varietyNameFromTitle } from './names';
 import { guessDetails, type Hints } from './guess';
 
 export class NameBook {
@@ -92,6 +92,27 @@ export async function autoAnswerSlips(t: Tables): Promise<number> {
     if (!spellings.some((sp) => sameEnough(sp, r.data.spelling))) continue;
     await confirmSame(t, r.data.spelling, v.id);
     await t.update('review_items', { id: r.id }, { status: 'done', resolved_at: new Date().toISOString(), answer: { choice: 'yes', auto: true } });
+    n++;
+  }
+  return n;
+}
+
+/**
+ * A variety whose every listing turned out to be something else (seeds, peonies, workshops...)
+ * is marked "Not a dahlia" and its colour question closed. Mary's confirmed varieties are never touched.
+ */
+export async function hideNonDahlias(t: Tables): Promise<number> {
+  const [varieties, listings, review] = await Promise.all([t.all('varieties'), t.all('listings'), t.where('review_items', { kind: 'details' })]);
+  const byVariety = new Map<number, any[]>();
+  for (const l of listings) if (l.variety_id) byVariety.set(l.variety_id, [...(byVariety.get(l.variety_id) ?? []), l]);
+  let n = 0;
+  for (const v of varieties) {
+    if (v.status === 'Confirmed' || v.status === 'Not a dahlia') continue;
+    const ls = byVariety.get(v.id);
+    // Judge by today's rules, so it also catches listings the checker has since dropped.
+    if (!ls?.length || !ls.every((l) => kindFromTitle(l.title) === 'other')) continue;
+    await t.update('varieties', { id: v.id }, { status: 'Not a dahlia' });
+    for (const r of review) if (r.status !== 'done' && r.data?.variety === v.slug) await t.update('review_items', { id: r.id }, { status: 'done', resolved_at: new Date().toISOString(), answer: { choice: 'notdahlia', auto: true } });
     n++;
   }
   return n;

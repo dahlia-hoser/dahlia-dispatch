@@ -56,3 +56,17 @@ test('review list: name yes/no, details, farm, undo', async () => {
   await answer(f.id, { choice: 'later' });
   assert.ok(!(await reviewCards()).some((c) => c.id === f.id));
 });
+
+import { hideNonDahlias } from './name-ops';
+test('things that are not dahlias get hidden with their questions', async () => {
+  const t = db();
+  const ff = (await t.all('farms')).find((f) => f.code === 'FF')!;
+  const [v] = await t.insert('varieties', { slug: 'agrostemma-corn-cockle', name: 'Agrostemma (Corn Cockle)', status: 'Suggested' });
+  await t.insert('listings', { farm_id: ff.id, product_key: 'ag', variety_id: v.id, title: 'Agrostemma (Corn Cockle)', url: null, price_cents: 500, in_stock: true, kind: 'tuber', active: true, first_seen: new Date().toISOString(), last_changed: new Date().toISOString() });
+  const [q] = await t.insert('review_items', { kind: 'details', status: 'open', data: { variety: v.slug } });
+  assert.equal(await hideNonDahlias(t), 1);
+  assert.equal((await t.where('varieties', { id: v.id }))[0].status, 'Not a dahlia');
+  assert.equal((await t.where('review_items', { id: q.id }))[0].status, 'done');
+  const groups = groupAll(await loadAll());
+  assert.ok(!groups.some((g) => g.name.startsWith('Agrostemma')));
+});
