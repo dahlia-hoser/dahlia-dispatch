@@ -40,6 +40,7 @@ export default async function Farms({ searchParams }: { searchParams: Promise<{ 
               <option value="unknown">Not sure (the checker will try to find out)</option>
               <option value="shopify">Shopify</option>
               <option value="woocommerce">WooCommerce</option>
+              <option value="wix">Wix</option>
               <option value="manual">Price list only (not checked)</option>
             </select>
           </label>

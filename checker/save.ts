@@ -4,7 +4,8 @@ import type { NameBook } from '../lib/name-ops';
 import type { Product } from './sources';
 
 /** Saves one farm's listings. Returns how many changed. */
-export async function save(t: Tables, book: NameBook, farm: any, products: Product[]): Promise<number> {
+/** allKeys: every product the shop has, when only some were read this time (Wix). */
+export async function save(t: Tables, book: NameBook, farm: any, products: Product[], allKeys?: string[]): Promise<number> {
   const existing = await t.where('listings', { farm_id: farm.id });
   const byKey = new Map(existing.map((l) => [l.product_key, l]));
   const now = new Date().toISOString();
@@ -38,7 +39,8 @@ export async function save(t: Tables, book: NameBook, farm: any, products: Produ
   // Listings that disappeared from the shop. If the shop suddenly returns nothing, assume a hiccup and keep them.
   if (products.length > 0 || existing.length === 0) {
     for (const l of existing) {
-      if (!seen.has(l.product_key) && l.active && !String(l.product_key).startsWith('manual-')) {
+      const stillThere = allKeys ? allKeys.includes(l.product_key) : seen.has(l.product_key);
+      if (!stillThere && l.active && !String(l.product_key).startsWith('manual-')) {
         await t.update('listings', { id: l.id }, { active: false, in_stock: false, last_changed: now });
         changed++;
       }

@@ -1,6 +1,7 @@
 // Reading a farm's shop. Shopify and WooCommerce both publish their product list as plain data.
 import { kindFromTitle, looksLikeDahlia } from '../lib/names';
 import { stripHtml, type Hints } from '../lib/guess';
+import { looksLikeWix } from './wix';
 
 export type Product = {
   key: string;
@@ -164,7 +165,7 @@ export async function readWoo(farm: FarmSource): Promise<Product[]> {
 }
 
 /** For farms marked "unknown": try both kinds of shop. */
-export async function detectPlatform(site: string): Promise<'shopify' | 'woocommerce' | null> {
+export async function detectPlatform(site: string): Promise<'shopify' | 'woocommerce' | 'wix' | null> {
   try {
     const d = await getJson(`${base(site)}/products.json?limit=1`);
     if (Array.isArray(d.products)) return 'shopify';
@@ -173,5 +174,6 @@ export async function detectPlatform(site: string): Promise<'shopify' | 'woocomm
     const d = await getJson(`${base(site)}/wp-json/wc/store/v1/products?per_page=1`);
     if (Array.isArray(d)) return 'woocommerce';
   } catch {}
+  if (await looksLikeWix(site)) return 'wix';
   return null;
 }

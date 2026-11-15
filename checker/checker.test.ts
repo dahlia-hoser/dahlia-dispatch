@@ -108,3 +108,30 @@ test('finds a farm’s dahlia collections', () => {
     ['tubercules', 'dahlia-cuttings-collection']
   );
 });
+
+import { parseWixProduct, sliceForThisRun, locs, isWixPage } from './wix';
+test('reads a Wix product page', () => {
+  const html = `<html><head><meta name="generator" content="Wix.com Website Builder">
+    <meta property="og:title" content="A La Mode | Beneficial Meadows">
+    <meta property="og:description" content="A gorgeous dahlia with orange and white petals.">
+    <meta property="og:availability" content="InStock">
+    <meta property="product:price:amount" content="10">
+    <meta property="product:price:currency" content="CAD"></head>
+    <body><h1 class="x">A La Mode</h1></body></html>`;
+  assert.ok(isWixPage(html));
+  const p = parseWixProduct(html, 'https://www.beneficialmeadows.com/product-page/a-la-mode')!;
+  assert.equal(p.title, 'A La Mode');
+  assert.equal(p.key, 'a-la-mode');
+  assert.equal(p.price_cents, 1000);
+  assert.equal(p.in_stock, true);
+  const out = parseWixProduct(html.replace('InStock', 'OutOfStock'), 'https://x.ca/product-page/a')!;
+  assert.equal(out.in_stock, false);
+  assert.equal(parseWixProduct('<html><h1>About us</h1></html>', 'https://x.ca/about'), null);
+});
+test('big Wix shops are read in slices', () => {
+  const urls = Array.from({ length: 200 }, (_, i) => `u${i}`);
+  const seen = new Set<string>();
+  for (let h = 0; h < 3; h++) for (const u of sliceForThisRun(urls, 80, h * 3600000)) seen.add(u);
+  assert.equal(seen.size, 200);
+  assert.deepEqual(locs('<urlset><url><loc>https://a.ca/product-page/x</loc></url></urlset>'), ['https://a.ca/product-page/x']);
+});

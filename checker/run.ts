@@ -4,6 +4,7 @@
 import { db } from '../lib/db';
 import { NameBook } from '../lib/name-ops';
 import { detectPlatform, readShopify, readWoo } from './sources';
+import { readWix } from './wix';
 import { save, weeklyHousekeeping } from './save';
 import { whyDue } from './schedule';
 
@@ -36,8 +37,12 @@ async function main() {
         notes.push(`${f.name}: found a ${platform} shop`);
       }
       const src = { name: f.name, site: f.site, platform, collection: f.collection };
-      const products = platform === 'woocommerce' ? await readWoo(src) : await readShopify(src);
-      const n = await save(t, book, f, products);
+      let products, allKeys: string[] | undefined;
+      if (platform === 'wix') {
+        const known = new Set((await t.where('listings', { farm_id: f.id })).map((l) => String(l.product_key)));
+        ({ products, allKeys } = await readWix(src, { known, perRun: why === 'sale day' ? 150 : 80 }));
+      } else products = platform === 'woocommerce' ? await readWoo(src) : await readShopify(src);
+      const n = await save(t, book, f, products, allKeys);
       changes += n;
       await t.update('farms', { id: f.id }, { last_checked_at: new Date().toISOString(), last_error: null });
       console.log(`✓ ${f.name} (${why}): ${products.length} listings, ${n} changes`);
