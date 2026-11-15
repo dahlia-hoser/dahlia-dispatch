@@ -1,0 +1,212 @@
+[
+ {
+  "farm": "LW",
+  "title": "Kelgai Ann",
+  "price": 20,
+  "in_stock": false
+ },
+ {
+  "farm": "LW",
+  "title": "Mystique",
+  "price": 12,
+  "in_stock": false
+ },
+ {
+  "farm": "LW",
+  "title": "Creme de Cassis",
+  "price": 14,
+  "in_stock": false
+ },
+ {
+  "farm": "LW",
+  "title": "Maarn",
+  "price": 10,
+  "in_stock": false
+ },
+ {
+  "farm": "LW",
+  "title": "Cornel Bronze",
+  "price": 10,
+  "in_stock": false
+ },
+ {
+  "farm": "PF",
+  "title": "Cornel Bronze",
+  "price": 10,
+  "in_stock": true
+ },
+ {
+  "farm": "PF",
+  "title": "Copper Boy",
+  "price": 10,
+  "in_stock": true
+ },
+ {
+  "farm": "PF",
+  "title": "Isabel",
+  "price": 10,
+  "in_stock": true
+ },
+ {
+  "farm": "PF",
+  "title": "Café au Lait",
+  "price": 12,
+  "in_stock": false
+ },
+ {
+  "farm": "PF",
+  "title": "Blizzard",
+  "price": 10,
+  "in_stock": false
+ },
+ {
+  "farm": "PF",
+  "title": "Brown Sugar",
+  "price": 10,
+  "in_stock": false
+ },
+ {
+  "farm": "PF",
+  "title": "Bridezilla",
+  "price": 10,
+  "in_stock": false
+ },
+ {
+  "farm": "PF",
+  "title": "Caitlyn Joy",
+  "price": 10,
+  "in_stock": false
+ },
+ {
+  "farm": "LS",
+  "title": "Cornel",
+  "price": 10,
+  "in_stock": false
+ },
+ {
+  "farm": "LS",
+  "title": "Salmon Runner",
+  "price": 12,
+  "in_stock": false
+ },
+ {
+  "farm": "LS",
+  "title": "Creamy",
+  "price": 18,
+  "in_stock": false
+ },
+ {
+  "farm": "LS",
+  "title": "Rock Run Ashley",
+  "price": 20,
+  "in_stock": false
+ },
+ {
+  "farm": "LS",
+  "title": "Senior’s Hope",
+  "price": 15,
+  "in_stock": false
+ },
+ {
+  "farm": "LS",
+  "title": "Ferncliff Copper",
+  "price": 14,
+  "in_stock": false
+ },
+ {
+  "farm": "LS",
+  "title": "Doris Duke",
+  "price": 13,
+  "in_stock": false
+ },
+ {
+  "farm": "TWC",
+  "title": "A la Mode",
+  "price": 16,
+  "in_stock": false
+ },
+ {
+  "farm": "TWC",
+  "title": "Alloway Candy",
+  "price": 16,
+  "in_stock": false
+ },
+ {
+  "farm": "TWC",
+  "title": "Apple Blossom",
+  "price": 24,
+  "in_stock": false
+ },
+ {
+  "farm": "TWC",
+  "title": "AC Ben",
+  "price": 20,
+  "in_stock": false
+ },
+ {
+  "farm": "TWC",
+  "title": "Bloomquist Alan",
+  "price": 22,
+  "in_stock": false
+ },
+ {
+  "farm": "TWC",
+  "title": "Bloomquist Amazing",
+  "price": 20,
+  "in_stock": false
+ },
+ {
+  "farm": "LBB",
+  "title": "A La Mode",
+  "price": 8,
+  "in_stock": false
+ },
+ {
+  "farm": "LBB",
+  "title": "CB Trevlove",
+  "price": 18,
+  "in_stock": false
+ },
+ {
+  "farm": "FA",
+  "title": "Skipley Spot of Gold",
+  "price": 20,
+  "in_stock": false
+ },
+ {
+  "farm": "FA",
+  "title": "Valley Porcupine",
+  "price": 16,
+  "in_stock": false
+ },
+ {
+  "farm": "FA",
+  "title": "Bloomquist Philly",
+  "price": 20,
+  "in_stock": false
+ },
+ {
+  "farm": "TW",
+  "title": "Alloway Candy",
+  "price": null,
+  "in_stock": false
+ },
+ {
+  "farm": "TW",
+  "title": "Amber Queen",
+  "price": null,
+  "in_stock": false
+ },
+ {
+  "farm": "TW",
+  "title": "American Dawn",
+  "price": null,
+  "in_stock": false
+ },
+ {
+  "farm": "TW",
+  "title": "Bantling",
+  "price": null,
+  "in_stock": false
+ }
+]

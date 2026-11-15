@@ -1,0 +1,91 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { normalize, varietyNameFromTitle, matchName, kindFromTitle, slugify } from './names';
+
+test('normalize strips accents, symbols, apostrophes', () => {
+  assert.equal(normalize('Café au Lait'), 'cafe au lait');
+  assert.equal(normalize('KA’s® Champagne'), 'kas champagne');
+  assert.equal(normalize("Senior's Hope"), 'seniors hope');
+  assert.equal(slugify('Apple Blossom (Double)'), 'apple-blossom-double');
+});
+
+test('variety name from farm titles', () => {
+  assert.equal(varietyNameFromTitle("Dahlia 'Café au Lait' – Tuber"), 'Café au Lait');
+  assert.equal(varietyNameFromTitle('Cornel Bronze Dahlia Tuber'), 'Cornel Bronze');
+  assert.equal(varietyNameFromTitle('Alloway Candy - Rooted Cutting'), 'Alloway Candy');
+  assert.equal(varietyNameFromTitle('Dahlia Maarn (Pre-order)'), 'Maarn');
+  assert.equal(varietyNameFromTitle('Apple Blossom (Double)'), 'Apple Blossom (Double)');
+  assert.equal(varietyNameFromTitle('Tubercule de dahlia Isabel'), 'Isabel');
+});
+
+test('kinds', () => {
+  assert.equal(kindFromTitle('Alloway Candy - Rooted Cutting'), 'cutting');
+  assert.equal(kindFromTitle('Gift Card'), 'other');
+  assert.equal(kindFromTitle('Heirloom Mum Cutting'), 'other');
+  assert.equal(kindFromTitle('Maarn'), 'tuber');
+});
+
+test('matching', () => {
+  const a = new Map<string, number>([
+    ['maarn', 1], ['sylvia', 1], ['cornel', 2], ['cornel bronze', 3], ['apple blossom', 4], ['caitlins joy', 5], ['bloomquist alan', 6],
+  ]);
+  assert.deepEqual(matchName('MAARN', a), { kind: 'exact', varietyId: 1 });
+  assert.deepEqual(matchName('Appleblossom', a), { kind: 'exact', varietyId: 4 });
+  assert.deepEqual(matchName('Caitlyn’s Joy', a), { kind: 'close', varietyId: 5, alias: 'caitlins joy' });
+  assert.deepEqual(matchName('Bloomquist Allen', a), { kind: 'close', varietyId: 6, alias: 'bloomquist alan' });
+  assert.equal(matchName('Cornel Red', a).kind, 'close');
+  assert.equal(matchName('Brown Sugar', a).kind, 'new');
+  assert.equal(matchName('Isabel', a).kind, 'new');
+});
+
+test('real farm titles from the first run', () => {
+  const cases: [string, string][] = [
+    ['Dahlia - Alloway Candy', 'Alloway Candy'],
+    ['Salmon Runner Dahlia Tuber - *Not Sold Out* SALE COMING IN MARCH OF 2027', 'Salmon Runner'],
+    ["Linda's Baby Dahlia Tuber -  *Not Sold Out* SALE COMING IN MARCH OF 2027", "Linda's Baby"],
+    ["Peaches N' Cream Dahlia Tuber - *Not Sold Out* SALE COMING IN MARCH OF 2027", "Peaches N' Cream"],
+    ['Black Magic - BLMG (5 Pack)', 'Black Magic'],
+    ['AC Dark Horse - ACDH', 'AC Dark Horse'],
+    ['CB Tanya - CBTN (', 'CB Tanya'],
+    ['Apple Blossom - LIMIT ONE', 'Apple Blossom'],
+    ['Bishop of Oxford Dhalia - BOX', 'Bishop of Oxford'],
+    ['Svartnäsets® Nougat Dahlia Tuber', 'Svartnäsets Nougat'],
+    ['Orange Globe Dahlia Tube', 'Orange Globe'],
+    ['Dahlia BJ\'s Dusty Rose', "BJ's Dusty Rose"],
+    ['L.A.T.E Dahlia Tuber - *Not Sold Out* SALE COMING IN MARCH OF 2027', 'L.A.T.E'],
+    ['20th Ave & Baker Rd.', '20th Ave & Baker Rd.'],
+  ];
+  for (const [t, want] of cases) assert.equal(varietyNameFromTitle(t), want, t);
+});
+
+test('not dahlias', () => {
+  for (const t of ['10 Tulip Bulbs- Verona Sunrise', '10 Corms - Ranunculus Amadine White', 'Floral snips', 'Floral Snip Holster', 'Vinyl Dahlia Tags', 'Terra Flora Soilworks x Five Acres Premium Vermicompost (1L bag)', 'Terra Flora Organics BioBloom 1-9-5 Bloom Fertilizer (1kg bag)', 'Five Acres Collection - five pack of tubers', '"Support Your Local Farmer" Dahlia May Zip Up Hoodie in Cream', '5-pack MYSTERY GRAB BAG', '10 PACK mix', 'A Value Pack (Named) - 10', 'Bulk DIY Bucket of : Custom Colour Palette', 'Burgundy/White Noid', '5 PACK mix (Autumn Colors)'])
+    assert.equal(kindFromTitle(t), 'other', t);
+  for (const t of ['Black Magic - BLMG (5 Pack)', 'Boom Boom White - BOOM', 'Dahlia Creamy', 'Bloomquist Compare - Limit One'])
+    assert.notEqual(kindFromTitle(t), 'other', t);
+});
+
+test('avenue = ave', () => {
+  const a = new Map<string, number>([['20th avenue softer peach', 7]]);
+  assert.deepEqual(matchName('20th Ave Softer Peach', a), { kind: 'exact', varietyId: 7 });
+});
+
+test('second batch of real titles', () => {
+  assert.equal(kindFromTitle('Dahlia - Valley Rust Bucket'), 'tuber');
+  assert.equal(kindFromTitle('Zundert Mystery Fox Tuber'), 'tuber');
+  assert.equal(kindFromTitle('Dahlia Mystery Tuber 3 Pack'), 'other');
+  assert.equal(kindFromTitle('Tulipe ‘Brisbane’'), 'other');
+  assert.equal(varietyNameFromTitle('Café Au Lait, Limit 1'), 'Café Au Lait');
+  assert.equal(varietyNameFromTitle('Sylvia / Maarn'), 'Sylvia');
+  assert.equal(varietyNameFromTitle('Cafe Au Lait Mini (aka Jolene)'), 'Cafe Au Lait Mini');
+  assert.equal(varietyNameFromTitle('Bracken Rose (US)'), 'Bracken Rose');
+  assert.equal(varietyNameFromTitle('Café Au Lait (Rose)'), 'Café Au Lait (Rose)');
+});
+
+test('third batch', () => {
+  assert.equal(varietyNameFromTitle('Dahlia ‘Petra’s Wedding’'), 'Petra’s Wedding');
+  assert.equal(varietyNameFromTitle("Lark's Ebbe Dahila"), "Lark's Ebbe");
+  assert.equal(varietyNameFromTitle('Quiet Splendour ￼'), 'Quiet Splendour');
+  assert.equal(kindFromTitle('All White Dahlia Kit'), 'other');
+  assert.equal(varietyNameFromTitle('Dahlia ‘Platinum Blonde’'), 'Platinum Blonde');
+});

@@ -1,0 +1,12 @@
+[
+  { "farm": "BB", "name": "Rivers Black Cherry", "price": 14 },
+  { "farm": "BB", "name": "KA’s Champagne", "price": 14 },
+  { "farm": "BB", "name": "Seabeck Shirley", "price": 12 },
+  { "farm": "BB", "name": "Zwink", "price": 10 },
+  { "farm": "BB", "name": "Rivers Watermelon", "price": 10 },
+  { "farm": "BB", "name": "Mayan Pearl", "price": 10 },
+  { "farm": "BB", "name": "AC Rooster", "price": 8 },
+  { "farm": "BB", "name": "Rivers Crystal", "price": 8 },
+  { "farm": "BB", "name": "Stillwater Raspberry", "price": 8 },
+  { "farm": "SM", "name": "Meadows Biddy-Bee", "price": null }
+]

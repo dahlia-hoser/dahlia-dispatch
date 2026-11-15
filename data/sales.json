@@ -1,0 +1,218 @@
+[
+  {
+    "farm": "BM",
+    "label": "Tuber sale",
+    "starts_at": "2026-10-24T17:00:00Z",
+    "when_text": "Open now",
+    "time_text": "Opened Oct 24",
+    "url": "https://www.beneficialmeadows.com/",
+    "note": "Ships April 19–26, 2027, farm pickup early May"
+  },
+  {
+    "farm": "DG",
+    "label": "Preorders",
+    "starts_at": null,
+    "when_text": "Open now",
+    "time_text": "Preorders",
+    "url": "https://devasgardens.com/collections/dahlia-tubers-home-grown",
+    "note": "Ships Canada-wide April–May 2027"
+  },
+  {
+    "farm": "NSF",
+    "label": "Pre-orders",
+    "starts_at": null,
+    "when_text": "Open now",
+    "time_text": "Pre-orders",
+    "url": "https://northshoreflowerco.ca/",
+    "note": "Ships late April to early May"
+  },
+  {
+    "farm": "TW",
+    "label": "Tuber preorder",
+    "starts_at": "2026-11-29T14:00:00Z",
+    "when_text": "Sun Nov 29",
+    "time_text": "9:00 am ET (6 am PT)",
+    "url": "https://twylasflowerfarm.com/collections/dahlia-tubers",
+    "note": "Certified organic, Canada-wide shipping April 2027"
+  },
+  {
+    "farm": "LBB",
+    "label": "Rooted cuttings pre-sale",
+    "starts_at": "2026-12-05T18:00:00Z",
+    "when_text": "Sat Dec 5",
+    "time_text": "1:00 pm ET (10 am PT)",
+    "url": "https://littleblackbird.ca/pages/shop",
+    "note": "2027 rooted cuttings"
+  },
+  {
+    "farm": "LBB",
+    "label": "Tuber sale",
+    "starts_at": "2027-01-02T18:00:00Z",
+    "when_text": "Sat Jan 2",
+    "time_text": "1:00 pm ET (10 am PT)",
+    "url": "https://littleblackbird.ca/pages/shop",
+    "note": "2027 tuber sale"
+  },
+  {
+    "farm": "LS",
+    "label": "Stock posted",
+    "starts_at": null,
+    "when_text": "Mid-Feb 2027",
+    "time_text": "Stock posted after dividing",
+    "url": "https://lasauvageonne.ca/les-dahlias/",
+    "note": "Shipping from mid-April, store pickup too"
+  },
+  {
+    "farm": "GP",
+    "label": "Pre-sale",
+    "starts_at": null,
+    "when_text": "Late winter 2027",
+    "time_text": "February last time",
+    "url": "https://greenerpasturesns.ca/",
+    "note": "Grows over 2,200 dahlias"
+  },
+  {
+    "farm": "ABP",
+    "label": "Tuber sale",
+    "starts_at": null,
+    "when_text": "TBA",
+    "time_text": "February last season",
+    "url": "https://aubeaupre.com/en-us",
+    "note": "Close to 200 varieties, ships across Canada"
+  },
+  {
+    "farm": "SM",
+    "label": "Tuber and cutting sale",
+    "starts_at": null,
+    "when_text": "Late Feb 2027",
+    "time_text": "Time TBA",
+    "url": "https://www.singingmeadowsfarm.com/",
+    "note": "Includes its own Meadows seedlings"
+  },
+  {
+    "farm": "BB",
+    "label": "Tuber sale",
+    "starts_at": null,
+    "when_text": "Mar 1",
+    "time_text": "1:00 pm AST last time",
+    "url": "https://www.bountifulbrookfieldblooms.com/",
+    "note": "Price lists by flower form"
+  },
+  {
+    "farm": "VH",
+    "label": "Annual sale",
+    "starts_at": null,
+    "when_text": "March 2027",
+    "time_text": "March last time, date TBA",
+    "url": "https://www.valhavenfarm.ca/collections/dahlia-tubers",
+    "note": "Ships within Canada mid-April to May, farm pickup"
+  },
+  {
+    "farm": "DM",
+    "label": "Tuber sale",
+    "starts_at": null,
+    "when_text": "March 2027",
+    "time_text": "Date TBA",
+    "url": "https://www.dahliamayflowerfarm.com/",
+    "note": "Ships across Canada"
+  },
+  {
+    "farm": "LW",
+    "label": "Preorders",
+    "starts_at": null,
+    "when_text": "TBA",
+    "time_text": "Winter preorders",
+    "url": "https://longwoodsflowerfarm.com/",
+    "note": "Tubers and heirloom mum cuttings, ships Canada-wide"
+  },
+  {
+    "farm": "HS",
+    "label": "Tuber sale",
+    "starts_at": null,
+    "when_text": "TBA",
+    "time_text": "Date not posted",
+    "url": "https://www.hardscrabbleblooms.com/",
+    "note": ""
+  },
+  {
+    "farm": "FA",
+    "label": "Restocks",
+    "starts_at": null,
+    "when_text": "TBA",
+    "time_text": "Restocks posted on site",
+    "url": "https://fiveacres.ca/collections/dahlia-collection",
+    "note": "Ships across Canada"
+  },
+  {
+    "farm": "TWC",
+    "label": "Tuber sale",
+    "starts_at": null,
+    "when_text": "TBA",
+    "time_text": "February last time",
+    "url": "https://shop.triplewrenfarms.ca/",
+    "note": "Tubers and rooted cuttings, Canada only"
+  },
+  {
+    "farm": "PF",
+    "label": "Tuber sale",
+    "starts_at": null,
+    "when_text": "TBA",
+    "time_text": "Date not posted",
+    "url": "https://picaflore.com/tubercules/",
+    "note": "$18 shipping, free over $250, farm pickup"
+  },
+  {
+    "farm": "BX",
+    "label": "Tuber sale",
+    "starts_at": null,
+    "when_text": "TBA",
+    "time_text": "Date not posted",
+    "url": "https://www.fermefloraleboxland.com/",
+    "note": ""
+  },
+  {
+    "farm": "SMG",
+    "label": "Tuber sale",
+    "starts_at": null,
+    "when_text": "TBA",
+    "time_text": "March 14 last time",
+    "url": "https://www.stonemeadowgardens.ca/collections/dahlias",
+    "note": ""
+  },
+  {
+    "farm": "SV",
+    "label": "Fall listings",
+    "starts_at": null,
+    "when_text": "TBA",
+    "time_text": "Fall 2026 listings up",
+    "url": "https://www.sweetvalleyflowers.com/",
+    "note": "Ships Canada-wide, local pickup"
+  },
+  {
+    "farm": "SHF",
+    "label": "Tuber sale",
+    "starts_at": null,
+    "when_text": "TBA",
+    "time_text": "Announced by newsletter",
+    "url": "https://www.stoneyhillfarm.ca/",
+    "note": "Also at Boyce Farmers Market, Fredericton"
+  },
+  {
+    "farm": "FF",
+    "label": "Dahlia sale",
+    "starts_at": null,
+    "when_text": "TBA",
+    "time_text": "Date not posted",
+    "url": "https://www.fraicheflowerfarm.com/pages/shop",
+    "note": "Also sells seed grown on the farm"
+  },
+  {
+    "farm": "TM",
+    "label": "Dahlia sale",
+    "starts_at": null,
+    "when_text": "TBA",
+    "time_text": "Early access for email subscribers",
+    "url": "https://twomountainsgarden.com/collections/dahlia-tubers-collection",
+    "note": "Tubers and rooted cuttings"
+  }
+]

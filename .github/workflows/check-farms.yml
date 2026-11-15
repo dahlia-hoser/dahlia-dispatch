@@ -1,0 +1,31 @@
+name: Check farms
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'   # every 10 minutes; the script decides which farms are due
+  workflow_dispatch:          # lets you press "Run workflow" on GitHub to check now
+    inputs:
+      all:
+        description: 'Check every farm right now'
+        type: boolean
+        default: false
+
+concurrency:
+  group: check-farms
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run check-farms -- ${{ inputs.all && '--all' || '' }}
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
