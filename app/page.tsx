@@ -2,6 +2,7 @@ import { loadAll, groupAll, search, suggestions, lastChecked, ago, type Filters 
 import { SearchBox } from '../components/SearchBox';
 import { Filters } from '../components/Filters';
 import { GroupCard } from '../components/Listing';
+import { LeafDivider } from '../components/Leaf';
 import { text, fill } from '../site-text';
 
 const PAGE = 40;
@@ -35,6 +36,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<Rec
         <p className="note">{fill(text.priceNote, { time: ago(checked) })}</p>
       </div>
       <p className="note-box">{text.notAvailableNote}</p>
+      <LeafDivider />
       {f.get && <p className="note">{text.getInNote}</p>}
 
       {found.length === 0 && <p>{text.resultsNone}</p>}

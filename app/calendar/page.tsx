@@ -3,6 +3,7 @@ import { dateTime } from '../../lib/catalogue';
 import type { Farm, SaleEvent } from '../../lib/types';
 import { text } from '../../site-text';
 import { isAdmin } from '../../lib/is-admin';
+import { LeafDivider } from '../../components/Leaf';
 
 const MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
 
@@ -76,6 +77,7 @@ export default async function Calendar({ searchParams }: { searchParams: Promise
         {admin && <a className="btn ghost" href="/admin/sales">{text.editButton}</a>}
       </div>
       <p className="note">{text.calendarClubNote}</p>
+      <LeafDivider />
       {[[text.calendarOpenNow, openNow], [text.calendarComingUp, upcoming], [text.calendarLater, later]].map(([title, list]) =>
         (list as SaleEvent[]).length ? (
           <section className="cal" key={title as string}>

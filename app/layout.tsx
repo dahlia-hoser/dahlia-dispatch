@@ -4,6 +4,7 @@ import { text } from '../site-text';
 import { Nav } from '../components/Nav';
 import { openReviewCount } from '../lib/review';
 import { isAdmin } from '../lib/is-admin';
+import { Leaf, LeafCluster } from '../components/Leaf';
 
 export const metadata: Metadata = {
   title: text.siteName,
@@ -30,16 +31,18 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </div>
         </div>
         <header className="top">
+          <LeafCluster corner="top-right" />
           <div className="wrap">
             <a className="brand" href="/">
               {text.siteName}
-              <span className="byline">{text.byline}</span>
+              <span className="byline"><Leaf size={12} />{text.byline}</span>
             </a>
             <Nav reviewCount={count} admin={admin} />
           </div>
         </header>
         <main className="wrap">{children}</main>
         <footer>
+          <LeafCluster corner="bottom-right" />
           <div className="wrap inline" style={{ justifyContent: 'space-between' }}>
             <span>{text.footer}</span>
             <a href="/feedback">{text.footerFeedback}</a>
