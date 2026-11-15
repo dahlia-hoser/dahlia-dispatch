@@ -80,6 +80,11 @@ export const text = {
   footer: 'For Hosers by a Hoser. Still in beta.',
   footerFeedback: 'Send feedback',
 
+  // Page not found (404)
+  notFoundTitle: 'Well, that’s a bit of a hoser move.',
+  notFoundText: 'This page wandered off, like a dahlia tuber you swore you labelled. Grab a coffee and try a search instead.',
+  notFoundSearch: 'Back to search',
+
   // Feedback page
   feedbackTitle: 'Send feedback',
   feedbackIntro: 'Spotted a wrong price, a missing farm, or a name that’s off? Ideas welcome too.',
