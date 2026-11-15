@@ -32,7 +32,7 @@ async function getJson(url: string): Promise<any> {
 const base = (site: string) => site.replace(/\/+$/, '');
 
 // ───────── Shopify ─────────
-export function parseShopify(products: any[], site: string, collection: string | null): { items: Product[]; unfiltered: number } {
+export function parseShopify(products: any[], site: string, collection: string | null): { items: Product[]; unfiltered: number; fellBack: boolean } {
   const all: Product[] = [];
   const dahlia: Product[] = [];
   for (const p of products) {
@@ -52,8 +52,8 @@ export function parseShopify(products: any[], site: string, collection: string |
     if (looksLikeDahlia(item.title, p.product_type ?? '', tagList(p.tags), collection)) dahlia.push(item);
   }
   // A farm that only sells dahlias may never write "dahlia" in titles: keep everything that isn't clearly something else.
-  if (!dahlia.length) return { items: all.filter((i) => i.kind !== 'other'), unfiltered: all.length };
-  return { items: dahlia, unfiltered: all.length };
+  if (!dahlia.length) return { items: all.filter((i) => i.kind !== 'other'), unfiltered: all.length, fellBack: true };
+  return { items: dahlia, unfiltered: all.length, fellBack: false };
 }
 
 function tagList(tags: unknown): string[] {
@@ -62,17 +62,57 @@ function tagList(tags: unknown): string[] {
   return [];
 }
 
-export async function readShopify(farm: FarmSource): Promise<Product[]> {
-  const path = farm.collection ? `/collections/${farm.collection}/products.json` : '/products.json';
+async function readAllPages(url: string): Promise<any[]> {
   const raw: any[] = [];
   for (let page = 1; page <= 20; page++) {
-    const data = await getJson(`${base(farm.site)}${path}?limit=250&page=${page}`);
+    const data = await getJson(`${url}?limit=250&page=${page}`);
     const products = data.products ?? [];
     raw.push(...products);
     if (products.length < 250) break;
     await pause(1500);
   }
-  return parseShopify(raw, farm.site, farm.collection).items;
+  return raw;
+}
+
+/** Shop collections that hold dahlias, e.g. "tubercules", "dahlia-tubers", "rooted-cuttings". */
+export function pickDahliaCollections(collections: { handle: string; title: string }[]): string[] {
+  return collections
+    .filter((c) => /dahlia|tuber|tubercule|cutting|bouture/i.test(`${c.handle} ${c.title}`))
+    .filter((c) => !/tulip|ranunc|anemone-corm|bulb|seed|graine|gift|merch|tool|sweet-?pea|mum|chrys/i.test(`${c.handle} ${c.title}`))
+    .map((c) => c.handle);
+}
+
+/**
+ * Reads a Shopify farm. Products in the farm's own dahlia collections are trusted as dahlias
+ * (many farms just write "Wine Eyed Jill" with no "dahlia" anywhere). Products outside those
+ * collections are kept only if they look like dahlias.
+ */
+export async function readShopify(farm: FarmSource): Promise<Product[]> {
+  const root = base(farm.site);
+  let handles = (farm.collection ?? '').split(',').map((h) => h.trim()).filter(Boolean);
+  if (!handles.length) {
+    try {
+      const data = await getJson(`${root}/collections.json?limit=250`);
+      handles = pickDahliaCollections(data.collections ?? []);
+    } catch {
+      handles = [];
+    }
+  }
+  const byId = new Map<string, Product>();
+  for (const h of handles) {
+    try {
+      const raw = await readAllPages(`${root}/collections/${h}/products.json`);
+      for (const p of parseShopify(raw, farm.site, h).items) byId.set(p.key, p);
+    } catch {
+      /* a collection that has gone away: skip it */
+    }
+    await pause(1000);
+  }
+  const all = await readAllPages(`${root}/products.json`);
+  const loose = parseShopify(all, farm.site, null);
+  // Without any dahlia collection, fall back to everything that isn't clearly something else.
+  if (!loose.fellBack || byId.size === 0) for (const p of loose.items) if (!byId.has(p.key)) byId.set(p.key, p);
+  return [...byId.values()];
 }
 
 // ───────── WooCommerce ─────────

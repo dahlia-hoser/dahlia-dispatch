@@ -94,3 +94,17 @@ test('weekly farm suggestions', async () => {
   const suggested = (await t.all('farm_candidates')).filter((c) => c.status === 'suggested');
   assert.equal(suggested.length, 6);
 });
+
+import { pickDahliaCollections } from './sources';
+test('finds a farm’s dahlia collections', () => {
+  assert.deepEqual(
+    pickDahliaCollections([
+      { handle: 'tubercules', title: 'Tous les tubercules' },
+      { handle: 'nouveautes-2026', title: 'Nouveautés 2026' },
+      { handle: 'tulip-bulbs', title: 'Tulip Bulbs' },
+      { handle: 'dahlia-cuttings-collection', title: 'Dahlia Cuttings' },
+      { handle: 'frontpage', title: 'Home page' },
+    ]),
+    ['tubercules', 'dahlia-cuttings-collection']
+  );
+});
