@@ -39,7 +39,7 @@ insert into varieties (slug, name, colour1, colour2, form, status) values
   ('seabeck-shirley', 'Seabeck Shirley', 'Orange', 'Yellow', 'Stellar', 'Suggested'),
   ('bloomquist-alan', 'Bloomquist Alan', 'Peach', 'Blush', 'Decorative', 'Needs you'),
   ('apple-blossom', 'Apple Blossom', 'Cream', 'Blush', 'Collarette', 'Suggested'),
-  ('apple-blossom-double', 'Apple Blossom (Double)', 'Peach', 'Pink', null, 'Suggested'),
+  ('apple-blossom-double', 'Apple Blossom (Double)', 'Bicolour', 'Orange', 'Decorative', 'Confirmed'),
   ('creme-de-cassis', 'Creme de Cassis', 'Purple', null, null, 'Suggested'),
   ('blizzard', 'Blizzard', 'White', null, null, 'Suggested'),
   ('nicholas', 'Nicholas', 'Orange', 'Yellow', 'Decorative', 'Suggested'),

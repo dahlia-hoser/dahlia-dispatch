@@ -183,3 +183,20 @@ export async function tidyForms(t: Tables): Promise<number> {
   }
   return n;
 }
+
+/**
+ * Decisions the owner gave in chat rather than on the site (data/owner-decisions.json).
+ * Applied once: the variety is then marked Confirmed and never touched again.
+ */
+export async function applyOwnerDecisions(t: Tables, decisions: { slug: string; [k: string]: any }[]): Promise<number> {
+  let n = 0;
+  for (const { slug, ...fields } of decisions) {
+    const [v] = await t.where('varieties', { slug });
+    if (!v || v.status === 'Confirmed') continue;
+    await t.update('varieties', { id: v.id }, { ...fields, status: 'Confirmed' });
+    const open = (await t.where('review_items', { kind: 'details' })).filter((r) => r.status !== 'done' && r.data?.variety === slug);
+    for (const r of open) await t.update('review_items', { id: r.id }, { status: 'done', resolved_at: new Date().toISOString(), answer: { choice: 'save', auto: true } });
+    n++;
+  }
+  return n;
+}
