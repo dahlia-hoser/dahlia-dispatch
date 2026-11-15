@@ -2,12 +2,14 @@ import { db } from '../../lib/db';
 import { dateTime } from '../../lib/catalogue';
 import type { Farm, SaleEvent } from '../../lib/types';
 import { text } from '../../site-text';
+import { isAdmin } from '../../lib/is-admin';
 
 export default async function Calendar() {
   const t = db();
   const [farms, sales] = (await Promise.all([t.all('farms'), t.all('sale_events')])) as [Farm[], SaleEvent[]];
   const farm = new Map(farms.map((f) => [f.id, f]));
   const now = Date.now();
+  const admin = await isAdmin();
 
   const openNow = sales.filter((s) => /open now/i.test(s.when_text ?? '') || (s.starts_at && new Date(s.starts_at).getTime() <= now && now - new Date(s.starts_at).getTime() < 120 * 86400000));
   const rest = sales.filter((s) => !openNow.includes(s));
@@ -37,7 +39,7 @@ export default async function Calendar() {
         <h1>{text.calendarTitle}</h1>
         <p>{text.calendarIntro}</p>
       </section>
-      <p className="inline"><a className="btn ghost" href="/admin/sales">{text.editButton}</a></p>
+      {admin && <p className="inline"><a className="btn ghost" href="/admin/sales">{text.editButton}</a></p>}
       {[[text.calendarOpenNow, openNow], [text.calendarComingUp, upcoming], [text.calendarLater, later]].map(([title, list]) =>
         (list as SaleEvent[]).length ? (
           <section className="cal" key={title as string}>

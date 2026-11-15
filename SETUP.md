@@ -27,7 +27,8 @@ You'll do this once. It takes about 30 minutes on your Windows PC. Everything is
    |---|---|
    | `SUPABASE_URL` | the Project URL |
    | `SUPABASE_SECRET_KEY` | the secret key |
-   | `SITE_PASSWORD` | a password you make up for the beta site |
+   | `SITE_PASSWORD` | a password you make up for the beta site (you can share this one with testers) |
+   | `ADMIN_PASSWORD` | a different password, only for you: it opens the review list and edit pages |
 
 4. Click **Deploy** and wait about two minutes. Vercel gives you a web address like `dahlia-dispatch.vercel.app`.
 5. Open it. Your browser asks for a user name and password. Type anything as the user name, and your `SITE_PASSWORD` as the password.
@@ -62,7 +63,7 @@ Vercel updates the site by itself in about two minutes. If something breaks, Ver
 
 ## Good to know
 
-- **The review list** (top menu) is where you answer questions:
+- **The review list** is only for you. Go to `/admin` (bookmark it) and sign in with your `ADMIN_PASSWORD`. Once signed in, **Review list** appears in the top menu and **Edit** buttons appear on pages. Testers with only the site password never see these. It's where you answer questions:
   - "Is this the same flower?"
   - Colour and form for new varieties
   - Three new farm suggestions each week

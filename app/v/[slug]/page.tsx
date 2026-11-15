@@ -2,10 +2,11 @@ import { notFound } from 'next/navigation';
 import { loadAll, groupAll, lastChecked, ago } from '../../../lib/catalogue';
 import { ListingRow } from '../../../components/Listing';
 import { text, fill } from '../../../site-text';
+import { isAdmin } from '../../../lib/is-admin';
 
 export default async function VarietyPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const data = await loadAll();
+  const [data, admin] = await Promise.all([loadAll(), isAdmin()]);
   const g = groupAll(data).find((x) => x.variety?.slug === slug);
   if (!g || !g.variety) notFound();
   const v = g.variety;
@@ -22,7 +23,7 @@ export default async function VarietyPage({ params }: { params: Promise<{ slug: 
             <div><dt>{text.varietyForm}</dt><dd>{v.form ?? text.varietyUnknown}</dd></div>
             <div><dt>{text.varietyColour}</dt><dd>{colours || text.varietyUnknown}</dd></div>
           </dl>
-          <div><a className="btn ghost" href={`/admin/varieties/${v.slug}`}>{text.editButton}</a></div>
+          {admin && <div><a className="btn ghost" href={`/admin/varieties/${v.slug}`}>{text.editButton}</a></div>}
         </div>
         <div className="right">
           <div className="results-head">

@@ -4,13 +4,16 @@ import { redirect } from 'next/navigation';
 import { db } from '../../lib/db';
 import { answer, undoAnswer, type Answer } from '../../lib/review';
 import { normalize } from '../../lib/names';
+import { requireAdmin } from '../../lib/is-admin';
 
 export async function answerAction(id: number, a: Answer) {
+  await requireAdmin();
   await answer(id, a);
   revalidatePath('/', 'layout');
 }
 
 export async function undoAction(id: number) {
+  await requireAdmin();
   await undoAnswer(id);
   revalidatePath('/', 'layout');
 }
@@ -21,6 +24,7 @@ const val = (fd: FormData, k: string) => {
 };
 
 export async function saveVariety(fd: FormData) {
+  await requireAdmin();
   const t = db();
   const id = Number(fd.get('id'));
   const [v] = await t.where('varieties', { id });
@@ -60,6 +64,7 @@ export async function saveVariety(fd: FormData) {
 }
 
 export async function saveSale(fd: FormData) {
+  await requireAdmin();
   const t = db();
   const id = Number(fd.get('id')) || null;
   const local = val(fd, 'starts_local'); // "2026-11-29T09:00" in Eastern time
@@ -80,6 +85,7 @@ export async function saveSale(fd: FormData) {
 }
 
 export async function saveFarm(fd: FormData) {
+  await requireAdmin();
   const t = db();
   const id = Number(fd.get('id'));
   await t.update('farms', { id }, {

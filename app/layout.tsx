@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { text } from '../site-text';
 import { Nav } from '../components/Nav';
 import { openReviewCount } from '../lib/review';
+import { isAdmin } from '../lib/is-admin';
 
 export const metadata: Metadata = {
   title: text.siteName,
@@ -13,7 +14,8 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const count = await openReviewCount().catch(() => 0);
+  const admin = await isAdmin();
+  const count = admin ? await openReviewCount().catch(() => 0) : 0;
   return (
     <html lang="en">
       <head>
@@ -33,7 +35,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               {text.siteName}
               <span className="byline">{text.byline}</span>
             </a>
-            <Nav reviewCount={count} />
+            <Nav reviewCount={count} admin={admin} />
           </div>
         </header>
         <main className="wrap">{children}</main>
