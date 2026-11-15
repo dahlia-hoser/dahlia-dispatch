@@ -39,6 +39,7 @@ export function ReviewDeck({ cards, more = 0 }: { cards: Card[]; more?: number }
       {!card ? (
         more > 0 ? (
           <div className="done">
+            <img src="/all-caught-up.jpg" alt="" />
             <h2>{text.reviewBatchDone}</h2>
             <p>{fill(text.reviewMoreWaiting, { n: more })}</p>
             <button className="btn" onClick={() => window.location.reload()}>{text.reviewNextBatch}</button>
