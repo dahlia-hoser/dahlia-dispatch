@@ -5,7 +5,7 @@ import { db } from '../lib/db';
 import { NameBook, autoAnswerSlips, hideNonDahlias, reconcileNames, syncSocieties, tidyForms, applyOwnerDecisions } from '../lib/name-ops';
 import decisions from '../data/owner-decisions.json';
 import trusted from '../data/trusted-sources.json';
-import { applyTrustedDetails, applyIntroYears, syncFarmDetails } from '../lib/name-ops';
+import { applyTrustedDetails, applyIntroYears, syncFarmDetails, confirmWhenFarmsAgree } from '../lib/name-ops';
 import farmDetails from '../data/farm-details.json';
 import { refreshShipping } from './shipping-read';
 import startingVarieties from '../data/varieties.json';
@@ -87,6 +87,10 @@ async function main() {
   }
 
   if (v2) for (const note of await refreshShipping(t, 3)) console.log(`Shipping: ${note}`);
+  if (v2) {
+    const agreed = await confirmWhenFarmsAgree(t);
+    if (agreed) console.log(`Confirmed ${agreed} varieties where farms agree on the colour.`);
+  }
   const hiddenCount = await hideNonDahlias(t);
   if (hiddenCount) console.log(`Hid ${hiddenCount} things that aren't dahlias.`);
   await weeklyHousekeeping(t, now);

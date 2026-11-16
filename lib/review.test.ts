@@ -33,14 +33,15 @@ test('review list: name yes/no, details, farm, undo', async () => {
   assert.equal((await t.where('varieties', { slug: 'bloomquist-allen' })).length, 0);
 
   // Colour and form
-  const d = cards.find((c) => c.kind === 'details' && c.slug === 'american-dawn')!;
+  const d = cards.find((c) => c.kind === 'details') as Extract<(typeof cards)[number], { kind: 'details' }>;
+  assert.ok(d, 'a colour question is on the list');
   await answer(d.id, { choice: 'save', colour1: 'Pink', colour2: 'Peach', form: 'Decorative' });
-  let v = (await t.where('varieties', { slug: 'american-dawn' }))[0];
+  let v = (await t.where('varieties', { slug: d.slug }))[0];
   assert.equal(v.colour2, 'Peach');
   assert.equal(v.status, 'Confirmed');
   await undoAnswer(d.id);
-  v = (await t.where('varieties', { slug: 'american-dawn' }))[0];
-  assert.equal(v.colour2, null);
+  v = (await t.where('varieties', { slug: d.slug }))[0];
+  assert.equal(v.colour2, d.colour2);
 
   // Farm yes
   const f = cards.find((c) => c.kind === 'farm')!;
@@ -101,4 +102,43 @@ test("a trusted farm's form label becomes the default", async () => {
   assert.equal((await t.where('review_items', { id: q.id }))[0].data.formFrom, 'Deva’s Gardens');
   await t.update('varieties', { id: v.id }, { status: 'Confirmed', form: 'Single' });
   assert.equal(await applyTrustedDetails(t, dg as any, [{ key: 'tt1', title: 'Test Trust', hints: { tags: ['Ball'], text: '' } }], ['form']), 0);
+});
+
+import { buildAdsMap, applyAds } from '../checker/ads-import';
+test('ADS lists fill and confirm', async () => {
+  const t = db();
+  const [v] = await t.insert('varieties', { slug: 'valley-rust-bucket', name: 'Valley Rust Bucket', status: 'Suggested', colour1: 'Red' });
+  await t.insert('aliases', { alias: 'valley rust bucket', variety_id: v.id, shown: null });
+  const [q] = await t.insert('review_items', { kind: 'details', status: 'open', data: { variety: 'valley-rust-bucket' } });
+  const map = buildAdsMap([
+    { name: 'VALLEY RUST BUCKET', code: '6111', form: 'Ball', colours: ['Orange'], canadian: false },
+    { name: "CAITLIN'S JOY", code: '6113', form: 'Ball', colours: [], canadian: false },
+  ]);
+  const r = await applyAds(map, new Set(['caitlins-joy']));
+  assert.ok(r.confirmed >= 1);
+  const after = (await t.where('varieties', { id: v.id }))[0];
+  assert.equal(after.colour1, 'Orange');
+  assert.equal(after.form, 'Ball');
+  assert.equal(after.status, 'Confirmed');
+  assert.equal((await t.where('review_items', { id: q.id }))[0].status, 'done');
+  // Owner's own colours kept: Caitlin's Joy stays Pink, gets confirmed with its form.
+  const cj = (await t.where('varieties', { slug: 'caitlins-joy' }))[0];
+  assert.equal(cj.colour1, 'Pink');
+});
+
+import { confirmWhenFarmsAgree } from './name-ops';
+test('two farms agreeing confirms a colour', async () => {
+  const t = db();
+  const farms = await t.all('farms');
+  const [v] = await t.insert('varieties', { slug: 'agree-test', name: 'Agree Test', status: 'Suggested' });
+  const [q] = await t.insert('review_items', { kind: 'details', status: 'open', data: { variety: 'agree-test' } });
+  const now = new Date().toISOString();
+  for (const [i, desc] of ['A lovely soft pink ball dahlia.', 'Soft pink blooms, ball form.'].entries())
+    await t.insert('listings', { farm_id: farms[i].id, product_key: `ag${i}`, variety_id: v.id, title: 'Agree Test', description: desc, url: null, price_cents: 900, in_stock: false, kind: 'tuber', active: true, first_seen: now, last_changed: now });
+  assert.equal(await confirmWhenFarmsAgree(t), 1);
+  const after = (await t.where('varieties', { id: v.id }))[0];
+  assert.equal(after.colour1, 'Blush');
+  assert.equal(after.form, 'Ball');
+  assert.equal(after.status, 'Confirmed');
+  assert.equal((await t.where('review_items', { id: q.id }))[0].status, 'done');
 });

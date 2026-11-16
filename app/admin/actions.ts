@@ -127,3 +127,21 @@ export async function suggestMoreFarms() {
   revalidatePath('/', 'layout');
   redirect('/admin');
 }
+
+/** Batch screen: confirm every ticked variety with the colour and form it already shows. */
+export async function confirmBatch(fd: FormData) {
+  await requireAdmin();
+  const t = db();
+  const ids = fd.getAll('ok').map(Number).filter(Boolean);
+  let n = 0;
+  for (const id of ids) {
+    const [r] = await t.where('review_items', { id });
+    if (!r || r.status !== 'open' || r.kind !== 'details') continue;
+    const [v] = await t.where('varieties', { slug: r.data.variety });
+    if (!v) continue;
+    await answer(id, { choice: 'save', colour1: v.colour1, colour2: v.colour2, form: v.form });
+    n++;
+  }
+  revalidatePath('/', 'layout');
+  redirect(`/admin/colours?done=${n}`);
+}

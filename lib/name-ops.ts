@@ -275,3 +275,40 @@ export async function syncFarmDetails(t: Tables, details: any[]): Promise<number
   }
   return n;
 }
+
+/**
+ * When two or more farms' own descriptions agree on a variety's main colour (and none disagrees),
+ * fill it in and confirm it, closing its colour question. Never touches Confirmed or hidden varieties.
+ */
+export async function confirmWhenFarmsAgree(t: Tables): Promise<number> {
+  const { guessDetails } = await import('./guess');
+  const [varieties, listings, review] = await Promise.all([t.all('varieties'), t.all('listings'), t.where('review_items', { kind: 'details' })]);
+  const open = new Map<string, any[]>();
+  for (const r of review) if (r.status !== 'done') open.set(r.data?.variety, [...(open.get(r.data?.variety) ?? []), r]);
+  const byVariety = new Map<number, any[]>();
+  for (const l of listings) if (l.variety_id && l.active && l.description) byVariety.set(l.variety_id, [...(byVariety.get(l.variety_id) ?? []), l]);
+  let n = 0;
+  for (const v of varieties) {
+    if (v.status === 'Confirmed' || v.status === 'Not a dahlia' || !open.has(v.slug)) continue;
+    const ls = byVariety.get(v.id) ?? [];
+    const perFarm = new Map<number, ReturnType<typeof guessDetails>>();
+    for (const l of ls) if (!perFarm.has(l.farm_id)) perFarm.set(l.farm_id, guessDetails(v.name, { tags: [], text: `${l.description}` }));
+    const guesses = [...perFarm.values()].filter((g) => g.colour1);
+    if (guesses.length < 2) continue;
+    const main = guesses[0].colour1;
+    if (!guesses.every((g) => g.colour1 === main)) continue;
+    const second = guesses.map((g) => g.colour2).filter(Boolean);
+    const colour2 = second.length >= 2 && second.every((c) => c === second[0]) ? second[0] : v.colour2 && v.colour2 !== main ? v.colour2 : null;
+    const forms = guesses.map((g) => g.form).filter(Boolean);
+    const form = forms.length >= 2 && forms.every((f) => f === forms[0]) ? forms[0] : v.form;
+    if (!form) {
+      // Colour settled, form still unknown: fill the colour but keep asking about the form.
+      await t.update('varieties', { id: v.id }, { colour1: main, colour2 });
+      continue;
+    }
+    await t.update('varieties', { id: v.id }, { colour1: main, colour2, form, status: 'Confirmed' });
+    for (const r of open.get(v.slug)!) await t.update('review_items', { id: r.id }, { status: 'done', resolved_at: new Date().toISOString(), answer: { choice: 'save', auto: 'farms agree' } });
+    n++;
+  }
+  return n;
+}

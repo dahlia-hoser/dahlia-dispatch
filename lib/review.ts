@@ -6,10 +6,29 @@ import { normalize, varietyNameFromTitle } from './names';
 /** Colour-and-form cards shown at once. The rest wait their turn, most-sold varieties first. */
 export const DETAILS_AT_ONCE = 20;
 
+/**
+ * Colour questions worth your time: varieties sold by two or more farms, or in stock somewhere.
+ * The rest keep their best guess (marked Suggested) without asking.
+ */
+export async function worthAsking(): Promise<Set<string>> {
+  const t = db();
+  const [varieties, listings] = await Promise.all([t.all('varieties'), t.all('listings')]);
+  const farms = new Map<number, Set<number>>();
+  const inStock = new Set<number>();
+  for (const l of listings) {
+    if (!l.active || !l.variety_id) continue;
+    if (!farms.has(l.variety_id)) farms.set(l.variety_id, new Set());
+    farms.get(l.variety_id)!.add(l.farm_id);
+    if (l.in_stock) inStock.add(l.variety_id);
+  }
+  return new Set(varieties.filter((v) => (farms.get(v.id)?.size ?? 0) >= 2 || inStock.has(v.id)).map((v) => v.slug));
+}
+
 export async function openReviewCount() {
-  const open = await db().where('review_items', { status: 'open' });
-  const details = open.filter((r) => r.kind === 'details').length;
-  return open.length - details + Math.min(details, DETAILS_AT_ONCE);
+  const [open, worth] = await Promise.all([db().where('review_items', { status: 'open' }), worthAsking()]);
+  const details = open.filter((r) => r.kind === 'details' && worth.has(r.data?.variety)).length;
+  const others = open.filter((r) => r.kind !== 'details').length;
+  return others + Math.min(details, DETAILS_AT_ONCE);
 }
 
 export type Card =
@@ -19,12 +38,13 @@ export type Card =
   | { id: number; kind: 'details'; slug: string; name: string; isNew: boolean; guessed: boolean; formFrom: string | null; colour1: string | null; colour2: string | null; form: string | null; seenAt: { farm: string; title: string; url: string | null }[] };
 
 export async function waitingDetails(): Promise<number> {
-  const open = await db().where('review_items', { status: 'open' });
-  return Math.max(0, open.filter((r) => r.kind === 'details').length - DETAILS_AT_ONCE);
+  const [open, worth] = await Promise.all([db().where('review_items', { status: 'open' }), worthAsking()]);
+  return Math.max(0, open.filter((r) => r.kind === 'details' && worth.has(r.data?.variety)).length - DETAILS_AT_ONCE);
 }
 
 export async function reviewCards(): Promise<Card[]> {
   const t = db();
+  const worth = await worthAsking();
   const [items, varieties, candidates, listings, farms] = await Promise.all([
     t.where('review_items', { status: 'open' }),
     t.all('varieties'),
@@ -61,7 +81,7 @@ export async function reviewCards(): Promise<Card[]> {
       });
     } else if (r.kind === 'details') {
       const v = vBySlug.get(r.data.variety);
-      if (!v || detailsLeft <= 0) continue;
+      if (!v || detailsLeft <= 0 || !worth.has(v.slug)) continue;
       detailsLeft--;
       // One link per farm, so the same farm doesn't repeat.
       const seenAt: { farm: string; title: string; url: string | null }[] = [];
