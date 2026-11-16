@@ -15,6 +15,7 @@ export const text = {
   // Top menu
   navSearch: 'Search',
   navCalendar: 'Sale calendar',
+  navPacks: 'Rainbows & Roulette',
   navReview: 'Review list',
 
   // Search
@@ -102,6 +103,23 @@ export const text = {
   notFoundTitle: 'Well, that’s a bit of a hoser move.',
   notFoundText: 'This page wandered off, like a dahlia tuber you swore you labelled. Grab a coffee and try a search instead.',
   notFoundSearch: 'Back to search',
+
+  // Rainbows & Roulette (mixed and mystery packs)
+  packsTitle: 'Rainbows & Roulette',
+  packsIntro: 'Colour mixes, curated bundles and mystery bags from Canadian farms. Feeling lucky, eh?',
+  rouletteTitle: '🎲 Roulette',
+  rouletteIntro: 'Mystery packs and no-ID tubers. Let a farmer pick for you.',
+  rainbowsTitle: '🌈 Rainbows',
+  rainbowsIntro: 'Colour-themed mixes and curated collections.',
+  rainbowsNone: 'No colour mixes listed right now. Check back when the sales open.',
+  spinButton: 'Let’er rip, bud',
+  spinAgain: 'Again, bud',
+  spinResult: 'The leaf has spoken:',
+  spinNone: 'No mystery packs listed right now. Check back when the sales open.',
+  packInside: 'What’s inside',
+  packTubers: '{n} tubers',
+  packHide: 'Not a dahlia pack: hide it',
+  packsNote: 'Mixes and mystery packs can’t be searched by colour or form, and what’s inside can change. Always check the farm’s description.',
 
   // Feedback page
   feedbackTitle: 'Send feedback',

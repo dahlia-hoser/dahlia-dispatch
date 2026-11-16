@@ -32,7 +32,7 @@ export function ListingRow({ r, groupName }: { r: Row; groupName: string }) {
       <span className="inline">
         <StatusChip r={r} />
         {r.isNew && <span className="chip new">{text.newBadge}</span>}
-        {packSize(r.listing.title) > 1 && <span className="chip pack">{fill(text.packBadge, { n: packSize(r.listing.title) })}</span>}
+        {packSize(r.listing.title) > 1 && <span className="chip packtag">{fill(text.packBadge, { n: packSize(r.listing.title) })}</span>}
       </span>
       <a className="shop" href={r.listing.url ?? r.farm.site ?? '#'} target="_blank" rel="noopener noreferrer">{text.visitShop} ↗</a>
     </article>

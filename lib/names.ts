@@ -47,11 +47,15 @@ export function varietyNameFromTitle(title: string): string {
 }
 
 // Products that are not dahlia tubers or cuttings. Checked against the title and product type only.
-const NOT_DAHLIA = /gift ?card|carte[- ]cadeau|bouquet|subscription|\bcsa\b|workshop|atelier|\bseeds?\b|graines?|t-?shirt|\bshirt|hoodie|sweater|crewneck|\bhats?\b|\btote|canvas bag|\bmugs?\b|stickers?|shipping|tulipes?|tulips?|narcisses?|renoncules?|\bbulbs?\b|\bcorms?\b|ranunculus|\bsnips?\b|holster|\btags?\b|vinyl|compost|fertili[sz]er|\bsoil\b|bucket of|\bkits?\b|\bbulk\b|mystery (tuber|grab|bag|box|pack)|myst[eè]res?|ensemble de|grab bag|giveaway|cut flower|grower.?s choice|\bmix(ed)?\b|assort|\bnoid\b|value pack|\bcollection\b|gloves|\bvases?\b|twine|labels?\b|\bbooks?\b|chrysanth|\bmums?\b|garlic|peony roots?|sweet ?peas?|lisianthus|snapdragon|agrostemma|corn cockle|breadseed|papaver|\bpoppies\b|\bcosmos\b|delphinium|larkspur|gladiol|zinnia|orlaya|clarkia|lavatera|mignonette|soapwort|forget-me-not|queen anne|lace flower|bunny tails|^\s*pivoines?\b|^\s*an[ée]mones?\s+['‘’"“]|season of|centerpiece|brews/i;
+const NOT_DAHLIA = /gift ?card|carte[- ]cadeau|bouquet|subscription|\bcsa\b|workshop|atelier|\bseeds?\b|graines?|t-?shirt|\bshirt|hoodie|sweater|crewneck|\bhats?\b|\btote|canvas bag|\bmugs?\b|stickers?|shipping|tulipes?|tulips?|narcisses?|renoncules?|\bbulbs?\b|\bcorms?\b|ranunculus|\bsnips?\b|holster|\btags?\b|vinyl|compost|fertili[sz]er|\bsoil\b|giveaway|cut flower|gloves|\bvases?\b|twine|labels?\b|\bbooks?\b|chrysanth|\bmums?\b|garlic|peony roots?|sweet ?peas?|lisianthus|snapdragon|agrostemma|corn cockle|breadseed|papaver|\bpoppies\b|\bcosmos\b|delphinium|larkspur|gladiol|zinnia|orlaya|clarkia|lavatera|mignonette|soapwort|forget-me-not|queen anne|lace flower|bunny tails|^\s*pivoines?\b|^\s*an[ée]mones?\s+['‘’"“]|season of|centerpiece|brews/i;
 
-/** tuber, cutting or other (mums, seeds, gift cards, tulip bulbs, tools...). */
-export function kindFromTitle(title: string, type = '', tags: string[] = []): 'tuber' | 'cutting' | 'plant' | 'other' {
+// Mixed, curated and mystery packs: not one variety, so they live on the Rainbows & Roulette page.
+const MIX = /bucket of|\bkits?\b|\bbulk\b|\bmystery (tubers?|grab|bag|box|pack|dahlias?|mix)\b|\bdahlia mystery\b|myst[eè]res\b|ensemble de|grab bag|grower.?s choice|\bmix(ed|es)?\b|assort|\bnoid\b|\bno[- ]?id\b|value pack|\bcollection\b|surprise (pack|bag|box|tubers?)|lucky dip|\bbundle\b|sampler|unlabel+ed|un-?named|\brainbow pack\b/i;
+
+/** tuber, cutting, potted plant, mixed pack, or other (mums, seeds, gift cards, tulip bulbs, tools...). */
+export function kindFromTitle(title: string, type = '', tags: string[] = []): 'tuber' | 'cutting' | 'plant' | 'mix' | 'other' {
   if (NOT_DAHLIA.test(`${title} ${type}`)) return 'other';
+  if (MIX.test(title)) return 'mix';
   if (/\bpotted\b|\bplugs?\b|\b(live|green) plants?\b/i.test(`${title} ${type}`)) return 'plant';
   const all = `${title} ${type} ${tags.join(' ')}`.toLowerCase();
   if (/cutting|bouture/.test(all) && !/tuber|tubercule/.test(`${title} ${type}`.toLowerCase())) return 'cutting';
@@ -162,4 +166,9 @@ export function packSize(title: string): number {
   const raw = m[1] ?? m[2];
   const n = words[raw] ?? Number(raw);
   return n >= 2 && n <= 50 ? n : 1;
+}
+
+/** Roulette = you don't know what you'll get. Everything else mixed is a Rainbow. */
+export function isRoulette(title: string, description = ''): boolean {
+  return /myst|grab bag|\bnoid\b|\bno[- ]?id\b|grower.?s choice|surprise|random|lucky|unlabel|un-?named|roulette|farmer.?s (choice|pick)/i.test(`${title} ${description.slice(0, 200)}`);
 }

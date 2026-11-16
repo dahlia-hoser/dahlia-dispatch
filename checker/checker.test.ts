@@ -59,7 +59,7 @@ test('schedule', () => {
 
 test('saving listings: match, new variety, question, restock, removal', async () => {
   const t = db();
-  const farm = (await t.all('farms')).find((f) => f.code === 'SV')!;
+  const farm = (await t.all('farms')).find((f) => f.code === 'SHF')!;
   const book = await new NameBook(t).load();
   const reviewBefore = (await t.all('review_items')).length;
   const { items } = parseShopify(shopify, farm.site, null);

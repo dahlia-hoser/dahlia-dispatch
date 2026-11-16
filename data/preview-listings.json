@@ -214,5 +214,29 @@
   "title": "Caf\u00e9 au Lait - CAL (3 Pack)",
   "price": 30,
   "in_stock": true
+ },
+ {
+  "farm": "FA",
+  "title": "5 PACK mix (Autumn Colors)",
+  "price": 45,
+  "in_stock": true
+ },
+ {
+  "farm": "DG",
+  "title": "5-pack MYSTERY GRAB BAG",
+  "price": 30,
+  "in_stock": true
+ },
+ {
+  "farm": "SV",
+  "title": "Pastel Dahlia Bundle - 4 tubers",
+  "price": 48,
+  "in_stock": false
+ },
+ {
+  "farm": "GP",
+  "title": "Burgundy/White Noid",
+  "price": 5,
+  "in_stock": true
  }
 ]

@@ -145,6 +145,11 @@ export async function reconcileNames(t: Tables, book: NameBook, keepSlugs: Set<s
   let moved = 0;
   for (const l of listings) {
     if (!l.variety_id || String(l.product_key).startsWith('manual-')) continue;
+    if (kindFromTitle(l.title) === 'mix') {
+      await t.update('listings', { id: l.id }, { variety_id: null, kind: 'mix' });
+      moved++;
+      continue;
+    }
     const clean = varietyNameFromTitle(l.title);
     const own = spellings.get(l.variety_id) ?? [];
     if (own.some((sp) => normalize(sp) === normalize(clean) || sameEnough(sp, clean))) continue;

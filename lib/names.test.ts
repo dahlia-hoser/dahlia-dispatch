@@ -59,7 +59,7 @@ test('real farm titles from the first run', () => {
 });
 
 test('not dahlias', () => {
-  for (const t of ['10 Tulip Bulbs- Verona Sunrise', '10 Corms - Ranunculus Amadine White', 'Floral snips', 'Floral Snip Holster', 'Vinyl Dahlia Tags', 'Terra Flora Soilworks x Five Acres Premium Vermicompost (1L bag)', 'Terra Flora Organics BioBloom 1-9-5 Bloom Fertilizer (1kg bag)', 'Five Acres Collection - five pack of tubers', '"Support Your Local Farmer" Dahlia May Zip Up Hoodie in Cream', '5-pack MYSTERY GRAB BAG', '10 PACK mix', 'A Value Pack (Named) - 10', 'Bulk DIY Bucket of : Custom Colour Palette', 'Burgundy/White Noid', '5 PACK mix (Autumn Colors)'])
+  for (const t of ['10 Tulip Bulbs- Verona Sunrise', '10 Corms - Ranunculus Amadine White', 'Floral snips', 'Floral Snip Holster', 'Vinyl Dahlia Tags', 'Terra Flora Soilworks x Five Acres Premium Vermicompost (1L bag)', 'Terra Flora Organics BioBloom 1-9-5 Bloom Fertilizer (1kg bag)', '"Support Your Local Farmer" Dahlia May Zip Up Hoodie in Cream', ])
     assert.equal(kindFromTitle(t), 'other', t);
   for (const t of ['Black Magic - BLMG (5 Pack)', 'Boom Boom White - BOOM', 'Dahlia Creamy', 'Bloomquist Compare - Limit One'])
     assert.notEqual(kindFromTitle(t), 'other', t);
@@ -73,7 +73,7 @@ test('avenue = ave', () => {
 test('second batch of real titles', () => {
   assert.equal(kindFromTitle('Dahlia - Valley Rust Bucket'), 'tuber');
   assert.equal(kindFromTitle('Zundert Mystery Fox Tuber'), 'tuber');
-  assert.equal(kindFromTitle('Dahlia Mystery Tuber 3 Pack'), 'other');
+  assert.equal(kindFromTitle('Dahlia Mystery Tuber 3 Pack'), 'mix');
   assert.equal(kindFromTitle('Tulipe ‘Brisbane’'), 'other');
   assert.equal(varietyNameFromTitle('Café Au Lait, Limit 1'), 'Café Au Lait');
   assert.equal(varietyNameFromTitle('Sylvia / Maarn'), 'Sylvia');
@@ -86,7 +86,7 @@ test('third batch', () => {
   assert.equal(varietyNameFromTitle('Dahlia ‘Petra’s Wedding’'), 'Petra’s Wedding');
   assert.equal(varietyNameFromTitle("Lark's Ebbe Dahila"), "Lark's Ebbe");
   assert.equal(varietyNameFromTitle('Quiet Splendour ￼'), 'Quiet Splendour');
-  assert.equal(kindFromTitle('All White Dahlia Kit'), 'other');
+  assert.equal(kindFromTitle('All White Dahlia Kit'), 'mix');
   assert.equal(varietyNameFromTitle('Dahlia ‘Platinum Blonde’'), 'Platinum Blonde');
 });
 
@@ -134,4 +134,15 @@ test('pack words leave the name', () => {
   assert.equal(varietyNameFromTitle('Labyrinth - Pack of 3'), 'Labyrinth');
   assert.equal(varietyNameFromTitle('Ten-pack Thomas Edison'), 'Thomas Edison');
   assert.equal(varietyNameFromTitle('Jowey Winnie - 3 tubers'), 'Jowey Winnie');
+});
+
+import { isRoulette } from './names';
+test('mixed and mystery packs', () => {
+  for (const t of ['5-pack MYSTERY GRAB BAG', '10 PACK mix', 'A Value Pack (Named) - 10', 'Bulk DIY Bucket of : Custom Colour Palette', 'Burgundy/White Noid', '5 PACK mix (Autumn Colors)', 'Five Acres Collection - five pack of tubers', 'Ensemble de dahlias mystères', 'Pastel Dahlia Bundle'])
+    assert.equal(kindFromTitle(t), 'mix', t);
+  for (const t of ['Zundert Mystery Fox Tuber', 'Mystery Day', 'Mystique', 'Sweet Surprise', 'Maarn'])
+    assert.notEqual(kindFromTitle(t), 'mix', t);
+  assert.ok(isRoulette('5-pack MYSTERY GRAB BAG'));
+  assert.ok(isRoulette('Burgundy/White Noid'));
+  assert.ok(!isRoulette('5 PACK mix (Autumn Colors)'));
 });

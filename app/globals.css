@@ -76,7 +76,7 @@ footer .wrap { padding-top: 18px; padding-bottom: 24px; }
 .row .who b { font-size: 16px; }
 .row .who span { font-size: 14px; color: var(--muted); }
 .row .price { flex: 0 0 90px; font-weight: 700; font-variant-numeric: tabular-nums; }
-.row .shop { min-height: 40px; display: inline-flex; align-items: center; padding: 8px 14px; border-radius: 10px; border: 1px solid #dcd2c2; color: var(--text); font-weight: 700; font-size: 14px; text-decoration: none; }
+.row .shop, .pack .shop { min-height: 40px; display: inline-flex; align-items: center; padding: 8px 14px; border-radius: 10px; border: 1px solid #dcd2c2; color: var(--text); font-weight: 700; font-size: 14px; text-decoration: none; }
 .chip { display: inline-block; font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 999px; color: var(--text); white-space: nowrap; }
 .chip.in, .chip.new { background: var(--sage); }
 .chip.soon { background: var(--butter); }
@@ -193,6 +193,26 @@ footer .wrap { padding-bottom: 64px; }
   .leaf-cluster.top-right { right: -4px; top: -10px; }
 }
 
-.chip.pack { background: #e6eef5; color: #2f4a63; }
+.chip.packtag { background: #e6eef5; color: #2f4a63; }
 .row .price { display: inline-flex; flex-direction: column; }
 .row .price .each { font-size: 12px; font-weight: 300; color: var(--muted); }
+
+/* Rainbows & Roulette */
+.packs-section { display: flex; flex-direction: column; gap: 12px; }
+.packs-section h2 { font-size: 24px; font-weight: 700; }
+.pack-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+.pack { border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.pack-top { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+.pack-name { font-size: 17px; }
+.dots { display: inline-flex; gap: 3px; flex: none; padding-top: 4px; }
+.dot { width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--line); }
+.pack-bottom { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-top: 4px; }
+.pack .price { display: inline-flex; flex-direction: column; font-weight: 700; }
+.pack .price .each { font-size: 12px; font-weight: 300; color: var(--muted); }
+.roulette { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 18px; border: 1px dashed var(--line); border-radius: 18px; background: var(--cream); text-align: center; }
+.wheel .leaf { color: #b9b1a5; }
+.wheel.spinning .leaf { animation: leafspin 1.4s cubic-bezier(.2,.7,.2,1); }
+@keyframes leafspin { from { transform: rotate(0); } to { transform: rotate(1440deg); } }
+.pick { display: flex; flex-direction: column; gap: 2px; align-items: center; }
+.pick b { font-size: 19px; }
+@media (prefers-reduced-motion: reduce) { .wheel.spinning .leaf { animation: none; } }

@@ -18,7 +18,7 @@ export async function save(t: Tables, book: NameBook, farm: any, products: Produ
     seen.add(p.key);
     const old = byKey.get(p.key);
     if (!old) {
-      const variety_id = p.kind === 'other' ? null : await book.resolve(p.title, farm.name, p.hints);
+      const variety_id = p.kind === 'other' || p.kind === 'mix' ? null : await book.resolve(p.title, farm.name, p.hints);
       fresh.push({
         farm_id: farm.id, product_key: p.key, variety_id, title: p.title, url: p.url,
         price_cents: p.price_cents, currency: p.currency, in_stock: p.in_stock, kind: p.kind,
@@ -34,7 +34,8 @@ export async function save(t: Tables, book: NameBook, farm: any, products: Produ
       continue; // only write when something changed, to keep the checker quick
     }
     const patch: Record<string, any> = { ...desc(p), title: p.title, url: p.url, price_cents: p.price_cents, in_stock: p.in_stock, kind: p.kind, active: true, last_seen: now, last_changed: now };
-    if (old.title !== p.title && old.variety_id == null && p.kind !== 'other') patch.variety_id = await book.resolve(p.title, farm.name, p.hints);
+    if (old.title !== p.title && old.variety_id == null && p.kind !== 'other' && p.kind !== 'mix') patch.variety_id = await book.resolve(p.title, farm.name, p.hints);
+    if (p.kind === 'mix') patch.variety_id = null; // packs of mixed varieties don't belong to one variety
     await t.update('listings', { id: old.id }, patch);
     changed++;
   }

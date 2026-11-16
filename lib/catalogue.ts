@@ -22,7 +22,7 @@ export async function loadAll(): Promise<AllData> {
     farms: farms as Farm[],
     varieties: (varieties as Variety[]).filter((v) => !hidden.has(v.id)),
     aliases: aliases as any,
-    listings: (listings as Listing[]).filter((l) => l.active && l.kind !== 'other' && kindFromTitle(l.title) !== 'other' && !hidden.has(l.variety_id as number)),
+    listings: (listings as Listing[]).filter((l) => l.active && !['other', 'mix'].includes(l.kind) && !['other', 'mix'].includes(kindFromTitle(l.title)) && !hidden.has(l.variety_id as number)),
     sales: sales as SaleEvent[],
     // While a "same flower?" question waits, show those listings under the suggested name.
     pending: questions.filter((q) => q.status !== 'done' && q.data?.suggestion).map((q) => ({ spelling: q.data.spelling, slug: q.data.suggestion })),

@@ -9,6 +9,7 @@ export function Nav({ reviewCount, admin }: { reviewCount: number; admin: boolea
     <nav className="nav" aria-label="Main">
       <a href="/" aria-current={cur('/')}>{text.navSearch}</a>
       <a href="/calendar" aria-current={cur('/calendar')}>{text.navCalendar}</a>
+      <a href="/packs" aria-current={cur('/packs')}>{text.navPacks}</a>
       {admin && (
         <a href="/admin" aria-current={cur('/admin')}>
           {text.navReview}
