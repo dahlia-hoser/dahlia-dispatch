@@ -7,7 +7,7 @@ import manualJson from '../data/manual-listings.json';
 import societiesJson from '../data/societies.json';
 import farmDetailsJson from '../data/farm-details.json';
 import previewListingsJson from '../data/preview-listings.json';
-import { normalize, slugify } from './names';
+import { normalize, slugify, varietyNameFromTitle } from './names';
 
 type Row = Record<string, any>;
 
@@ -41,7 +41,8 @@ export function buildPreviewTables(): Record<string, Row[]> {
     addVariety(n, c1, c2, form, st, aka);
     if (st === 'Needs you') review.push({ id: id++, kind: 'details', status: 'open', data: { variety: slugify(n) }, created_at: new Date(now).toISOString() });
   }
-  const lookup = (name: string) => {
+  const lookup = (title: string) => {
+    const name = varietyNameFromTitle(title);
     const a = aliases.find((x) => x.alias === normalize(name) || x.alias.replace(/\s/g, '') === normalize(name).replace(/\s/g, ''));
     if (a) return a.variety_id;
     const v = addVariety(name, null, null, null, 'Suggested');

@@ -1,6 +1,6 @@
 // Reading the data for the public pages: statuses, search, grouping by variety.
 import { db } from './db';
-import { kindFromTitle, normalize, varietyNameFromTitle } from './names';
+import { kindFromTitle, normalize, packSize, varietyNameFromTitle } from './names';
 import type { AllData, Farm, Listing, SaleEvent, Variety } from './types';
 import { NOT_DAHLIA } from './types';
 import { isCanadianBred, isNewIntro } from './badges';
@@ -119,7 +119,9 @@ export function groupAll(data: AllData, now = Date.now()): Group[] {
   }
   const order: Record<Avail, number> = { in: 0, soon: 1, list: 2, out: 3 };
   for (const g of groups.values()) {
-    g.rows.sort((a, b) => order[a.avail] - order[b.avail] || (a.listing.price_cents ?? 1e9) - (b.listing.price_cents ?? 1e9));
+    // Cheapest first, comparing packs by their price per tuber.
+    const each = (r: Row) => (r.listing.price_cents ?? 1e9) / packSize(r.listing.title);
+    g.rows.sort((a, b) => order[a.avail] - order[b.avail] || each(a) - each(b));
     // "Also sold as": other spellings farms use, cleaned of shop talk, each once.
     const have = new Set([normalize(g.name), ...g.aka.map(normalize)]);
     for (const r of g.rows) {
@@ -170,6 +172,7 @@ export function search(groups: Group[], f: Filters): Group[] {
     if (f.prov) rows = rows.filter((r) => r.farm.province === f.prov);
     if (f.get) rows = rows.filter((r) => canGetIn(r.farm, f.get!));
     if (f.only === 'pickup') rows = rows.filter((r) => !!r.farm.pickup);
+    if (f.only === 'packs') rows = rows.filter((r) => packSize(r.listing.title) > 1);
     if (f.only === 'new' && !g.newIntro) continue;
     if (f.only === 'rare' && !g.rare) continue;
     if (f.only === 'canadian' && !g.canadian) continue;

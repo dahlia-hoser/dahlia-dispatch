@@ -192,3 +192,7 @@ footer .wrap { padding-bottom: 64px; }
   .leaf-cluster.top-right .l1 { display: none; }
   .leaf-cluster.top-right { right: -4px; top: -10px; }
 }
+
+.chip.pack { background: #e6eef5; color: #2f4a63; }
+.row .price { display: inline-flex; flex-direction: column; }
+.row .price .each { font-size: 12px; font-weight: 300; color: var(--muted); }

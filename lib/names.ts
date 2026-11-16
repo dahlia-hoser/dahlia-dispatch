@@ -31,6 +31,7 @@ export function varietyNameFromTitle(title: string): string {
   t = t.replace(/[®™]/g, '');
   t = t.replace(/[\u0000-\u001f​-‏￼�]/g, ' ');
   t = t.replace(/\b(dahlias?|dhalias?|dahilas?|dahli)\b/gi, ' ');
+  t = t.replace(/\b\d{1,2}\s*-?\s*(?:pack|pk|pcs|count|ct)\b|\bpack\s*(?:of\s*)?\d{1,2}\b|(?:^|\s)x\s?\d{1,2}\b|\b\d{1,2}\s?x(?=\s|$)|\b\d{1,2}\s*(?:tubers|tubercules|cuttings|boutures|clumps)\b|\b(?:two|three|four|five|six|ten)[- ]pack\b/gi, ' ');
   t = t.replace(/\b(rooted )?cuttings?\b|\bboutures?\b/gi, ' ');
   t = t.replace(/\b(tubers?|tubercules?|tubes?|clumps?)\b/gi, ' ');
   t = t.replace(/\b(potted|live|green)\s+plants?\b|\bpotted\b|\bplugs?\b|\b(in a|\d+(\.\d+)?\s*(l|litre|liter|gal|gallon))\s+pots?\b/gi, ' ');
@@ -145,4 +146,20 @@ export function matchName(name: string, aliases: Map<string, number>): MatchResu
 export function tidyName(s: string): string {
   if (s !== s.toUpperCase()) return s;
   return s.toLowerCase().replace(/\b([a-z])/g, (c) => c.toUpperCase());
+}
+
+/** How many tubers or cuttings a listing is for: "(5 Pack)", "3-pack", "Pack of 3", "x3", "3 tubers". 1 if not a pack. */
+export function packSize(title: string): number {
+  const t = title.toLowerCase();
+  const m =
+    t.match(/\b(\d{1,2})\s*-?\s*(?:pack|pk|pcs|pieces|count|ct)\b/) ||
+    t.match(/\bpack\s*(?:of\s*)?(\d{1,2})\b/) ||
+    t.match(/\b(\d{1,2})\s*(?:tubers|tubercules|cuttings|boutures|clumps)\b/) ||
+    t.match(/(?:^|\s)x\s?(\d{1,2})\b|\b(\d{1,2})\s?x(?:\s|$)/) ||
+    t.match(/\b(two|three|four|five|six|ten)[- ]pack\b/);
+  if (!m) return 1;
+  const words: Record<string, number> = { two: 2, three: 3, four: 4, five: 5, six: 6, ten: 10 };
+  const raw = m[1] ?? m[2];
+  const n = words[raw] ?? Number(raw);
+  return n >= 2 && n <= 50 ? n : 1;
 }

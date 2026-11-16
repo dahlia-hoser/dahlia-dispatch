@@ -1,7 +1,7 @@
 import type { Group, Row } from '../lib/catalogue';
 import { money, gettingIt } from '../lib/catalogue';
 import { text, fill } from '../site-text';
-import { normalize } from '../lib/names';
+import { normalize, packSize, varietyNameFromTitle } from '../lib/names';
 import { LeafDot } from './Leaf';
 
 export function StatusChip({ r }: { r: Pick<Row, 'avail' | 'label'> }) {
@@ -9,7 +9,8 @@ export function StatusChip({ r }: { r: Pick<Row, 'avail' | 'label'> }) {
 }
 
 export function ListingRow({ r, groupName }: { r: Row; groupName: string }) {
-  const different = normalize(r.listing.title) !== normalize(groupName);
+  // Only say "Listed as" when the farm really uses a different name, not just extra shop words.
+  const different = normalize(varietyNameFromTitle(r.listing.title)) !== normalize(groupName);
   return (
     <article className="row">
       <div className="who">
@@ -22,10 +23,16 @@ export function ListingRow({ r, groupName }: { r: Row; groupName: string }) {
         </span>
         {gettingIt(r.farm) && <span className="ship">{gettingIt(r.farm)}</span>}
       </div>
-      <span className="price">{money(r.listing.price_cents)}</span>
+      <span className="price">
+        {money(r.listing.price_cents)}
+        {packSize(r.listing.title) > 1 && r.listing.price_cents != null && (
+          <span className="each">{fill(text.packEach, { price: money(Math.round(r.listing.price_cents / packSize(r.listing.title))) })}</span>
+        )}
+      </span>
       <span className="inline">
         <StatusChip r={r} />
         {r.isNew && <span className="chip new">{text.newBadge}</span>}
+        {packSize(r.listing.title) > 1 && <span className="chip pack">{fill(text.packBadge, { n: packSize(r.listing.title) })}</span>}
       </span>
       <a className="shop" href={r.listing.url ?? r.farm.site ?? '#'} target="_blank" rel="noopener noreferrer">{text.visitShop} ↗</a>
     </article>

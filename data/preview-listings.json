@@ -49,7 +49,7 @@
  },
  {
   "farm": "PF",
-  "title": "Café au Lait",
+  "title": "Caf\u00e9 au Lait",
   "price": 12,
   "in_stock": false
  },
@@ -103,7 +103,7 @@
  },
  {
   "farm": "LS",
-  "title": "Senior’s Hope",
+  "title": "Senior\u2019s Hope",
   "price": 15,
   "in_stock": false
  },
@@ -208,5 +208,11 @@
   "title": "Bantling",
   "price": null,
   "in_stock": false
+ },
+ {
+  "farm": "DG",
+  "title": "Caf\u00e9 au Lait - CAL (3 Pack)",
+  "price": 30,
+  "in_stock": true
  }
 ]

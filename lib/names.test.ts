@@ -114,3 +114,24 @@ test('potted plants', () => {
   assert.equal(kindFromTitle('Dahlia - Potted - Café au Lait'), 'plant');
   assert.equal(kindFromTitle('Café au Lait'), 'tuber');
 });
+
+import { packSize } from './names';
+test('multi-packs', () => {
+  assert.equal(packSize('Black Magic - BLMG (5 Pack)'), 5);
+  assert.equal(packSize('Café au Lait 3-pack'), 3);
+  assert.equal(packSize('Labyrinth - Pack of 3'), 3);
+  assert.equal(packSize('Maarn x3'), 3);
+  assert.equal(packSize('Jowey Winnie - 3 tubers'), 3);
+  assert.equal(packSize('Ten-pack Thomas Edison'), 10);
+  assert.equal(packSize('Maarn'), 1);
+  assert.equal(packSize('20th Ave & Baker Rd.'), 1);
+  assert.equal(packSize('Single tuber'), 1);
+});
+
+test('pack words leave the name', () => {
+  assert.equal(varietyNameFromTitle('Café au Lait 3-pack'), 'Café au Lait');
+  assert.equal(varietyNameFromTitle('Maarn x3'), 'Maarn');
+  assert.equal(varietyNameFromTitle('Labyrinth - Pack of 3'), 'Labyrinth');
+  assert.equal(varietyNameFromTitle('Ten-pack Thomas Edison'), 'Thomas Edison');
+  assert.equal(varietyNameFromTitle('Jowey Winnie - 3 tubers'), 'Jowey Winnie');
+});
