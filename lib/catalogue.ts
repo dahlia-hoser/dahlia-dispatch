@@ -80,7 +80,7 @@ export function status(l: Listing, farm: Farm, sales: SaleEvent[], now = Date.no
 }
 
 export type Row = { listing: Listing; farm: Farm; avail: Avail; label: string; isNew: boolean };
-export type Group = { key: string; variety: Variety | null; name: string; aka: string[]; rows: Row[]; rare?: boolean; newIntro?: boolean; canadian?: boolean };
+export type Group = { key: string; variety: Variety | null; name: string; aka: string[]; rows: Row[]; newIntro?: boolean; canadian?: boolean };
 
 export type Filters = { q?: string; farm?: string; avail?: string; form?: string; colour?: string; prov?: string; get?: string; only?: string };
 
@@ -134,7 +134,6 @@ export function groupAll(data: AllData, now = Date.now()): Group[] {
     }
   }
   for (const g of groups.values()) {
-    g.rare = new Set(g.rows.map((r) => r.farm.id)).size === 1;
     g.newIntro = isNewIntro(g.variety?.intro_year, now);
     g.canadian = isCanadianBred(g.name, g.variety?.canadian_bred);
   }
@@ -174,7 +173,6 @@ export function search(groups: Group[], f: Filters): Group[] {
     if (f.only === 'pickup') rows = rows.filter((r) => !!r.farm.pickup);
     if (f.only === 'packs') rows = rows.filter((r) => packSize(r.listing.title) > 1 || isBulk(r.listing.title));
     if (f.only === 'new' && !g.newIntro) continue;
-    if (f.only === 'rare' && !g.rare) continue;
     if (f.only === 'canadian' && !g.canadian) continue;
     if (f.avail && f.avail !== 'all') rows = rows.filter((r) => r.avail === f.avail);
     if (!rows.length) continue;

@@ -54,7 +54,6 @@ export function Filters({ f, farmName }: { f: F; farmName?: string }) {
         <select name="only" defaultValue={f.only ?? ''} onChange={submit}>
           <option value="">{text.filterAny}</option>
           <option value="new">{text.onlyNew}</option>
-          <option value="rare">{text.onlyRare}</option>
           <option value="canadian">{text.onlyCanadian}</option>
           <option value="pickup">{text.onlyPickup}</option>
           <option value="packs">{text.onlyPacks}</option>

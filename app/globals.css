@@ -159,7 +159,6 @@ a.pill { text-decoration: none; color: var(--text); display: inline-flex; align-
 .row .who .ship { font-size: 13px; color: var(--muted2); }
 .chip.intro { background: var(--butter); }
 .chip.canada { background: #fbe3df; color: #8a2f22; }
-.chip.rare { background: #efe6f3; }
 
 /* Maple leaves */
 .leaf { color: var(--leaf); display: inline-block; flex: none; vertical-align: middle; }
