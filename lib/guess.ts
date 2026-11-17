@@ -29,8 +29,9 @@ const FORM_WORDS: [RegExp, string][] = [
   [/\borchid\b|\borchidée\b/, 'Orchid'],
   [/\bpeony\b|\bpivoine\b/, 'Peony'],
   [/\blaciniated\b|\bfimbriated\b|\bfringed\b/, 'Laciniated'],
-  [/\bsingle\b|\bsimple\b|\bmignon\b/, 'Single'],
+  [/\bsingle\b(?!\s+(?:tubers?|clumps?|divisions?|roots?|plants?|eyes?|stems?|order|item|listing|purchase|unit|pack))|\bsimple\b|\bmignon\b/, 'Single'],
   [/\bnovelty\b/, 'Novelty'],
+  [/\b(?:in)?formal dec(?:orative)?\b\.?|\binf\.? ?dec\b\.?|\b[fi]\.d\.(?=\s|$|,)|(?:^|\| )(?:fd|id)(?= \||$)/, 'Decorative'],
   [/\bdecorative\b|\bdécoratif\b|\bdinnerplate\b|\bdinner plate\b/, 'Decorative'],
 ];
 

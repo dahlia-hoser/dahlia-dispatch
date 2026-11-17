@@ -10,3 +10,13 @@ test('guesses from description', () => {
   assert.deepEqual(guessDetails('X', { tags: [], text: 'Beautiful soft pink waterlily.' }), { colour1: 'Blush', colour2: null, form: 'Waterlily' });
   assert.deepEqual(guessDetails('X', { tags: [], text: '' }), { colour1: null, colour2: null, form: null });
 });
+
+test('formal and informal decorative (and short forms) count as Decorative', () => {
+  const form = (tags: string[], text = '') => guessDetails('x', { tags, text }).form;
+  assert.equal(form(['Informal Decorative']), 'Decorative');
+  assert.equal(form(['Form: FD']), 'Decorative');
+  assert.equal(form([], 'Formal dec. in soft peach'), 'Decorative');
+  assert.equal(form([], 'This listing is for a single tuber. Informal decorative, coral.'), 'Decorative');
+  assert.equal(form([], 'Single blooms in bright red'), 'Single');
+  assert.equal(form([], 'idle hands'), null);
+});
