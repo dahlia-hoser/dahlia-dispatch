@@ -1,10 +1,10 @@
-import { reviewCards, waitingDetails } from '../../lib/review';
+import { reviewCards, reviewTotals, waitingDetails } from '../../lib/review';
 import { ReviewDeck } from '../../components/ReviewDeck';
 import { text } from '../../site-text';
 import { db } from '../../lib/db';
 
 export default async function Admin() {
-  const [cards, more] = await Promise.all([reviewCards(), waitingDetails()]);
+  const [cards, more, totals] = await Promise.all([reviewCards(), waitingDetails(), reviewTotals()]);
   const preview = db().preview;
   return (
     <>
@@ -17,6 +17,11 @@ export default async function Admin() {
         </span>
       </div>
       {preview && <p className="note-box">Preview mode: no database connected yet, so answers are forgotten when the site restarts.</p>}
+      <p className="note">
+        <strong>{totals.toReview}</strong> {totals.toReview === 1 ? 'flower' : 'flowers'} left to review
+        {totals.toReview > 20 && <> (20 at a time)</>}
+        {totals.quiet > 0 && <> · {totals.quiet} more keeping their best guess until a second farm sells them</>}
+      </p>
       <ReviewDeck cards={cards} more={more} />
     </>
   );

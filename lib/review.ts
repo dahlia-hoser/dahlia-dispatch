@@ -31,6 +31,14 @@ export async function openReviewCount() {
   return others + Math.min(details, DETAILS_AT_ONCE);
 }
 
+/** The whole picture: every flower left, not just today's batch. */
+export async function reviewTotals() {
+  const [open, worth] = await Promise.all([db().where('review_items', { status: 'open' }), worthAsking()]);
+  const flowers = open.filter((r) => r.kind === 'details');
+  const toReview = flowers.filter((r) => worth.has(r.data?.variety)).length;
+  return { toReview, quiet: flowers.length - toReview, other: open.length - flowers.length };
+}
+
 export type Card =
   | { id: number; kind: 'feedback'; message: string; contact: string | null; page: string | null; at: string }
   | { id: number; kind: 'farm'; name: string; place: string | null; site: string | null; platform: string | null }
