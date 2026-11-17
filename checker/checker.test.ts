@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseShopify, parseWoo } from './sources';
+import { parseShopify, parseWoo, shopifyPrice } from './sources';
 import { whyDue } from './schedule';
 import { save, weeklyHousekeeping } from './save';
 import { db } from '../lib/db';
@@ -22,7 +22,7 @@ test('reads a Shopify product list', () => {
   assert.equal(maarn.price_cents, 1000);
   assert.equal(maarn.in_stock, false);
   const cj = items.find((i) => i.key === '2')!;
-  assert.equal(cj.price_cents, 900);
+  assert.equal(cj.price_cents, 1200); // the sold-out $9 option is ignored
   assert.equal(cj.in_stock, true);
   assert.equal(items.find((i) => i.key === '5')!.kind, 'cutting');
 });
@@ -134,4 +134,11 @@ test('big Wix shops are read in slices', () => {
   for (let h = 0; h < 3; h++) for (const u of sliceForThisRun(urls, 80, h * 3600000)) seen.add(u);
   assert.equal(seen.size, 200);
   assert.deepEqual(locs('<urlset><url><loc>https://a.ca/product-page/x</loc></url></urlset>'), ['https://a.ca/product-page/x']);
+});
+
+test('shopify price ignores sold-out and odd options', () => {
+  assert.equal(shopifyPrice([{ title: 'Small tuber', price: '13.20', available: true }, { title: 'Single tuber', price: '18.50', available: true }]), 1850);
+  assert.equal(shopifyPrice([{ title: 'A', price: '13.20', available: false }, { title: 'B', price: '18.50', available: true }]), 1850);
+  assert.equal(shopifyPrice([{ title: 'Default Title', price: '12', available: false }]), 1200);
+  assert.equal(shopifyPrice([]), null);
 });

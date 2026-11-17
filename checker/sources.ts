@@ -38,12 +38,11 @@ export function parseShopify(products: any[], site: string, collection: string |
   const dahlia: Product[] = [];
   for (const p of products) {
     const variants: any[] = p.variants ?? [];
-    const prices = variants.map((v) => Math.round(parseFloat(v.price) * 100)).filter((n) => !isNaN(n));
     const item: Product = {
       key: String(p.id),
       title: String(p.title ?? '').trim(),
       url: `${base(site)}/products/${p.handle}`,
-      price_cents: prices.length ? Math.min(...prices) : null,
+      price_cents: shopifyPrice(variants),
       currency: 'CAD',
       in_stock: variants.some((v) => v.available === true),
       kind: kindFromTitle(p.title ?? '', p.product_type ?? '', tagList(p.tags)),
@@ -55,6 +54,21 @@ export function parseShopify(products: any[], site: string, collection: string |
   // A farm that only sells dahlias may never write "dahlia" in titles: keep everything that isn't clearly something else.
   if (!dahlia.length) return { items: all.filter((i) => i.kind !== 'other'), unfiltered: all.length, fellBack: true };
   return { items: dahlia, unfiltered: all.length, fellBack: false };
+}
+
+// Options that aren't one ordinary tuber: deposits, cuttings, potted plants, seconds, wholesale, gift wrap…
+const ODD_OPTION = /\b(deposit|cuttings?|rooted|potted|plants?|plugs?|seeds?|seconds?|small|mini|wholesale|bulk|gift|wrap|add[- ]?on|pre[- ]?order deposit)\b/i;
+
+// The price a shopper would actually pay: an option they can buy right now, ideally a plain single tuber.
+export function shopifyPrice(variants: any[]): number | null {
+  const opts = variants
+    .map((v) => ({ cents: Math.round(parseFloat(v.price) * 100), title: String(v.title ?? ''), available: v.available === true }))
+    .filter((o) => !isNaN(o.cents) && o.cents > 0);
+  if (!opts.length) return null;
+  const plain = opts.filter((o) => !ODD_OPTION.test(o.title));
+  const pool = plain.length ? plain : opts;
+  const buyable = pool.filter((o) => o.available);
+  return Math.min(...(buyable.length ? buyable : pool).map((o) => o.cents));
 }
 
 function tagList(tags: unknown): string[] {
