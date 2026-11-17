@@ -64,6 +64,7 @@ export const text = {
   pottedPlant: 'Potted plant',
   badgeRare: 'Only at 1 farm in Canada',
   packBadge: '{n}-pack',
+  bulkBadge: 'Bulk',
   packEach: '{price} each',
   badgeNewIntro: 'New introduction {year}',
   badgeCanadian: '🍁 Canadian-bred',

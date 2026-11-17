@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { normalize, varietyNameFromTitle, matchName, kindFromTitle, slugify } from './names';
+import { normalize, varietyNameFromTitle, matchName, kindFromTitle, slugify, isBulk } from './names';
 
 test('normalize strips accents, symbols, apostrophes', () => {
   assert.equal(normalize('Café au Lait'), 'cafe au lait');
@@ -145,4 +145,13 @@ test('mixed and mystery packs', () => {
   assert.ok(isRoulette('5-pack MYSTERY GRAB BAG'));
   assert.ok(isRoulette('Burgundy/White Noid'));
   assert.ok(!isRoulette('5 PACK mix (Autumn Colors)'));
+});
+
+test('bulk packs of one variety are tubers, not mixes', () => {
+  assert.equal(varietyNameFromTitle('Bulk Nicholas'), 'Nicholas');
+  assert.equal(kindFromTitle('Bulk Nicholas', '', []), 'tuber');
+  assert.equal(isBulk('Bulk Nicholas'), true);
+  assert.equal(packSize('Bulk Cafe au Lait (5 pack)'), 5);
+  assert.equal(kindFromTitle('Bulk DIY Bucket of : Custom Colour Palette', '', []), 'mix');
+  assert.equal(kindFromTitle('Bulk Dahlia Tubers', '', []), 'mix');
 });

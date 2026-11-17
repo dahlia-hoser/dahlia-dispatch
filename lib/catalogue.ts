@@ -1,6 +1,6 @@
 // Reading the data for the public pages: statuses, search, grouping by variety.
 import { db } from './db';
-import { kindFromTitle, normalize, packSize, varietyNameFromTitle } from './names';
+import { isBulk, kindFromTitle, normalize, packSize, varietyNameFromTitle } from './names';
 import type { AllData, Farm, Listing, SaleEvent, Variety } from './types';
 import { NOT_DAHLIA } from './types';
 import { isCanadianBred, isNewIntro } from './badges';
@@ -172,7 +172,7 @@ export function search(groups: Group[], f: Filters): Group[] {
     if (f.prov) rows = rows.filter((r) => r.farm.province === f.prov);
     if (f.get) rows = rows.filter((r) => canGetIn(r.farm, f.get!));
     if (f.only === 'pickup') rows = rows.filter((r) => !!r.farm.pickup);
-    if (f.only === 'packs') rows = rows.filter((r) => packSize(r.listing.title) > 1);
+    if (f.only === 'packs') rows = rows.filter((r) => packSize(r.listing.title) > 1 || isBulk(r.listing.title));
     if (f.only === 'new' && !g.newIntro) continue;
     if (f.only === 'rare' && !g.rare) continue;
     if (f.only === 'canadian' && !g.canadian) continue;

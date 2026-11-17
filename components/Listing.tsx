@@ -1,7 +1,7 @@
 import type { Group, Row } from '../lib/catalogue';
 import { money, gettingIt } from '../lib/catalogue';
 import { text, fill } from '../site-text';
-import { normalize, packSize, varietyNameFromTitle } from '../lib/names';
+import { isBulk, normalize, packSize, varietyNameFromTitle } from '../lib/names';
 import { LeafDot } from './Leaf';
 
 export function StatusChip({ r }: { r: Pick<Row, 'avail' | 'label'> }) {
@@ -33,6 +33,7 @@ export function ListingRow({ r, groupName }: { r: Row; groupName: string }) {
         <StatusChip r={r} />
         {r.isNew && <span className="chip new">{text.newBadge}</span>}
         {packSize(r.listing.title) > 1 && <span className="chip packtag">{fill(text.packBadge, { n: packSize(r.listing.title) })}</span>}
+        {packSize(r.listing.title) === 1 && isBulk(r.listing.title) && <span className="chip packtag">{text.bulkBadge}</span>}
       </span>
       <a className="shop" href={r.listing.url ?? r.farm.site ?? '#'} target="_blank" rel="noopener noreferrer">{text.visitShop} ↗</a>
     </article>

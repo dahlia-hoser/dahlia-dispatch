@@ -31,7 +31,7 @@ export function varietyNameFromTitle(title: string): string {
   t = t.replace(/[®™]/g, '');
   t = t.replace(/[\u0000-\u001f​-‏￼�]/g, ' ');
   t = t.replace(/\b(dahlias?|dhalias?|dahilas?|dahli)\b/gi, ' ');
-  t = t.replace(/\b\d{1,2}\s*-?\s*(?:pack|pk|pcs|count|ct)\b|\bpack\s*(?:of\s*)?\d{1,2}\b|(?:^|\s)x\s?\d{1,2}\b|\b\d{1,2}\s?x(?=\s|$)|\b\d{1,2}\s*(?:tubers|tubercules|cuttings|boutures|clumps)\b|\b(?:two|three|four|five|six|ten)[- ]pack\b/gi, ' ');
+  t = t.replace(/\bbulk(?:\s+(?:pack|lot|order|buy))?\b|\b\d{1,2}\s*-?\s*(?:pack|pk|pcs|count|ct)\b|\bpack\s*(?:of\s*)?\d{1,2}\b|(?:^|\s)x\s?\d{1,2}\b|\b\d{1,2}\s?x(?=\s|$)|\b\d{1,2}\s*(?:tubers|tubercules|cuttings|boutures|clumps)\b|\b(?:two|three|four|five|six|ten)[- ]pack\b/gi, ' ');
   t = t.replace(/\b(rooted )?cuttings?\b|\bboutures?\b/gi, ' ');
   t = t.replace(/\b(tubers?|tubercules?|tubes?|clumps?)\b/gi, ' ');
   t = t.replace(/\b(potted|live|green)\s+plants?\b|\bpotted\b|\bplugs?\b|\b(in a|\d+(\.\d+)?\s*(l|litre|liter|gal|gallon))\s+pots?\b/gi, ' ');
@@ -50,7 +50,7 @@ export function varietyNameFromTitle(title: string): string {
 const NOT_DAHLIA = /gift ?card|carte[- ]cadeau|bouquet|subscription|\bcsa\b|workshop|atelier|\bseeds?\b|graines?|t-?shirt|\bshirt|hoodie|sweater|crewneck|\bhats?\b|\btote|canvas bag|\bmugs?\b|stickers?|shipping|tulipes?|tulips?|narcisses?|renoncules?|\bbulbs?\b|\bcorms?\b|ranunculus|\bsnips?\b|holster|\btags?\b|vinyl|compost|fertili[sz]er|\bsoil\b|giveaway|cut flower|gloves|\bvases?\b|twine|labels?\b|\bbooks?\b|chrysanth|\bmums?\b|garlic|peony roots?|sweet ?peas?|lisianthus|snapdragon|agrostemma|corn cockle|breadseed|papaver|\bpoppies\b|\bcosmos\b|delphinium|larkspur|gladiol|zinnia|orlaya|clarkia|lavatera|mignonette|soapwort|forget-me-not|queen anne|lace flower|bunny tails|^\s*pivoines?\b|^\s*an[ée]mones?\s+['‘’"“]|season of|centerpiece|brews/i;
 
 // Mixed, curated and mystery packs: not one variety, so they live on the Rainbows & Roulette page.
-const MIX = /bucket of|\bkits?\b|\bbulk\b|\bmystery (tubers?|grab|bag|box|pack|dahlias?|mix)\b|\bdahlia mystery\b|myst[eè]res\b|ensemble de|grab bag|grower.?s choice|\bmix(ed|es)?\b|assort|\bnoid\b|\bno[- ]?id\b|value pack|\bcollection\b|surprise (pack|bag|box|tubers?)|lucky dip|\bbundle\b|sampler|unlabel+ed|un-?named|\brainbow pack\b/i;
+const MIX = /bucket of|\bkits?\b|\bbulk (?:dahlias?|tubers?)\b|\bmystery (tubers?|grab|bag|box|pack|dahlias?|mix)\b|\bdahlia mystery\b|myst[eè]res\b|ensemble de|grab bag|grower.?s choice|\bmix(ed|es)?\b|assort|\bnoid\b|\bno[- ]?id\b|value pack|\bcollection\b|surprise (pack|bag|box|tubers?)|lucky dip|\bbundle\b|sampler|unlabel+ed|un-?named|\brainbow pack\b/i;
 
 /** tuber, cutting, potted plant, mixed pack, or other (mums, seeds, gift cards, tulip bulbs, tools...). */
 export function kindFromTitle(title: string, type = '', tags: string[] = []): 'tuber' | 'cutting' | 'plant' | 'mix' | 'other' {
@@ -166,6 +166,11 @@ export function packSize(title: string): number {
   const raw = m[1] ?? m[2];
   const n = words[raw] ?? Number(raw);
   return n >= 2 && n <= 50 ? n : 1;
+}
+
+/** "Bulk Nicholas": several tubers of one variety, count not always given. */
+export function isBulk(title: string): boolean {
+  return /\bbulk\b/i.test(title) && !MIX.test(title);
 }
 
 /** Roulette = you don't know what you'll get. Everything else mixed is a Rainbow. */
