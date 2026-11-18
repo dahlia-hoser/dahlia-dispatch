@@ -17,6 +17,7 @@ export const text = {
   navCalendar: 'Sale calendar',
   navPacks: 'Rainbows & Roulette',
   navFavs: 'Favourites',
+  formDecorativeAny: 'Decorative (formal or informal)',
   favTitle: 'Your favourites',
   favIntro: 'Tap the heart on any dahlia to keep it here. Favourites are saved on this phone or computer only — no account needed, and we never see them.',
   favNone: 'No favourites yet, bud. Tap the ♡ next to any dahlia and it’ll show up here with every farm’s price and stock.',

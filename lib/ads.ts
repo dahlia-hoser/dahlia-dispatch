@@ -3,7 +3,7 @@
 // beside it give the form. Country "C" means it was introduced in Canada.
 const SIZES = new Set(['AA', 'A', 'B', 'BB', 'M', 'MC']);
 const FORMS: Record<string, string> = {
-  FD: 'Decorative', ID: 'Decorative', SC: 'Semi-cactus', C: 'Cactus', IC: 'Cactus', LC: 'Laciniated',
+  FD: 'Formal decorative', ID: 'Informal decorative', SC: 'Semi-cactus', C: 'Cactus', IC: 'Cactus', LC: 'Laciniated',
   BA: 'Ball', MB: 'Ball', P: 'Pompon', ST: 'Stellar', WL: 'Waterlily', MWL: 'Waterlily',
   PE: 'Peony', MP: 'Peony', AN: 'Single', MA: 'Single', O: 'Orchid', MO: 'Orchid', OT: 'Orchid',
   CO: 'Collarette', MCO: 'Collarette', MCL: 'Collarette', S: 'Single', MS: 'Single', NO: 'Novelty', NX: 'Novelty', N: 'Novelty',
@@ -20,7 +20,7 @@ export type AdsEntry = { name: string; code: string; form: string | null; colour
 
 function formFromCode(code: string): string | null {
   const x = Number(code[0]), y = Number(code[1]);
-  if (x <= 5) return ['Decorative', 'Decorative', 'Semi-cactus', 'Cactus', 'Cactus', 'Laciniated'][y] ?? null;
+  if (x <= 5) return ['Formal decorative', 'Informal decorative', 'Semi-cactus', 'Cactus', 'Cactus', 'Laciniated'][y] ?? null;
   const two = code.slice(0, 2);
   return ({ '60': 'Ball', '61': 'Ball', '62': 'Pompon', '70': 'Stellar', '73': 'Waterlily', '80': 'Peony', '82': 'Single', '92': 'Orchid', '93': 'Orchid', '94': 'Orchid', '97': 'Single' } as Record<string, string>)[two] ?? null;
 }

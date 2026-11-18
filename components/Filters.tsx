@@ -25,7 +25,7 @@ export function Filters({ f, farmName }: { f: F; farmName?: string }) {
         {text.filterForm}
         <select name="form" defaultValue={f.form ?? ''} onChange={submit}>
           <option value="">{text.filterAny}</option>
-          {FORMS.map((x) => <option key={x}>{x}</option>)}
+          {FORMS.map((x) => <option key={x} value={x}>{x === 'Decorative' ? text.formDecorativeAny : x}</option>)}
         </select>
       </label>
       <label>

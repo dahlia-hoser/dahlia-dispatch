@@ -31,7 +31,8 @@ const FORM_WORDS: [RegExp, string][] = [
   [/\blaciniated\b|\bfimbriated\b|\bfringed\b/, 'Laciniated'],
   [/\bsingle\b(?!\s+(?:tubers?|clumps?|divisions?|roots?|plants?|eyes?|stems?|order|item|listing|purchase|unit|pack))|\bsimple\b|\bmignon\b/, 'Single'],
   [/\bnovelty\b/, 'Novelty'],
-  [/\b(?:in)?formal dec(?:orative)?\b\.?|\binf\.? ?dec\b\.?|\b[fi]\.d\.(?=\s|$|,)|(?:^|\| )(?:fd|id)(?= \||$)/, 'Decorative'],
+  [/\binformal dec(?:orative)?\b\.?|\binf\.? ?dec\b\.?|\bi\.d\.(?=\s|$|,)|(?:^|\| )id(?= \||$)|\bform\s*:\s*id\b|\bdecorative\s*[(:–-]\s*informal\b/, 'Informal decorative'],
+  [/\bformal dec(?:orative)?\b\.?|\bf\.d\.(?=\s|$|,)|(?:^|\| )fd(?= \||$)|\bform\s*:\s*fd\b|\bdecorative\s*[(:–-]\s*formal\b/, 'Formal decorative'],
   [/\bdecorative\b|\bdécoratif\b|\bdinnerplate\b|\bdinner plate\b/, 'Decorative'],
 ];
 
@@ -61,13 +62,13 @@ function findAll(text: string, words: [RegExp, string][], max: number): string[]
 
 export type Hints = { tags: string[]; text: string };
 
-export function guessDetails(name: string, h: Hints): { colour1: string | null; colour2: string | null; form: string | null } {
+export function guessDetails(name: string, h: Hints, opts: { fullText?: boolean } = {}): { colour1: string | null; colour2: string | null; form: string | null } {
   // 1. Tags that are exactly a colour or form ("Pink", "Colour: Pink", "Ball Dahlias").
   const tagText = h.tags.map((t) => t.toLowerCase().replace(/^(colou?r|couleur|form|forme|type)\s*[:_-]\s*/, '')).join(' | ');
   let colours = findAll(tagText, COLOUR_WORDS, 2).filter((c) => COLOURS.includes(c));
   let form = findAll(tagText, FORM_WORDS, 1)[0] ?? null;
   // 2. Otherwise the start of the description (where farms usually describe the bloom).
-  const text = h.text.toLowerCase().slice(0, 350);
+  const text = opts.fullText ? h.text.toLowerCase() : h.text.toLowerCase().slice(0, 350);
   if (!colours.length) colours = findAll(text, COLOUR_WORDS, 2);
   if (!form) form = findAll(text, FORM_WORDS, 1)[0] ?? null;
   // Never guess from the variety's own name ("Cornel Bronze") without other evidence: skip.

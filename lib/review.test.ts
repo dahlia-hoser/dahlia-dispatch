@@ -102,6 +102,12 @@ test("a trusted farm's form label becomes the default", async () => {
   assert.equal((await t.where('review_items', { id: q.id }))[0].data.formFrom, 'Deva’s Gardens');
   await t.update('varieties', { id: v.id }, { status: 'Confirmed', form: 'Single' });
   assert.equal(await applyTrustedDetails(t, dg as any, [{ key: 'tt1', title: 'Test Trust', hints: { tags: ['Ball'], text: '' } }], ['form']), 0);
+  // Confirmed plain Decorative gets narrowed, even when the label is far down the description.
+  await t.update('varieties', { id: v.id }, { form: 'Decorative' });
+  const long = 'Grown on our farm in Ontario. '.repeat(20) + 'Form: Informal Decorative.';
+  assert.equal(await applyTrustedDetails(t, dg as any, [{ key: 'tt1', title: 'Test Trust', hints: { tags: [], text: long } }], ['form']), 1);
+  assert.equal((await t.where('varieties', { id: v.id }))[0].form, 'Informal decorative');
+  assert.equal((await t.where('varieties', { id: v.id }))[0].status, 'Confirmed');
 });
 
 import { buildAdsMap, applyAds } from '../checker/ads-import';

@@ -23,9 +23,17 @@ export async function applyAds(map: Map<string, AdsEntry>, keepSlugs: Set<string
   for (const a of aliases) spellings.get(a.variety_id)?.push(a.alias);
   let filled = 0, confirmed = 0;
   for (const v of varieties) {
-    if (v.status === 'Confirmed' || v.status === 'Not a dahlia') continue;
+    if (v.status === 'Not a dahlia') continue;
     const e = (spellings.get(v.id) ?? []).map((s) => map.get(looseKey(s))).find(Boolean);
     if (!e) continue;
+    if (v.status === 'Confirmed') {
+      // Your answers stand, except plain "Decorative" gets narrowed to formal or informal.
+      if (v.form === 'Decorative' && /^(Formal|Informal) decorative$/.test(e.form ?? '')) {
+        await t.update('varieties', { id: v.id }, { form: e.form });
+        filled++;
+      }
+      continue;
+    }
     const fromOwner = keepSlugs.has(v.slug);
     const patch: Record<string, any> = {};
     if (e.form && (!v.form || !fromOwner)) patch.form = e.form;

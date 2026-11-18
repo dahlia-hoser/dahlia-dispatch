@@ -226,10 +226,14 @@ export async function applyTrustedDetails(
   for (const p of products) {
     const id = varietyOf.get(p.key);
     const v = id ? varieties.get(id) : null;
-    if (!v || v.status === 'Confirmed' || v.status === 'Not a dahlia' || !p.hints) continue;
-    const g = guessDetails(v.name, p.hints) as Record<string, string | null>;
+    if (!v || v.status === 'Not a dahlia' || !p.hints) continue;
+    // A trusted farm is read in full: its form is often further down the description.
+    const g = guessDetails(v.name, p.hints, { fullText: true }) as Record<string, string | null>;
     const patch: Record<string, string> = {};
-    for (const f of fields) if (g[f] && v[f] !== g[f]) patch[f] = g[f]!;
+    if (v.status === 'Confirmed') {
+      // Your answers stand. The one exception: plain "Decorative" can be narrowed to formal or informal.
+      if (fields.includes('form') && v.form === 'Decorative' && /^(Formal|Informal) decorative$/.test(g.form ?? '')) patch.form = g.form!;
+    } else for (const f of fields) if (g[f] && v[f] !== g[f]) patch[f] = g[f]!;
     if (!Object.keys(patch).length) continue;
     await t.update('varieties', { id: v.id }, patch);
     Object.assign(v, patch);

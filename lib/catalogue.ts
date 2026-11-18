@@ -164,7 +164,8 @@ export function search(groups: Group[], f: Filters): Group[] {
   const out: Group[] = [];
   for (const g of groups) {
     const v = g.variety;
-    if (f.form && v?.form !== f.form) continue;
+    // "Decorative" finds formal and informal decoratives too.
+    if (f.form && v?.form !== f.form && !(f.form === 'Decorative' && /decorative$/i.test(v?.form ?? ''))) continue;
     if (f.colour && v?.colour1 !== f.colour && v?.colour2 !== f.colour) continue;
     let rows = g.rows;
     if (f.farm) rows = rows.filter((r) => r.farm.code === f.farm);
