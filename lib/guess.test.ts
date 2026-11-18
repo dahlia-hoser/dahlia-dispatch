@@ -19,6 +19,6 @@ test('formal and informal decoratives are told apart (short forms too)', () => {
   assert.equal(form([], 'Decorative (informal), blush'), 'Informal decorative');
   assert.equal(form([], 'Formal dec. in soft peach'), 'Formal decorative');
   assert.equal(form([], 'This listing is for a single tuber. Informal decorative, coral.'), 'Informal decorative');
-  assert.equal(form([], 'Single blooms in bright red'), 'Single');
+  assert.equal(form([], 'Single blooms in bright red'), 'Anemone');
   assert.equal(form([], 'idle hands'), null);
 });

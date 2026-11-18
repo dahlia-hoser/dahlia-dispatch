@@ -5,8 +5,8 @@ const SIZES = new Set(['AA', 'A', 'B', 'BB', 'M', 'MC']);
 const FORMS: Record<string, string> = {
   FD: 'Formal decorative', ID: 'Informal decorative', SC: 'Semi-cactus', C: 'Cactus', IC: 'Cactus', LC: 'Laciniated',
   BA: 'Ball', MB: 'Ball', P: 'Pompon', ST: 'Stellar', WL: 'Waterlily', MWL: 'Waterlily',
-  PE: 'Peony', MP: 'Peony', AN: 'Single', MA: 'Single', O: 'Orchid', MO: 'Orchid', OT: 'Orchid',
-  CO: 'Collarette', MCO: 'Collarette', MCL: 'Collarette', S: 'Single', MS: 'Single', NO: 'Novelty', NX: 'Novelty', N: 'Novelty',
+  PE: 'Peony', MP: 'Peony', AN: 'Anemone', MA: 'Anemone', O: 'Orchid', MO: 'Orchid', OT: 'Orchid',
+  CO: 'Collarette', MCO: 'Collarette', MCL: 'Collarette', S: 'Anemone', MS: 'Anemone', NO: 'Novelty', NX: 'Novelty', N: 'Novelty',
 };
 // Colour class from the last two digits. Light and dark blends (10, 13) are left to the farms.
 const COLOUR_BY_CODE: Record<string, string[]> = {
@@ -22,7 +22,7 @@ function formFromCode(code: string): string | null {
   const x = Number(code[0]), y = Number(code[1]);
   if (x <= 5) return ['Formal decorative', 'Informal decorative', 'Semi-cactus', 'Cactus', 'Cactus', 'Laciniated'][y] ?? null;
   const two = code.slice(0, 2);
-  return ({ '60': 'Ball', '61': 'Ball', '62': 'Pompon', '70': 'Stellar', '73': 'Waterlily', '80': 'Peony', '82': 'Single', '92': 'Orchid', '93': 'Orchid', '94': 'Orchid', '97': 'Single' } as Record<string, string>)[two] ?? null;
+  return ({ '60': 'Ball', '61': 'Ball', '62': 'Pompon', '70': 'Stellar', '73': 'Waterlily', '80': 'Peony', '82': 'Anemone', '92': 'Orchid', '93': 'Orchid', '94': 'Orchid', '97': 'Anemone' } as Record<string, string>)[two] ?? null;
 }
 
 /** The tokens after the name: [size] form colour awards. Returns the form token, or null if it doesn't fit. */

@@ -100,7 +100,7 @@ test("a trusted farm's form label becomes the default", async () => {
   assert.equal(n, 1);
   assert.equal((await t.where('varieties', { id: v.id }))[0].form, 'Ball');
   assert.equal((await t.where('review_items', { id: q.id }))[0].data.formFrom, 'Deva’s Gardens');
-  await t.update('varieties', { id: v.id }, { status: 'Confirmed', form: 'Single' });
+  await t.update('varieties', { id: v.id }, { status: 'Confirmed', form: 'Anemone' });
   assert.equal(await applyTrustedDetails(t, dg as any, [{ key: 'tt1', title: 'Test Trust', hints: { tags: ['Ball'], text: '' } }], ['form']), 0);
   // Confirmed plain Decorative gets narrowed, even when the label is far down the description.
   await t.update('varieties', { id: v.id }, { form: 'Decorative' });
