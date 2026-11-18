@@ -1,5 +1,5 @@
 import { loadAll, groupAll, lastChecked, ago, money, gettingIt } from '../../lib/catalogue';
-import { shoppingPlan, inStockOptions } from '../../lib/plan';
+import { shoppingPlan, inStockOptions, PLAN_FROM } from '../../lib/plan';
 import { GroupCard } from '../../components/Listing';
 import { FavSync } from '../../components/Fav';
 import { LeafDivider } from '../../components/Leaf';
@@ -17,7 +17,7 @@ export default async function Favourites({ searchParams }: { searchParams: Promi
   const mine = [...slugs].reverse().map((x) => bySlug.get(x)).filter(Boolean) as typeof groups;
   const gone = slugs.length - mine.length;
   const inStock = inStockOptions(mine).size;
-  const plan = inStock > 10 ? shoppingPlan(mine) : null;
+  const plan = inStock >= PLAN_FROM ? shoppingPlan(mine) : null;
   return (
     <>
       <FavSync current={slugs.join(',')} />

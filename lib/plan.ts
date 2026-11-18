@@ -1,4 +1,7 @@
 // Shopping plan: buy every in-stock favourite from as few farms as possible.
+
+/** The plan shows once this many favourites are in stock. */
+export const PLAN_FROM = 10;
 import type { Group, Row } from './catalogue';
 import type { Farm } from './types';
 

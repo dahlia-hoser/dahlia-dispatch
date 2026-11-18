@@ -25,7 +25,7 @@ export const text = {
   planTotal: 'Total before shipping: {total}',
   planUnpriced: '{n} without a price yet',
   planNote: 'Stock changes fast on sale days. Check each shop before you count on it.',
-  planHint: 'With more than 10 favourites in stock, we’ll work out the fewest farms to order from.',
+  planHint: 'Once 10 of your favourites are in stock, we’ll work out the fewest farms to order from.',
   favsHere: '{n} of your favourites are in stock here: {names}',
   favsHereOne: '1 of your favourites is in stock here: {names}',
   favsHereOut: '{n} of your favourites are listed here but not in stock right now.',
