@@ -167,3 +167,11 @@ test('emoji and flags are not part of a name', () => {
   assert.equal(varietyNameFromTitle('Rock Run Ashley ⭐️ NEW'), 'Rock Run Ashley');
   assert.equal(varietyNameFromTitle('Brand New Seedling'), 'Brand New Seedling');
 });
+
+test('buckets of cut flowers are not dahlias', () => {
+  assert.equal(kindFromTitle('Growers Choice Bulk Flower Buckets', '', []), 'other');
+  assert.equal(kindFromTitle('Bulk Flower Bucket', '', []), 'other');
+  assert.equal(kindFromTitle('Bucket of Blooms', '', []), 'other');
+  assert.equal(kindFromTitle("Grower's Choice Dahlia Tubers", '', []), 'mix');
+  assert.equal(kindFromTitle('Bulk Nicholas', '', []), 'tuber');
+});
