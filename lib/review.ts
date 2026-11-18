@@ -1,5 +1,6 @@
 // The review list: questions for the owner, and what each answer does.
 import { db } from './db';
+import { isCanadianProvince } from './canada';
 import { confirmSame, makeSeparate } from './name-ops';
 import { normalize, varietyNameFromTitle } from './names';
 
@@ -41,7 +42,7 @@ export async function reviewTotals() {
 
 export type Card =
   | { id: number; kind: 'feedback'; message: string; contact: string | null; page: string | null; at: string }
-  | { id: number; kind: 'farm'; name: string; place: string | null; site: string | null; platform: string | null }
+  | { id: number; kind: 'farm'; name: string; place: string | null; site: string | null; platform: string | null; canadian: boolean }
   | { id: number; kind: 'name'; spelling: string; farm: string; note: string | null; suggestion: { slug: string; name: string; detail: string } | null }
   | { id: number; kind: 'details'; slug: string; name: string; isNew: boolean; guessed: boolean; formFrom: string | null; colour1: string | null; colour2: string | null; form: string | null; seenAt: { farm: string; title: string; url: string | null; image: string | null }[] };
 
@@ -76,7 +77,7 @@ export async function reviewCards(): Promise<Card[]> {
       cards.push({ id: r.id, kind: 'feedback', message: r.data.message, contact: r.data.contact ?? null, page: r.data.page ?? null, at: r.created_at });
     } else if (r.kind === 'farm') {
       const c = candidates.find((x) => x.id === r.data.candidate);
-      if (c) cards.push({ id: r.id, kind: 'farm', name: c.name, place: c.place, site: c.site, platform: c.platform });
+      if (c) cards.push({ id: r.id, kind: 'farm', name: c.name, place: c.place, site: c.site, platform: c.platform, canadian: isCanadianProvince(c.province) });
     } else if (r.kind === 'name') {
       const v = vBySlug.get(r.data.suggestion);
       cards.push({

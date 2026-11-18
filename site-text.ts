@@ -17,6 +17,7 @@ export const text = {
   navCalendar: 'Sale calendar',
   navPacks: 'Rainbows & Roulette',
   navFavs: 'Favourites',
+  reviewFarmNotCanadian: '⚠ Location not confirmed as Canadian. Check their site before saying yes. The checker also pauses any shop that says it’s outside Canada.',
   formDecorativeAny: 'Decorative (formal or informal)',
   favTitle: 'Your favourites',
   favIntro: 'Tap the heart on any dahlia to keep it here. Favourites are saved on this phone or computer only — no account needed, and we never see them.',

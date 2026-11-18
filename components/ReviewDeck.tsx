@@ -90,6 +90,7 @@ function FarmCard({ card, busy, go }: { card: Extract<Card, { kind: 'farm' }>; b
       <span className="kicker">{text.reviewFarmQuestion}</span>
       <h2>{card.name}</h2>
       <p>{[card.place, card.platform === 'shopify' ? 'Shopify shop' : null].filter(Boolean).join(' · ')}</p>
+      {!card.canadian && <p className="note-box">{text.reviewFarmNotCanadian}</p>}
       <label className="form" style={{ gap: 4 }}>
         <span className="note">Shop web address (you can add it later)</span>
         <input value={site} onChange={(e) => setSite(e.target.value)} placeholder="farmname.ca" inputMode="url" style={{ border: '1px solid #d6ccbc', borderRadius: 10, padding: '10px 12px' }} />

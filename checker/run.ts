@@ -11,6 +11,7 @@ import { refreshShipping } from './shipping-read';
 import startingVarieties from '../data/varieties.json';
 import { slugify } from '../lib/names';
 import societies from '../data/societies.json';
+import { pauseIfNotCanadian } from './canada-check';
 import { detectPlatform, readShopify, readWoo } from './sources';
 import { readWix } from './wix';
 import { save, weeklyHousekeeping } from './save';
@@ -66,6 +67,11 @@ async function main() {
         const known = new Set((await t.where('listings', { farm_id: f.id })).map((l) => String(l.product_key)));
         ({ products, allKeys } = await readWix(src, { known, perRun: why === 'sale day' ? 150 : 80 }));
       } else products = platform === 'woocommerce' ? await readWoo(src) : await readShopify(src);
+      if (await pauseIfNotCanadian(t, f, platform, products)) {
+        notes.push(`${f.name}: paused, shop isn't in Canada`);
+        console.log(`✗ ${f.name}: paused, its shop says it isn't in Canada.`);
+        continue;
+      }
       const n = await save(t, book, f, products, allKeys, v2, v3);
       if (v2) {
         const intros = await applyIntroYears(t, f.id, products);

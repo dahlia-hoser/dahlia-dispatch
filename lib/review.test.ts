@@ -148,3 +148,22 @@ test('two farms agreeing confirms a colour', async () => {
   assert.equal(after.status, 'Confirmed');
   assert.equal((await t.where('review_items', { id: q.id }))[0].status, 'done');
 });
+
+import { shopVerdict } from './canada';
+import { pauseIfNotCanadian } from '../checker/canada-check';
+test('Canada-only: shops that say they are elsewhere get paused', async () => {
+  assert.equal(shopVerdict('CA', 'CAD'), 'canadian');
+  assert.equal(shopVerdict('US', 'USD'), 'not');
+  assert.equal(shopVerdict(null, 'USD'), 'not');
+  assert.equal(shopVerdict(null, null), 'unknown');
+  const t = db();
+  const [farm] = await t.insert('farms', { code: 'F999', name: 'Ocean State Dahlias', place: 'Providence, RI', province: null, site: 'https://example-ri.com', platform: 'woocommerce', active: true });
+  await t.insert('listings', { farm_id: farm.id, product_key: 'ri1', variety_id: null, title: 'Cafe au Lait', url: null, price_cents: 1200, in_stock: true, kind: 'tuber', active: true, first_seen: new Date().toISOString(), last_changed: new Date().toISOString() });
+  const products = [{ key: 'ri1', title: 'Cafe au Lait', url: '', price_cents: 1200, currency: 'USD', in_stock: true, kind: 'tuber' as const }];
+  assert.equal(await pauseIfNotCanadian(t, farm, 'woocommerce', products), true);
+  assert.equal((await t.where('farms', { id: farm.id }))[0].active, false);
+  assert.equal((await t.where('listings', { farm_id: farm.id }))[0].active, false);
+  assert.equal((await t.where('review_items', { kind: 'feedback' })).filter((r) => r.data?.pausedFarm === farm.id).length, 1);
+  const cad = [{ ...products[0], currency: 'CAD' }];
+  assert.equal(await pauseIfNotCanadian(t, { ...farm, active: true }, 'woocommerce', cad), false);
+});

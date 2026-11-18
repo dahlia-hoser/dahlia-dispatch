@@ -2,6 +2,7 @@
 import type { Tables } from '../lib/db';
 import type { NameBook } from '../lib/name-ops';
 import type { Product } from './sources';
+import { isCanadianProvince } from '../lib/canada';
 
 /** Saves one farm's listings. Returns how many changed. */
 /** allKeys: every product the shop has, when only some were read this time (Wix). */
@@ -79,7 +80,8 @@ export async function weeklyHousekeeping(t: Tables, now: number) {
 /** Puts the next few waiting farms on the review list. Used weekly, and by the "Suggest more" button. */
 export async function suggestFarms(t: Tables, count: number, now = Date.now()): Promise<number> {
   const candidates = await t.all('farm_candidates');
-  const pick = candidates.filter((c) => c.status === 'waiting').sort((a, b) => a.id - b.id).slice(0, count);
+  // Only farms with a confirmed Canadian province get suggested.
+  const pick = candidates.filter((c) => c.status === 'waiting' && isCanadianProvince(c.province)).sort((a, b) => a.id - b.id).slice(0, count);
   for (const c of pick) {
     await t.update('farm_candidates', { id: c.id }, { status: 'suggested', suggested_at: new Date(now).toISOString() });
     await t.insert('review_items', { kind: 'farm', data: { candidate: c.id } });
