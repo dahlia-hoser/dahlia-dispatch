@@ -21,10 +21,14 @@ const HEADERS = {
   'User-Agent': 'HosersDahliaDispatch/0.1 (small Canadian dahlia price tracker; checks a few times a day)',
   Accept: 'application/json',
 };
+// The checker runs on servers in the US. Shopify shops with several currencies would answer a US
+// visitor in US dollars, so every Shopify request asks, as a Canadian shopper would, for Canadian dollars.
+const AS_CANADIAN = { Cookie: 'cart_currency=CAD; localization=CA', 'Accept-Language': 'en-CA,en;q=0.8' };
+const SHOPIFY_HEADERS = { ...HEADERS, ...AS_CANADIAN };
 const pause = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-export async function getJson(url: string): Promise<any> {
-  const res = await fetch(url, { headers: HEADERS, redirect: 'follow', signal: AbortSignal.timeout(30000) });
+export async function getJson(url: string, headers: Record<string, string> = HEADERS): Promise<any> {
+  const res = await fetch(url, { headers, redirect: 'follow', signal: AbortSignal.timeout(30000) });
   if (!res.ok) throw new Error(`${res.status} ${res.statusText} from ${url}`);
   const type = res.headers.get('content-type') ?? '';
   if (!type.includes('json')) throw new Error(`Not product data at ${url}`);
@@ -89,7 +93,7 @@ function tagList(tags: unknown): string[] {
 async function readAllPages(url: string): Promise<any[]> {
   const raw: any[] = [];
   for (let page = 1; page <= 20; page++) {
-    const data = await getJson(`${url}?limit=250&page=${page}`);
+    const data = await getJson(`${url}?limit=250&page=${page}&currency=CAD&country=CA`, SHOPIFY_HEADERS);
     const products = data.products ?? [];
     raw.push(...products);
     if (products.length < 250) break;
@@ -116,7 +120,7 @@ export async function readShopify(farm: FarmSource): Promise<Product[]> {
   let handles = (farm.collection ?? '').split(',').map((h) => h.trim()).filter(Boolean);
   if (!handles.length) {
     try {
-      const data = await getJson(`${root}/collections.json?limit=250`);
+      const data = await getJson(`${root}/collections.json?limit=250`, SHOPIFY_HEADERS);
       handles = pickDahliaCollections(data.collections ?? []);
     } catch {
       handles = [];
@@ -136,7 +140,19 @@ export async function readShopify(farm: FarmSource): Promise<Product[]> {
   const loose = parseShopify(all, farm.site, null);
   // Without any dahlia collection, fall back to everything that isn't clearly something else.
   if (!loose.fellBack || byId.size === 0) for (const p of loose.items) if (!byId.has(p.key)) byId.set(p.key, p);
-  return [...byId.values()];
+  // Which currency the shop actually answered in. Prices in any other currency are not saved.
+  const currency = await shopifyCurrency(root);
+  return [...byId.values()].map((p) => ({ ...p, currency }));
+}
+
+/** The shop's cart says which currency this visitor is being shown. Unknown → assume Canadian. */
+export async function shopifyCurrency(root: string): Promise<string> {
+  try {
+    const cart = await getJson(`${root}/cart.js?currency=CAD&country=CA`, SHOPIFY_HEADERS);
+    return typeof cart.currency === 'string' && cart.currency ? cart.currency.toUpperCase() : 'CAD';
+  } catch {
+    return 'CAD';
+  }
 }
 
 // ───────── WooCommerce ─────────

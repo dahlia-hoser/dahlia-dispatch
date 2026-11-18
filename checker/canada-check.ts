@@ -9,8 +9,10 @@ export async function shopCountry(site: string, platform: string, products: Prod
       const m = await getJson(`${site.replace(/\/+$/, '')}/meta.json`);
       return { country: m.country ?? m.country_code ?? null, currency: m.currency ?? null };
     } catch {
-      /* fall back to prices below */
+      /* unknown */
     }
+    // A Shopify shop's currency follows the visitor, so it says nothing about where the shop is.
+    return { country: null, currency: null };
   }
   const currencies = new Set(products.map((p) => p.currency).filter(Boolean));
   return { country: null, currency: currencies.size === 1 ? [...currencies][0] : null };

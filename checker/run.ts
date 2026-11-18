@@ -73,6 +73,11 @@ async function main() {
         const known = new Set((await t.where('listings', { farm_id: f.id })).map((l) => String(l.product_key)));
         ({ products, allKeys } = await readWix(src, { known, perRun: why === 'sale day' ? 150 : 80 }));
       } else products = platform === 'woocommerce' ? await readWoo(src) : await readShopify(src);
+      const odd = products.find((p) => p.currency && p.currency.toUpperCase() !== 'CAD');
+      if (odd) {
+        notes.push(`${f.name}: shop answered in ${odd.currency}, prices left blank`);
+        console.log(`! ${f.name}: the shop answered in ${odd.currency}, so its prices were left blank rather than shown wrong.`);
+      }
       if (await pauseIfNotCanadian(t, f, platform, products)) {
         notes.push(`${f.name}: paused, shop isn't in Canada`);
         console.log(`✗ ${f.name}: paused, its shop says it isn't in Canada.`);

@@ -8,6 +8,8 @@ import { isCanadianProvince } from '../lib/canada';
 /** allKeys: every product the shop has, when only some were read this time (Wix). */
 export async function save(t: Tables, book: NameBook, farm: any, products: Product[], allKeys?: string[], withDescriptions = false, withImages = false): Promise<number> {
   const desc = (p: Product) => (withDescriptions && p.hints?.text ? { description: p.hints.text.slice(0, 600) } : {});
+  // A price in another currency (a shop answering in US dollars) is never shown as if it were Canadian.
+  products = products.map((p) => (p.currency && p.currency.toUpperCase() !== 'CAD' ? { ...p, price_cents: null } : p));
   const img = (p: Product) => (withImages && p.image ? { image: p.image } : {});
   const existing = await t.where('listings', { farm_id: farm.id });
   const byKey = new Map(existing.map((l) => [l.product_key, l]));

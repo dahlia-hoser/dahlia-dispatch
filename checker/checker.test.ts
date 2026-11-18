@@ -149,3 +149,12 @@ test('shopify photo is read at a small size', () => {
   const none = parseShopify([{ id: 8, title: 'Dahlia Maarn', handle: 'm', product_type: 'Dahlia', tags: [], images: [], variants: [{ price: '12', available: true }] }], 'https://x.ca', null);
   assert.equal(none.items[0].image, undefined);
 });
+
+test('prices in US dollars are never saved as Canadian', async () => {
+  const t = db();
+  const farm = (await t.all('farms')).find((f) => f.code === 'SHF')!;
+  const book = await new NameBook(t).load();
+  await save(t, book, farm, [{ key: 'usd-1', title: 'Penhill Watermelon', url: 'https://x', price_cents: 1247, currency: 'USD', in_stock: true, kind: 'tuber' }]);
+  const [l] = (await t.where('listings', { farm_id: farm.id })).filter((x) => x.product_key === 'usd-1');
+  assert.equal(l.price_cents, null);
+});
