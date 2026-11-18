@@ -25,3 +25,9 @@ test('Canadian-bred', () => {
   assert.ok(isCanadianBred('Kenora Lisa', true));
   assert.ok(!isCanadianBred('Ferncliff Copper', false));
 });
+
+test('Letterkenny dahlias are Canadian-bred', () => {
+  assert.equal(isCanadianBred('Letterkenny Wayne', null), true);
+  assert.equal(isCanadianBred("Squirrely Dan's Letterkenny", null), true);
+  assert.equal(isCanadianBred('Letterkenny Wayne', false), false); // your override still wins
+});
