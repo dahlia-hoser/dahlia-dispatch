@@ -2,6 +2,7 @@ import { loadAll, groupAll, search, suggestions, lastChecked, ago, gettingIt, ty
 import { SearchBox } from '../components/SearchBox';
 import { Filters } from '../components/Filters';
 import { GroupCard } from '../components/Listing';
+import { FavsHere } from '../components/FavsHere';
 import { LeafDivider } from '../components/Leaf';
 import { text, fill } from '../site-text';
 
@@ -27,6 +28,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<Rec
         <section className="farm-head">
           <h1>{farm.name}</h1>
           <p className="note">{[farm.place, gettingIt(farm)].filter(Boolean).join(' · ')}</p>
+          <FavsHere items={groups.filter((g) => g.variety && g.rows.some((r) => r.farm.id === farm.id)).map((g) => ({ slug: g.variety!.slug, name: g.name, inStock: g.rows.some((r) => r.farm.id === farm.id && r.avail === 'in') }))} />
           {farm.site && <a className="btn ghost" href={farm.site} target="_blank" rel="noopener noreferrer">{text.farmVisit} ↗</a>}
         </section>
       )}

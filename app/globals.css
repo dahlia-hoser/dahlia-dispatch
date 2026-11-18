@@ -245,3 +245,15 @@ footer .wrap { padding-bottom: 64px; }
 .row .who .farmlink:hover { color: var(--accent); }
 .farm-head { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; margin: 4px 0 18px; }
 .farm-head h1 { font-size: 32px; }
+
+/* Favourites: summary, shopping plan, and "your favourites here" on farm pages */
+.fav-summary { font-size: 18px; font-weight: 700; margin: 6px 0; }
+.favs-here { background: #fdeee9; border-radius: 12px; padding: 10px 14px; font-size: 15px; }
+.favs-here span { color: #E26D5C; }
+.plan { border: 1px solid var(--line); border-radius: 18px; padding: 16px 18px; margin: 12px 0 20px; background: #fffaf2; display: flex; flex-direction: column; gap: 10px; }
+.plan h2 { font-size: 22px; }
+.plan-stop { border-top: 1px solid var(--line); padding-top: 10px; }
+.plan-farm { display: flex; flex-direction: column; gap: 2px; }
+.plan-farm a { color: var(--text); text-decoration-color: var(--coral); text-underline-offset: 3px; }
+.plan ul { list-style: none; padding: 0; margin: 8px 0; display: flex; flex-direction: column; gap: 4px; }
+.plan li { display: flex; justify-content: space-between; gap: 10px; }
