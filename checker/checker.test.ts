@@ -158,3 +158,12 @@ test('prices in US dollars are never saved as Canadian', async () => {
   const [l] = (await t.where('listings', { farm_id: farm.id })).filter((x) => x.product_key === 'usd-1');
   assert.equal(l.price_cents, null);
 });
+
+test('a mostly-dahlia shop keeps products that never say "dahlia"', () => {
+  // parseShopify with a collection treats everything not clearly something else as a dahlia.
+  const { items } = parseShopify([
+    { id: 1, title: 'Tangerine Dream', handle: 'td', product_type: '', tags: [], variants: [{ price: '15', available: true }] },
+    { id: 2, title: 'Gift Card', handle: 'gc', product_type: 'Gift Card', tags: [], variants: [{ price: '25', available: true }] },
+  ], 'https://x.ca', 'everything');
+  assert.deepEqual(items.map((i) => i.title), ['Tangerine Dream']);
+});

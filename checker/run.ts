@@ -74,7 +74,7 @@ async function main() {
       if (platform === 'wix') {
         const known = new Set((await t.where('listings', { farm_id: f.id })).map((l) => String(l.product_key)));
         ({ products, allKeys } = await readWix(src, { known, knownNames: new Set(book.aliases.keys()), perRun: why === 'sale day' ? 150 : 80 }));
-      } else products = platform === 'woocommerce' ? await readWoo(src) : await readShopify(src);
+      } else products = platform === 'woocommerce' ? await readWoo(src) : await readShopify(src, new Set(book.aliases.keys()));
       const odd = products.find((p) => p.currency && p.currency.toUpperCase() !== 'CAD');
       if (odd) {
         notes.push(`${f.name}: shop answered in ${odd.currency}, prices left blank`);

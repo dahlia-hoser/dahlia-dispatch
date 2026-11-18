@@ -1,5 +1,5 @@
 // Reading a farm's shop. Shopify and WooCommerce both publish their product list as plain data.
-import { kindFromTitle, looksLikeDahlia } from '../lib/names';
+import { kindFromTitle, looksLikeDahlia, normalize, varietyNameFromTitle } from '../lib/names';
 import { stripHtml, type Hints } from '../lib/guess';
 import { looksLikeWix } from './wix';
 
@@ -115,7 +115,7 @@ export function pickDahliaCollections(collections: { handle: string; title: stri
  * (many farms just write "Wine Eyed Jill" with no "dahlia" anywhere). Products outside those
  * collections are kept only if they look like dahlias.
  */
-export async function readShopify(farm: FarmSource): Promise<Product[]> {
+export async function readShopify(farm: FarmSource, knownNames: Set<string> = new Set()): Promise<Product[]> {
   const root = base(farm.site);
   let handles = (farm.collection ?? '').split(',').map((h) => h.trim()).filter(Boolean);
   if (!handles.length) {
@@ -140,6 +140,13 @@ export async function readShopify(farm: FarmSource): Promise<Product[]> {
   const loose = parseShopify(all, farm.site, null);
   // Without any dahlia collection, fall back to everything that isn't clearly something else.
   if (!loose.fellBack || byId.size === 0) for (const p of loose.items) if (!byId.has(p.key)) byId.set(p.key, p);
+  // Products outside the dahlia collections that never say "dahlia" (e.g. just "Tangerine Dream"):
+  // keep them when the shop is mostly dahlias anyway, or when the name is a dahlia we already know.
+  const mostlyDahlias = byId.size > 0 && byId.size >= 0.6 * all.length;
+  for (const p of parseShopify(all, farm.site, 'everything').items) {
+    if (byId.has(p.key)) continue;
+    if (mostlyDahlias || knownNames.has(normalize(varietyNameFromTitle(p.title)))) byId.set(p.key, p);
+  }
   // Which currency the shop actually answered in. Prices in any other currency are not saved.
   const currency = await shopifyCurrency(root);
   return [...byId.values()].map((p) => ({ ...p, currency }));
