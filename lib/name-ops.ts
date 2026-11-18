@@ -1,6 +1,6 @@
 // Deciding which variety a farm's listing belongs to, and asking the owner when unsure.
 import type { Tables } from './db';
-import { kindFromTitle, matchName, normalize, sameEnough, slugify, tidyName, varietyNameFromTitle } from './names';
+import { kindFromTitle, matchName, normalize, sameEnough, slugify, tidyName, varietyNameFromTitle, stripEmoji, hasCanadaMark } from './names';
 import { guessDetails, type Hints } from './guess';
 
 export class NameBook {
@@ -181,6 +181,20 @@ export async function reconcileNames(t: Tables, book: NameBook, keepSlugs: Set<s
     await t.removeIn('varieties', 'id', empty.map((v) => v.id));
   }
   return { moved, removed: empty.length };
+}
+
+/** Names saved with emoji or flags in them get cleaned; a 🇨🇦 or 🍁 marks the variety Canadian-bred. */
+export async function tidyEmojiNames(t: Tables, canSetCanadian: boolean): Promise<number> {
+  let n = 0;
+  for (const v of await t.all('varieties')) {
+    const clean = stripEmoji(v.name);
+    if (clean === v.name || !clean) continue;
+    const patch: Record<string, any> = { name: clean };
+    if (canSetCanadian && hasCanadaMark(v.name) && v.canadian_bred == null) patch.canadian_bred = true;
+    await t.update('varieties', { id: v.id }, patch);
+    n++;
+  }
+  return n;
 }
 
 /** Form list changes: Single is now called Anemone; Bicolour moves from form to colour. */

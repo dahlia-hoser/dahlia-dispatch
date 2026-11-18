@@ -160,3 +160,10 @@ test('colour-themed favourites packs are mixes, not varieties', () => {
   for (const t of ['Bulk Orange Favourites', 'Orange Favourites', 'Bulk - Orange Favourite', "Farmer's Favourites"]) assert.equal(kindFromTitle(t, '', []), 'mix', t);
   assert.equal(kindFromTitle('Bulk Nicholas', '', []), 'tuber');
 });
+
+test('emoji and flags are not part of a name', () => {
+  assert.equal(varietyNameFromTitle('Letterkenny Wayne 🇨🇦'), 'Letterkenny Wayne');
+  assert.equal(varietyNameFromTitle('🇨🇦 Ferncliff Copper'), 'Ferncliff Copper');
+  assert.equal(varietyNameFromTitle('Rock Run Ashley ⭐️ NEW'), 'Rock Run Ashley');
+  assert.equal(varietyNameFromTitle('Brand New Seedling'), 'Brand New Seedling');
+});

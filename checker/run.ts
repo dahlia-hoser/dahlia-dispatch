@@ -2,7 +2,7 @@
 // Run it yourself with:  npm run check-farms            (farms that are due)
 //                        npm run check-farms -- --all   (every farm now)
 import { db } from '../lib/db';
-import { NameBook, autoAnswerSlips, hideNonDahlias, reconcileNames, syncSocieties, tidyForms, applyOwnerDecisions, applyFormSplits, blockFarms, syncFarmSources } from '../lib/name-ops';
+import { NameBook, autoAnswerSlips, hideNonDahlias, reconcileNames, syncSocieties, tidyForms, applyOwnerDecisions, applyFormSplits, blockFarms, syncFarmSources, tidyEmojiNames } from '../lib/name-ops';
 import decisions from '../data/owner-decisions.json';
 import formSplits from '../data/form-splits.json';
 import farmList from '../data/farms.json';
@@ -47,6 +47,8 @@ async function main() {
   if (blockedNow) console.log(`Removed ${blockedNow} farms or suggestions you ruled out.`);
   const split = await applyFormSplits(t, formSplits as any[]);
   if (split) console.log(`Narrowed ${split} Decorative varieties to formal or informal.`);
+  const unemoji = await tidyEmojiNames(t, v2);
+  if (unemoji) console.log(`Took emoji and flags out of ${unemoji} variety names.`);
   const reformed = await tidyForms(t);
   if (reformed) console.log(`Updated ${reformed} varieties to the new form list.`);
   const slips = await autoAnswerSlips(t);

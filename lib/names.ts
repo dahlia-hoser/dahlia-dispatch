@@ -23,8 +23,15 @@ const JUNK_PART = /^(potted|potted plants?|plants?|plugs?|starts?|live plants?|g
 const STOCK_CODE = /^[A-Z0-9]{2,6}$/; // e.g. "BLMG" in "Black Magic - BLMG"
 
 /** "Dahlia 'Café au Lait' – Tuber (Pre-order)" -> "Café au Lait" */
+/** Emoji and flags farms add to titles ("Letterkenny Wayne 🇨🇦"): not part of the name. */
+export const EMOJI = /[\p{Extended_Pictographic}\p{Regional_Indicator}\u{FE0F}\u{200D}\u{20E3}]/gu;
+export const stripEmoji = (s: string) => s.replace(EMOJI, ' ').replace(/\s+/g, ' ').trim();
+/** A farm marking a dahlia Canadian with a flag or maple leaf. */
+export const hasCanadaMark = (s: string) => /🇨🇦|🍁/u.test(s);
+
 export function varietyNameFromTitle(title: string): string {
-  let t = title.replace(/\s+/g, ' ').trim();
+  let t = stripEmoji(title);
+  t = t.replace(/\s+(?:NEW!?|New!)\s*$/, '').trim(); // shop badge, not part of the name
   // Text inside quotes is usually the variety name.
   const quoted = t.match(/(?:^|\s)[‘'"“]([^'’"”]{3,})['’"”](?=\s|$|[-–—,.|:])/);
   if (quoted) t = quoted[1];

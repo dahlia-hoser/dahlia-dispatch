@@ -1,6 +1,6 @@
 // Reading the data for the public pages: statuses, search, grouping by variety.
 import { db } from './db';
-import { isBulk, kindFromTitle, normalize, packSize, varietyNameFromTitle } from './names';
+import { isBulk, kindFromTitle, normalize, packSize, varietyNameFromTitle, stripEmoji, hasCanadaMark } from './names';
 import type { AllData, Farm, Listing, SaleEvent, Variety } from './types';
 import { NOT_DAHLIA } from './types';
 import { isCanadianBred, isNewIntro } from './badges';
@@ -104,7 +104,7 @@ export function groupAll(data: AllData, now = Date.now()): Group[] {
     groups.set('v' + v.id, {
       key: 'v' + v.id,
       variety: v,
-      name: v.name,
+      name: stripEmoji(v.name),
       aka: data.aliases.filter((a) => a.variety_id === v.id && a.shown).map((a) => a.shown!),
       rows: [],
     });
@@ -139,7 +139,7 @@ export function groupAll(data: AllData, now = Date.now()): Group[] {
   }
   for (const g of groups.values()) {
     g.newIntro = isNewIntro(g.variety?.intro_year, now);
-    g.canadian = isCanadianBred(g.name, g.variety?.canadian_bred);
+    g.canadian = isCanadianBred(g.name, g.variety?.canadian_bred) || (g.variety?.canadian_bred !== false && g.rows.some((r) => hasCanadaMark(r.listing.title)));
   }
   return [...groups.values()].sort((a, b) => a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }));
 }
