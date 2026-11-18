@@ -3,7 +3,7 @@
   {"code": "TW", "name": "Twyla’s Flower Farm", "place": "Victoria, BC", "province": "BC", "site": "https://twylasflowerfarm.com", "platform": "shopify", "collection": "dahlia-tubers"},
   {"code": "ABP", "name": "Au Beau Pré", "place": "Saint-Anicet, QC", "province": "QC", "site": "https://aubeaupre.com", "platform": "shopify", "collection": null},
   {"code": "DM", "name": "Dahlia May Flower Farm", "place": "Trenton, ON", "province": "ON", "site": "https://www.dahliamayflowerfarm.com", "platform": "shopify", "collection": null},
-  {"code": "SM", "name": "Singing Meadows Farm", "place": "Orangeville, ON", "province": "ON", "site": "https://www.singingmeadowsfarm.com", "platform": "manual", "collection": null},
+  {"code": "SM", "name": "Singing Meadows Farm", "place": "Orangeville, ON", "province": "ON", "site": "https://www.singingmeadowsfarm.com", "platform": "wix", "collection": null},
   {"code": "BB", "name": "Bountiful Brookfield Blooms", "place": "Brookfield, NS", "province": "NS", "site": "https://www.bountifulbrookfieldblooms.com", "platform": "manual", "collection": null},
   {"code": "HS", "name": "Hard Scrabble Blooms", "place": "Chatham-Kent, ON", "province": "ON", "site": "https://www.hardscrabbleblooms.com", "platform": "unknown", "collection": null},
   {"code": "FA", "name": "Five Acres Flower Farm", "place": "Abbotsford, BC", "province": "BC", "site": "https://fiveacres.ca", "platform": "shopify", "collection": "dahlia-collection"},

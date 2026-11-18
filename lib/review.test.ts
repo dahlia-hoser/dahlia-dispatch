@@ -197,3 +197,14 @@ test('an unlinked "Bulk Cornel" joins Cornel instead of making a second Cornel',
   assert.ok(l.variety_id);
   assert.equal(await count(), 1);
 });
+
+import { syncFarmSources } from './name-ops';
+test('a price-list farm switches to reading its shop', async () => {
+  const t = db();
+  const [f] = await t.insert('farms', { code: 'ZZ', name: 'Test Meadows', place: null, province: 'ON', site: 'https://tm.example', platform: 'manual', active: true });
+  await t.insert('listings', { farm_id: f.id, product_key: 'manual-x', variety_id: null, title: 'X', url: null, price_cents: 800, in_stock: false, kind: 'tuber', active: true, first_seen: new Date().toISOString(), last_changed: new Date().toISOString() });
+  assert.deepEqual(await syncFarmSources(t, [{ code: 'ZZ', platform: 'wix' }]), ['Test Meadows']);
+  assert.equal((await t.where('farms', { id: f.id }))[0].platform, 'wix');
+  assert.equal((await t.where('listings', { farm_id: f.id }))[0].active, false);
+  assert.deepEqual(await syncFarmSources(t, [{ code: 'ZZ', platform: 'wix' }]), []);
+});

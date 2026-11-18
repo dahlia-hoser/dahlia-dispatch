@@ -2,7 +2,7 @@
 // Wix has no product list to download, so: the site map lists every product page, and each
 // product page carries its price and stock in its page tags. Big shops are read in turns,
 // a slice per run, so no farm gets hundreds of visits an hour.
-import { kindFromTitle } from '../lib/names';
+import { kindFromTitle, normalize, varietyNameFromTitle } from '../lib/names';
 import { stripHtml } from '../lib/guess';
 import type { FarmSource, Product } from './sources';
 
@@ -84,7 +84,7 @@ export function sliceForThisRun(urls: string[], perRun: number, now = Date.now()
   return urls.slice(i * perRun, (i + 1) * perRun);
 }
 
-export async function readWix(farm: FarmSource, opts: { perRun?: number; known?: Set<string> } = {}): Promise<{ products: Product[]; allKeys: string[] }> {
+export async function readWix(farm: FarmSource, opts: { perRun?: number; known?: Set<string>; knownNames?: Set<string> } = {}): Promise<{ products: Product[]; allKeys: string[] }> {
   const urls = await productUrls(farm.site);
   if (!urls.length) throw new Error('No product pages found in the Wix site map.');
   const keyOf = (u: string) => u.replace(/^.*\/product-page\//, '').replace(/\/$/, '');
@@ -104,7 +104,9 @@ export async function readWix(farm: FarmSource, opts: { perRun?: number; known?:
   }
   // Wix shops can sell seeds and other flowers too: keep products that mention dahlias,
   // unless none do (then the farm only sells dahlias and doesn't say so).
-  const dahlia = products.filter((p) => p.kind !== 'other' && /dahlia|tuber|tubercule|bouture|cutting/i.test(`${p.title} ${p.hints?.text ?? ''}`));
+  // A product named like a dahlia we already know (e.g. "Cornel") counts too, even if its page never says "dahlia".
+  const known = opts.knownNames ?? new Set<string>();
+  const dahlia = products.filter((p) => p.kind !== 'other' && (/dahlia|tuber|tubercule|bouture|cutting/i.test(`${p.title} ${p.hints?.text ?? ''}`) || known.has(normalize(varietyNameFromTitle(p.title)))));
   const kept = dahlia.length ? dahlia : products.filter((p) => p.kind !== 'other');
   return { products: kept, allKeys: urls.map(keyOf) };
 }

@@ -7,6 +7,5 @@
   { "farm": "BB", "name": "Mayan Pearl", "price": 10 },
   { "farm": "BB", "name": "AC Rooster", "price": 8 },
   { "farm": "BB", "name": "Rivers Crystal", "price": 8 },
-  { "farm": "BB", "name": "Stillwater Raspberry", "price": 8 },
-  { "farm": "SM", "name": "Meadows Biddy-Bee", "price": null }
+  { "farm": "BB", "name": "Stillwater Raspberry", "price": 8 }
 ]

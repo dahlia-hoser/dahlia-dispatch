@@ -362,3 +362,21 @@ export async function blockFarms(t: Tables, blocked: { name: string }[]): Promis
   }
   return n;
 }
+
+/**
+ * Farms whose shop we've learned to read since they were added (data/farms.json): switch the
+ * database over from a hand-entered price list, and retire the hand-entered listings.
+ */
+export async function syncFarmSources(t: Tables, list: { code: string; site?: string | null; platform: string; collection?: string | null }[]): Promise<string[]> {
+  const changed: string[] = [];
+  const farms = await t.all('farms');
+  for (const j of list) {
+    const f = farms.find((x) => x.code === j.code);
+    if (!f || !['manual', 'unknown'].includes(f.platform) || ['manual', 'unknown'].includes(j.platform) || f.platform === j.platform) continue;
+    await t.update('farms', { id: f.id }, { platform: j.platform, site: j.site ?? f.site, collection: j.collection ?? f.collection ?? null, last_checked_at: null });
+    for (const l of await t.where('listings', { farm_id: f.id }))
+      if (String(l.product_key).startsWith('manual-') && l.active) await t.update('listings', { id: l.id }, { active: false });
+    changed.push(f.name);
+  }
+  return changed;
+}

@@ -5,7 +5,7 @@ insert into farms (code, name, place, province, site, platform, collection, acti
   ('TW', 'Twyla’s Flower Farm', 'Victoria, BC', 'BC', 'https://twylasflowerfarm.com', 'shopify', 'dahlia-tubers', true),
   ('ABP', 'Au Beau Pré', 'Saint-Anicet, QC', 'QC', 'https://aubeaupre.com', 'shopify', null, true),
   ('DM', 'Dahlia May Flower Farm', 'Trenton, ON', 'ON', 'https://www.dahliamayflowerfarm.com', 'shopify', null, true),
-  ('SM', 'Singing Meadows Farm', 'Orangeville, ON', 'ON', 'https://www.singingmeadowsfarm.com', 'manual', null, true),
+  ('SM', 'Singing Meadows Farm', 'Orangeville, ON', 'ON', 'https://www.singingmeadowsfarm.com', 'wix', null, true),
   ('BB', 'Bountiful Brookfield Blooms', 'Brookfield, NS', 'NS', 'https://www.bountifulbrookfieldblooms.com', 'manual', null, true),
   ('HS', 'Hard Scrabble Blooms', 'Chatham-Kent, ON', 'ON', 'https://www.hardscrabbleblooms.com', 'unknown', null, true),
   ('FA', 'Five Acres Flower Farm', 'Abbotsford, BC', 'BC', 'https://fiveacres.ca', 'shopify', 'dahlia-collection', true),
@@ -212,8 +212,7 @@ insert into listings (farm_id, product_key, variety_id, title, url, price_cents,
   ((select id from farms where code = 'BB'), 'manual-mayan-pearl', (select variety_id from aliases where alias = 'mayan pearl'), 'Mayan Pearl', 'https://www.bountifulbrookfieldblooms.com', 1000, false, 'tuber'),
   ((select id from farms where code = 'BB'), 'manual-ac-rooster', (select variety_id from aliases where alias = 'ac rooster'), 'AC Rooster', 'https://www.bountifulbrookfieldblooms.com', 800, false, 'tuber'),
   ((select id from farms where code = 'BB'), 'manual-rivers-crystal', (select variety_id from aliases where alias = 'rivers crystal'), 'Rivers Crystal', 'https://www.bountifulbrookfieldblooms.com', 800, false, 'tuber'),
-  ((select id from farms where code = 'BB'), 'manual-stillwater-raspberry', (select variety_id from aliases where alias = 'stillwater raspberry'), 'Stillwater Raspberry', 'https://www.bountifulbrookfieldblooms.com', 800, false, 'tuber'),
-  ((select id from farms where code = 'SM'), 'manual-meadows-biddy-bee', (select variety_id from aliases where alias = 'meadows biddy bee'), 'Meadows Biddy-Bee', 'https://www.singingmeadowsfarm.com', null, false, 'tuber')
+  ((select id from farms where code = 'BB'), 'manual-stillwater-raspberry', (select variety_id from aliases where alias = 'stillwater raspberry'), 'Stillwater Raspberry', 'https://www.bountifulbrookfieldblooms.com', 800, false, 'tuber')
 on conflict (farm_id, product_key) do nothing;
 insert into review_items (kind, data) values
   ('name', '{"spelling":"Bloomquist Allen","farm":"Longwoods Flower Farm","suggestion":"bloomquist-alan","note":"Triple Wren spells it Alan."}'::jsonb),
