@@ -192,7 +192,9 @@ export function search(groups: Group[], f: Filters): Group[] {
     }
     out.push({ ...g, rows });
   }
-  return out;
+  // What you can buy now first, then what's opening soon, then the rest (alphabetical within each).
+  const rank = (g: Group) => Math.min(...g.rows.map((r) => ({ in: 0, soon: 1, list: 2, out: 3 })[r.avail]));
+  return out.map((g, i) => ({ g, i, r: rank(g) })).sort((a, b) => a.r - b.r || a.i - b.i).map((x) => x.g);
 }
 
 export type Suggestion = { label: string; alts: string[]; sub: string; href: string; kind: 'variety' | 'farm' };

@@ -3,6 +3,7 @@ import { SearchBox } from '../components/SearchBox';
 import { Filters } from '../components/Filters';
 import { GroupCard } from '../components/Listing';
 import { FavsHere } from '../components/FavsHere';
+import { Happening } from '../components/Happening';
 import { LeafDivider } from '../components/Leaf';
 import { text, fill } from '../site-text';
 
@@ -40,6 +41,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<Rec
       )}
       <SearchBox items={suggestions(data, groups)} initial={f.q ?? ''} hidden={f as Record<string, string>} />
       <Filters f={f} farmName={farmName} />
+      {!f.q && !f.farm && !Object.entries(f).some(([, v]) => v) && <Happening sales={data.sales} farms={data.farms} />}
 
       <div className="results-head">
         <h2>{fill(found.length === 1 ? (farmCount === 1 ? text.resultsCountOne : text.resultsCountOneVariety) : farmCount === 1 ? text.resultsCountOneFarm : text.resultsCount, { varieties: found.length, farms: farmCount })}</h2>

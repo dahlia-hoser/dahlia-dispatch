@@ -7,10 +7,17 @@ type F = { q?: string; farm?: string; avail?: string; form?: string; colour?: st
 export function Filters({ f, farmName }: { f: F; farmName?: string }) {
   const submit = (e: React.ChangeEvent<HTMLSelectElement>) => e.currentTarget.form?.submit();
   const any = f.avail || f.form || f.colour || f.prov || f.farm || f.get || f.only;
+  const count = [f.avail, f.form, f.colour, f.prov, f.get, f.only].filter(Boolean).length;
   return (
-    <form className="filters" action="/" method="get">
+    <form className="filters-wrap" action="/" method="get">
       {f.q && <input type="hidden" name="q" value={f.q} />}
       {f.farm && <input type="hidden" name="farm" value={f.farm} />}
+      <details className="filters-box" open={count > 0}>
+        <summary className="btn ghost">
+          {text.filtersButton}
+          {count > 0 && <span className="count">{count}</span>}
+        </summary>
+        <div className="filters">
       <label>
         {text.filterAvailability}
         <select name="avail" defaultValue={f.avail ?? ''} onChange={submit}>
@@ -60,6 +67,8 @@ export function Filters({ f, farmName }: { f: F; farmName?: string }) {
         </select>
       </label>
       <noscript><button className="btn ghost" type="submit">{text.searchButton}</button></noscript>
+        </div>
+      </details>
       {farmName && <span className="chip soft">{farmName}</span>}
       {any && <a className="clear" href={f.q ? `/?q=${encodeURIComponent(f.q)}` : '/'}>{text.clearFilters}</a>}
     </form>
