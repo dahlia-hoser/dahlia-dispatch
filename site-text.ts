@@ -16,6 +16,15 @@ export const text = {
   navSearch: 'Search',
   navCalendar: 'Sale calendar',
   navPacks: 'Rainbows & Roulette',
+  navFavs: 'Favourites',
+  favTitle: 'Your favourites',
+  favIntro: 'Tap the heart on any dahlia to keep it here. Favourites are saved on this phone or computer only — no account needed, and we never see them.',
+  favNone: 'No favourites yet, bud. Tap the ♡ next to any dahlia and it’ll show up here with every farm’s price and stock.',
+  favGone: '{n} of your favourites aren’t sold anywhere right now. They’ll come back here when a farm lists them.',
+  favAdd: 'Add {name} to favourites',
+  favRemove: 'Remove {name} from favourites',
+  favOffTitle: 'Add to favourites',
+  favOnTitle: 'In your favourites',
   navReview: 'Review list',
 
   // Search

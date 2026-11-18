@@ -1,4 +1,5 @@
 import type { Group, Row } from '../lib/catalogue';
+import { FavButton } from './Fav';
 import { money, gettingIt } from '../lib/catalogue';
 import { text, fill } from '../site-text';
 import { isBulk, normalize, packSize, varietyNameFromTitle } from '../lib/names';
@@ -48,6 +49,7 @@ export function GroupCard({ g }: { g: Group }) {
     <section className="group">
       <div className="group-head">
         <h3>{v ? <a href={`/v/${v.slug}`}>{g.name}</a> : g.name}</h3>
+        {v && <FavButton slug={v.slug} name={g.name} />}
         {metaParts.length > 0 && (
           <span className="meta meta-row">
             {metaParts.map((m, i) => (

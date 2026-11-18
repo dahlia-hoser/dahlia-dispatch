@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { loadAll, groupAll, lastChecked, ago } from '../../../lib/catalogue';
 import { ListingRow, Badges } from '../../../components/Listing';
 import { text, fill } from '../../../site-text';
+import { FavButton } from '../../../components/Fav';
 import { isAdmin } from '../../../lib/is-admin';
 
 export default async function VarietyPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -17,7 +18,10 @@ export default async function VarietyPage({ params }: { params: Promise<{ slug: 
       <a className="back" href="/">{text.varietyBack}</a>
       <div className="vhead">
         <div className="left">
-          <h1>{v.name}</h1>
+          <div className="inline" style={{ gap: 10, alignItems: 'center' }}>
+            <h1>{v.name}</h1>
+            <FavButton slug={v.slug} name={v.name} big />
+          </div>
           <Badges g={g} />
           {g.aka.length > 0 && <p className="note">{text.alsoSoldAs}: {g.aka.join(', ')}</p>}
           <dl className="facts">

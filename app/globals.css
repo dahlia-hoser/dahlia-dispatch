@@ -231,3 +231,11 @@ footer .wrap { padding-bottom: 64px; }
 .photos span { display: block; font-size: 13px; opacity: .75; margin-top: 2px; }
 .photos a:only-child { width: 70%; max-width: 280px; }
 .batch-photo { width: 76px; height: 76px; object-fit: cover; border-radius: 10px; flex: none; background: var(--cream); }
+
+/* Favourites heart */
+.fav { background: none; border: 0; color: var(--coral, #E26D5C); font-size: 24px; line-height: 1; padding: 6px 8px; margin: -6px -4px; cursor: pointer; min-width: 40px; min-height: 40px; }
+.fav.big { font-size: 32px; }
+.fav[aria-pressed='true'] { color: #E26D5C; }
+.fav:focus-visible { outline: 2px solid var(--accent); border-radius: 10px; }
+.group-head { position: relative; padding-right: 56px; }
+.group-head .fav { position: absolute; top: 10px; right: 10px; margin: 0; }
