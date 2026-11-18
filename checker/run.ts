@@ -2,8 +2,10 @@
 // Run it yourself with:  npm run check-farms            (farms that are due)
 //                        npm run check-farms -- --all   (every farm now)
 import { db } from '../lib/db';
-import { NameBook, autoAnswerSlips, hideNonDahlias, reconcileNames, syncSocieties, tidyForms, applyOwnerDecisions } from '../lib/name-ops';
+import { NameBook, autoAnswerSlips, hideNonDahlias, reconcileNames, syncSocieties, tidyForms, applyOwnerDecisions, applyFormSplits, blockFarms } from '../lib/name-ops';
 import decisions from '../data/owner-decisions.json';
+import formSplits from '../data/form-splits.json';
+import blockedFarms from '../data/blocked-farms.json';
 import trusted from '../data/trusted-sources.json';
 import { applyTrustedDetails, applyIntroYears, syncFarmDetails, confirmWhenFarmsAgree } from '../lib/name-ops';
 import farmDetails from '../data/farm-details.json';
@@ -39,6 +41,10 @@ async function main() {
   const added = await syncSocieties(t, societies as any[]);
   if (added) console.log(`Added ${added} clubs and societies to the calendar.`);
   await applyOwnerDecisions(t, decisions as any[]);
+  const blockedNow = await blockFarms(t, blockedFarms as any[]);
+  if (blockedNow) console.log(`Removed ${blockedNow} farms or suggestions you ruled out.`);
+  const split = await applyFormSplits(t, formSplits as any[]);
+  if (split) console.log(`Narrowed ${split} Decorative varieties to formal or informal.`);
   const reformed = await tidyForms(t);
   if (reformed) console.log(`Updated ${reformed} varieties to the new form list.`);
   const slips = await autoAnswerSlips(t);

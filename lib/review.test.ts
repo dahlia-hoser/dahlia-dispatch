@@ -167,3 +167,18 @@ test('Canada-only: shops that say they are elsewhere get paused', async () => {
   const cad = [{ ...products[0], currency: 'CAD' }];
   assert.equal(await pauseIfNotCanadian(t, { ...farm, active: true }, 'woocommerce', cad), false);
 });
+
+import { blockFarms, applyFormSplits } from './name-ops';
+test('blocked farms are hidden and decorative splits apply', async () => {
+  const t = db();
+  const [f] = await t.insert('farms', { code: 'F998', name: 'Petal and Stem Farm', place: null, province: null, site: 'https://ps.example', platform: 'shopify', active: true });
+  await t.insert('listings', { farm_id: f.id, product_key: 'ps1', variety_id: null, title: 'Maarn', url: null, price_cents: 1000, in_stock: true, kind: 'tuber', active: true, first_seen: new Date().toISOString(), last_changed: new Date().toISOString() });
+  assert.ok((await blockFarms(t, [{ name: 'Petal & Stem Farm' }])) >= 1);
+  assert.equal((await t.where('farms', { id: f.id }))[0].active, false);
+  assert.equal((await t.where('listings', { farm_id: f.id }))[0].active, false);
+  const [v] = await t.insert('varieties', { slug: 'split-me', name: 'Split Me', form: 'Decorative', status: 'Confirmed' });
+  const [w] = await t.insert('varieties', { slug: 'leave-me', name: 'Leave Me', form: 'Ball', status: 'Suggested' });
+  assert.equal(await applyFormSplits(t, [{ slug: 'split-me', form: 'Formal decorative' }, { slug: 'leave-me', form: 'Informal decorative' }]), 1);
+  assert.equal((await t.where('varieties', { id: v.id }))[0].form, 'Formal decorative');
+  assert.equal((await t.where('varieties', { id: w.id }))[0].form, 'Ball');
+});

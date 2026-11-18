@@ -316,3 +316,38 @@ export async function confirmWhenFarmsAgree(t: Tables): Promise<number> {
   }
   return n;
 }
+
+/** Plain "Decorative" narrowed to formal or informal by the owner (data/form-splits.json). Never touches other forms. */
+export async function applyFormSplits(t: Tables, splits: { slug: string; form: string }[]): Promise<number> {
+  let n = 0;
+  for (const { slug, form } of splits) {
+    const [v] = await t.where('varieties', { slug });
+    if (!v || (v.form && v.form !== 'Decorative') || v.form === form) continue;
+    await t.update('varieties', { id: v.id }, { form });
+    n++;
+  }
+  return n;
+}
+
+/** Farms the owner has ruled out (data/blocked-farms.json): never suggested, never shown. */
+export async function blockFarms(t: Tables, blocked: { name: string }[]): Promise<number> {
+  const key = (s: unknown) => String(s ?? '').toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, ' ').trim();
+  const names = new Set(blocked.map((b) => key(b.name)));
+  if (!names.size) return 0;
+  let n = 0;
+  const now = new Date().toISOString();
+  for (const c of await t.all('farm_candidates')) {
+    if (!names.has(key(c.name)) || c.status === 'no') continue;
+    await t.update('farm_candidates', { id: c.id }, { status: 'no' });
+    for (const r of await t.where('review_items', { kind: 'farm' }))
+      if (r.data?.candidate === c.id && r.status !== 'done') await t.update('review_items', { id: r.id }, { status: 'done', resolved_at: now, answer: { choice: 'no', auto: 'blocked' } });
+    n++;
+  }
+  for (const f of await t.all('farms')) {
+    if (!names.has(key(f.name)) || !f.active) continue;
+    await t.update('farms', { id: f.id }, { active: false, last_error: 'Removed by the owner: not in Canada.' });
+    for (const l of await t.where('listings', { farm_id: f.id })) if (l.active) await t.update('listings', { id: l.id }, { active: false, in_stock: false });
+    n++;
+  }
+  return n;
+}
