@@ -240,9 +240,11 @@ footer .wrap { padding-bottom: 64px; }
 .group-head { position: relative; padding-right: 56px; }
 .group-head .fav { position: absolute; top: 10px; right: 10px; margin: 0; }
 
-/* Farm name links to everything that farm sells */
-.row .who .farmlink { color: var(--text); text-decoration: underline; text-decoration-color: var(--coral); text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
-.row .who .farmlink:hover { color: var(--accent); }
+/* Quiet link to everything that farm sells; the shop button is the main action */
+.row .who .morefarm { font-size: 13px; color: var(--muted); margin-top: 4px; text-decoration: underline; text-decoration-color: #d6ccbc; text-underline-offset: 3px; align-self: flex-start; padding: 4px 0; }
+.row .who .morefarm:hover { color: var(--accent); }
+.row .shop { background: var(--accent); border-color: var(--accent); color: #fff; }
+.row .shop:hover { background: var(--text); color: #fff; }
 .farm-head { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; margin: 4px 0 18px; }
 .farm-head h1 { font-size: 32px; }
 

@@ -33,6 +33,7 @@ export const text = {
   favsHereOne: '1 of your favourites is in stock here: {names}',
   favsHereOut: '{n} of your favourites are listed here but not in stock right now.',
   farmAllTitle: 'See everything from {farm}',
+  moreFromFarm: 'More from this farm →',
   reviewFarmNotCanadian: '⚠ Location not confirmed as Canadian. Check their site before saying yes. The checker also pauses any shop that says it’s outside Canada.',
   formDecorativeAny: 'Decorative (formal or informal)',
   favTitle: 'Your favourites',

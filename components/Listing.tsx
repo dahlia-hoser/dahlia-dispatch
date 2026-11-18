@@ -15,9 +15,7 @@ export function ListingRow({ r, groupName }: { r: Row; groupName: string }) {
   return (
     <article className="row">
       <div className="who">
-        <b>
-          <a className="farmlink" href={`/?farm=${encodeURIComponent(r.farm.code)}`} title={fill(text.farmAllTitle, { farm: r.farm.name })}>{r.farm.name}</a>
-        </b>
+        <b>{r.farm.name}</b>
         <span>
           {r.farm.place}
           {different && <> · {fill(text.listedAs, { name: r.listing.title })}</>}
@@ -25,6 +23,7 @@ export function ListingRow({ r, groupName }: { r: Row; groupName: string }) {
           {r.listing.kind === 'plant' && <> · {text.pottedPlant}</>}
         </span>
         {gettingIt(r.farm) && <span className="ship">{gettingIt(r.farm)}</span>}
+        <a className="morefarm" href={`/?farm=${encodeURIComponent(r.farm.code)}`} title={fill(text.farmAllTitle, { farm: r.farm.name })}>{text.moreFromFarm}</a>
       </div>
       <span className="price">
         {money(r.listing.price_cents)}
