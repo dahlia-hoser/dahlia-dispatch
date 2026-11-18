@@ -1,19 +1,29 @@
 // Shopping plan: buy every in-stock favourite from as few farms as possible.
 
 /** The plan shows once this many favourites are in stock. */
-export const PLAN_FROM = 10;
+export const PLAN_FROM = 5;
 import type { Group, Row } from './catalogue';
 import type { Farm } from './types';
+import { isBulk, packSize } from './names';
+
+/** One ordinary tuber: not a multi-pack, not a bulk lot. */
+export const isSingle = (r: Row) => packSize(r.listing.title) === 1 && !isBulk(r.listing.title);
 
 export type PlanStop = { farm: Farm; items: { name: string; slug: string; row: Row }[]; totalCents: number; unpriced: number };
+/** Favourites in stock only as packs or bulk lots. */
+export function inStockOnlyAsPacks(groups: Group[]): number {
+  const singles = inStockOptions(groups);
+  return groups.filter((g) => g.variety && !singles.has(g.variety.slug) && g.rows.some((r) => r.avail === 'in' && r.listing.kind !== 'plant')).length;
+}
+
 export type Plan = { stops: PlanStop[]; covered: number };
 
-/** In-stock rows per favourite (one favourite = one variety group). Potted plants and price lists don't count. */
+/** In-stock single tubers per favourite (one favourite = one variety group). Packs, bulk lots and potted plants don't count. */
 export function inStockOptions(groups: Group[]): Map<string, Row[]> {
   const out = new Map<string, Row[]>();
   for (const g of groups) {
     if (!g.variety) continue;
-    const rows = g.rows.filter((r) => r.avail === 'in' && r.listing.kind !== 'plant');
+    const rows = g.rows.filter((r) => r.avail === 'in' && r.listing.kind !== 'plant' && isSingle(r));
     if (rows.length) out.set(g.variety.slug, rows);
   }
   return out;

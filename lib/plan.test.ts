@@ -33,3 +33,11 @@ test('two farms when no one farm has it all; each item bought where cheaper', ()
   assert.deepEqual(at2.items.map((i) => i.slug).sort(), ['b', 'c']);
   assert.equal(at2.totalCents, 2100);
 });
+
+test('bulk lots and multi-packs are left out of the plan', () => {
+  const r = (f: number, cents: number, title: string) => ({ ...row(f, cents), listing: { ...row(f, cents).listing, title } });
+  const groups = [group('a', [r(1, 6000, 'Bulk Cornel')]), group('b', [r(2, 3000, 'Maarn (5 pack)'), r(3, 900, 'Maarn')])];
+  const plan = shoppingPlan(groups);
+  assert.equal(plan.covered, 1);
+  assert.equal(plan.stops[0].farm.id, 3);
+});
