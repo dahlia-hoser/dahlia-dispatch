@@ -155,3 +155,8 @@ test('bulk packs of one variety are tubers, not mixes', () => {
   assert.equal(kindFromTitle('Bulk DIY Bucket of : Custom Colour Palette', '', []), 'mix');
   assert.equal(kindFromTitle('Bulk Dahlia Tubers', '', []), 'mix');
 });
+
+test('colour-themed favourites packs are mixes, not varieties', () => {
+  for (const t of ['Bulk Orange Favourites', 'Orange Favourites', 'Bulk - Orange Favourite', "Farmer's Favourites"]) assert.equal(kindFromTitle(t, '', []), 'mix', t);
+  assert.equal(kindFromTitle('Bulk Nicholas', '', []), 'tuber');
+});
