@@ -15,7 +15,9 @@ export function ListingRow({ r, groupName }: { r: Row; groupName: string }) {
   return (
     <article className="row">
       <div className="who">
-        <b>{r.farm.name}</b>
+        <b>
+          <a className="farmlink" href={`/?farm=${encodeURIComponent(r.farm.code)}`} title={fill(text.farmAllTitle, { farm: r.farm.name })}>{r.farm.name}</a>
+        </b>
         <span>
           {r.farm.place}
           {different && <> · {fill(text.listedAs, { name: r.listing.title })}</>}

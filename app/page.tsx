@@ -1,4 +1,4 @@
-import { loadAll, groupAll, search, suggestions, lastChecked, ago, type Filters as F } from '../lib/catalogue';
+import { loadAll, groupAll, search, suggestions, lastChecked, ago, gettingIt, type Filters as F } from '../lib/catalogue';
 import { SearchBox } from '../components/SearchBox';
 import { Filters } from '../components/Filters';
 import { GroupCard } from '../components/Listing';
@@ -16,12 +16,20 @@ export default async function Home({ searchParams }: { searchParams: Promise<Rec
   const found = search(groups, f);
   const shown = found.slice(0, limit);
   const farmCount = new Set(found.flatMap((g) => g.rows.map((r) => r.farm.id))).size;
-  const farmName = f.farm ? data.farms.find((x) => x.code === f.farm)?.name : undefined;
+  const farm = f.farm ? data.farms.find((x) => x.code === f.farm) : undefined;
+  const farmName = farm?.name;
   const checked = lastChecked(data);
   const moreParams = new URLSearchParams(Object.entries({ ...f, show: String(limit + PAGE) }).filter(([, v]) => v) as [string, string][]);
 
   return (
     <>
+      {farm && (
+        <section className="farm-head">
+          <h1>{farm.name}</h1>
+          <p className="note">{[farm.place, gettingIt(farm)].filter(Boolean).join(' · ')}</p>
+          {farm.site && <a className="btn ghost" href={farm.site} target="_blank" rel="noopener noreferrer">{text.farmVisit} ↗</a>}
+        </section>
+      )}
       {!f.q && !f.farm && (
         <section className="hero">
           <h1>{text.siteName}</h1>
@@ -32,7 +40,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<Rec
       <Filters f={f} farmName={farmName} />
 
       <div className="results-head">
-        <h2>{fill(found.length === 1 ? (farmCount === 1 ? text.resultsCountOne : text.resultsCountOneVariety) : text.resultsCount, { varieties: found.length, farms: farmCount })}</h2>
+        <h2>{fill(found.length === 1 ? (farmCount === 1 ? text.resultsCountOne : text.resultsCountOneVariety) : farmCount === 1 ? text.resultsCountOneFarm : text.resultsCount, { varieties: found.length, farms: farmCount })}</h2>
         <p className="note">{fill(text.priceNote, { time: ago(checked) })}</p>
       </div>
       <p className="note-box">{text.notAvailableNote}</p>

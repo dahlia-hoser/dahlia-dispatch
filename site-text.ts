@@ -17,6 +17,7 @@ export const text = {
   navCalendar: 'Sale calendar',
   navPacks: 'Rainbows & Roulette',
   navFavs: 'Favourites',
+  farmAllTitle: 'See everything from {farm}',
   reviewFarmNotCanadian: '⚠ Location not confirmed as Canadian. Check their site before saying yes. The checker also pauses any shop that says it’s outside Canada.',
   formDecorativeAny: 'Decorative (formal or informal)',
   favTitle: 'Your favourites',
@@ -60,6 +61,8 @@ export const text = {
   resultsCount: '{varieties} varieties at {farms} farms',
   resultsCountOne: '1 variety at 1 farm',
   resultsCountOneVariety: '1 variety at {farms} farms',
+  resultsCountOneFarm: '{varieties} varieties at 1 farm',
+  farmVisit: 'Visit their shop',
   showMore: 'Show more ({n})',
   resultsNone: 'Nothing matches yet. Try a different spelling, or clear the filters.',
   notAvailableNote:

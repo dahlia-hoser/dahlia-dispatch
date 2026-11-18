@@ -239,3 +239,9 @@ footer .wrap { padding-bottom: 64px; }
 .fav:focus-visible { outline: 2px solid var(--accent); border-radius: 10px; }
 .group-head { position: relative; padding-right: 56px; }
 .group-head .fav { position: absolute; top: 10px; right: 10px; margin: 0; }
+
+/* Farm name links to everything that farm sells */
+.row .who .farmlink { color: var(--text); text-decoration: underline; text-decoration-color: var(--coral); text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+.row .who .farmlink:hover { color: var(--accent); }
+.farm-head { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; margin: 4px 0 18px; }
+.farm-head h1 { font-size: 32px; }
