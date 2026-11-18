@@ -123,5 +123,6 @@ alter table farms add column if not exists ship_cost text;
 alter table farms add column if not exists pickup text;
 alter table farms add column if not exists shipping_checked_at timestamptz;
 alter table listings add column if not exists description text;
+alter table listings add column if not exists image text;          -- the farm's main product photo (owner's review list only)
 alter table varieties add column if not exists intro_year integer;
 alter table varieties add column if not exists canadian_bred boolean;

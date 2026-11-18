@@ -31,6 +31,10 @@ export default async function BatchColours({ searchParams }: { searchParams: Pro
               return (
                 <label key={c.id} className="batch-tile">
                   <input type="checkbox" name="ok" value={c.id} defaultChecked={cols.length > 0 && !!c.form} />
+                  {c.seenAt.find((s) => s.image) && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img className="batch-photo" src={c.seenAt.find((s) => s.image)!.image!} alt="" loading="lazy" referrerPolicy="no-referrer" />
+                  )}
                   <span className="batch-body">
                     <b>{c.name}</b>
                     <span className="inline" style={{ gap: 6 }}>

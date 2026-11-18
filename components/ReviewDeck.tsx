@@ -136,6 +136,17 @@ function DetailsCard({ card, busy, go }: { card: Extract<Card, { kind: 'details'
     <>
       <span className="kicker">{card.isNew ? text.reviewNewVariety : text.reviewDetailsQuestion}</span>
       <h2>{card.name}</h2>
+      {card.seenAt.some((s) => s.image) && (
+        <div className="photos">
+          {card.seenAt.filter((s) => s.image).map((s, i) => (
+            <a key={i} href={s.url ?? undefined} target="_blank" rel="noopener noreferrer" title={`${s.farm}: ${s.title}`}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={s.image!} alt={`${card.name} at ${s.farm}`} loading="lazy" referrerPolicy="no-referrer" />
+              <span>{s.farm}</span>
+            </a>
+          ))}
+        </div>
+      )}
       {card.seenAt.length > 0 && (
         <p className="note">
           {card.seenAt.map((s, i) => (

@@ -5,8 +5,9 @@ import type { Product } from './sources';
 
 /** Saves one farm's listings. Returns how many changed. */
 /** allKeys: every product the shop has, when only some were read this time (Wix). */
-export async function save(t: Tables, book: NameBook, farm: any, products: Product[], allKeys?: string[], withDescriptions = false): Promise<number> {
+export async function save(t: Tables, book: NameBook, farm: any, products: Product[], allKeys?: string[], withDescriptions = false, withImages = false): Promise<number> {
   const desc = (p: Product) => (withDescriptions && p.hints?.text ? { description: p.hints.text.slice(0, 600) } : {});
+  const img = (p: Product) => (withImages && p.image ? { image: p.image } : {});
   const existing = await t.where('listings', { farm_id: farm.id });
   const byKey = new Map(existing.map((l) => [l.product_key, l]));
   const now = new Date().toISOString();
@@ -22,7 +23,7 @@ export async function save(t: Tables, book: NameBook, farm: any, products: Produ
       fresh.push({
         farm_id: farm.id, product_key: p.key, variety_id, title: p.title, url: p.url,
         price_cents: p.price_cents, currency: p.currency, in_stock: p.in_stock, kind: p.kind,
-        active: true, first_seen: now, last_seen: now, last_changed: now, ...desc(p),
+        active: true, first_seen: now, last_seen: now, last_changed: now, ...desc(p), ...img(p),
       });
       changed++;
       continue;
@@ -30,10 +31,14 @@ export async function save(t: Tables, book: NameBook, farm: any, products: Produ
     const differs = old.title !== p.title || old.kind !== p.kind || old.price_cents !== p.price_cents || old.in_stock !== p.in_stock || !old.active || old.url !== p.url;
     if (!differs) {
       // Fill in a missing description once (for spotting new introductions), without counting it as a change.
-      if (withDescriptions && old.description == null && p.hints?.text) await t.update('listings', { id: old.id }, desc(p));
+      const quiet = {
+        ...(withDescriptions && old.description == null && p.hints?.text ? desc(p) : {}),
+        ...(withImages && p.image && old.image !== p.image ? img(p) : {}),
+      };
+      if (Object.keys(quiet).length) await t.update('listings', { id: old.id }, quiet);
       continue; // only write when something changed, to keep the checker quick
     }
-    const patch: Record<string, any> = { ...desc(p), title: p.title, url: p.url, price_cents: p.price_cents, in_stock: p.in_stock, kind: p.kind, active: true, last_seen: now, last_changed: now };
+    const patch: Record<string, any> = { ...desc(p), ...img(p), title: p.title, url: p.url, price_cents: p.price_cents, in_stock: p.in_stock, kind: p.kind, active: true, last_seen: now, last_changed: now };
     if (old.title !== p.title && old.variety_id == null && p.kind !== 'other' && p.kind !== 'mix') patch.variety_id = await book.resolve(p.title, farm.name, p.hints);
     if (p.kind === 'mix') patch.variety_id = null; // packs of mixed varieties don't belong to one variety
     await t.update('listings', { id: old.id }, patch);

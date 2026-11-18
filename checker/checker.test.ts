@@ -142,3 +142,10 @@ test('shopify price ignores sold-out and odd options', () => {
   assert.equal(shopifyPrice([{ title: 'Default Title', price: '12', available: false }]), 1200);
   assert.equal(shopifyPrice([]), null);
 });
+
+test('shopify photo is read at a small size', () => {
+  const { items } = parseShopify([{ id: 7, title: 'Dahlia Nicholas', handle: 'n', product_type: 'Dahlia', tags: [], images: [{ src: 'https://cdn.shopify.com/s/files/1/n.jpg?v=12' }], variants: [{ price: '12', available: true }] }], 'https://x.ca', null);
+  assert.equal(items[0].image, 'https://cdn.shopify.com/s/files/1/n.jpg?v=12&width=400');
+  const none = parseShopify([{ id: 8, title: 'Dahlia Maarn', handle: 'm', product_type: 'Dahlia', tags: [], images: [], variants: [{ price: '12', available: true }] }], 'https://x.ca', null);
+  assert.equal(none.items[0].image, undefined);
+});

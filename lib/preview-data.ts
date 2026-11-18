@@ -58,7 +58,7 @@ export function buildPreviewTables(): Record<string, Row[]> {
   }
   for (const m of previewListingsJson as any[]) {
     const f = farms.find((x) => x.code === m.farm)!;
-    listings.push({ id: id++, farm_id: f.id, product_key: 'preview-' + slugify(m.title), variety_id: lookup(m.title), title: m.title, url: f.site, price_cents: m.price == null ? null : m.price * 100, currency: 'CAD', in_stock: m.in_stock, kind: 'tuber', active: true, first_seen: iso, last_changed: iso });
+    listings.push({ id: id++, farm_id: f.id, product_key: 'preview-' + slugify(m.title), variety_id: lookup(m.title), title: m.title, url: f.site, price_cents: m.price == null ? null : m.price * 100, currency: 'CAD', in_stock: m.in_stock, kind: 'tuber', active: true, first_seen: iso, last_changed: iso, image: m.image ?? null });
   }
 
   review.unshift(

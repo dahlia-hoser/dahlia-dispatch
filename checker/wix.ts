@@ -72,6 +72,7 @@ export function parseWixProduct(html: string, url: string): Product | null {
     in_stock: /instock|in stock|preorder/i.test(availability),
     kind: kindFromTitle(title),
     hints: { tags: [], text: description },
+    image: /^https:\/\//.test(meta(html, 'og:image')) ? meta(html, 'og:image') : undefined,
   };
 }
 

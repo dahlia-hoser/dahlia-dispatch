@@ -223,3 +223,11 @@ footer .wrap { padding-bottom: 64px; }
 .batch-tile input { width: 22px; height: 22px; margin-top: 2px; accent-color: var(--accent); flex: none; }
 .batch-tile:has(input:not(:checked)) { background: var(--cream); }
 .batch-body { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+
+/* Farm photos on the review list */
+.photos { display: flex; gap: 8px; overflow-x: auto; margin: 6px 0 4px; scroll-snap-type: x mandatory; }
+.photos a { flex: none; width: 46%; max-width: 220px; scroll-snap-align: start; text-decoration: none; color: inherit; }
+.photos img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 12px; display: block; background: var(--cream); }
+.photos span { display: block; font-size: 13px; opacity: .75; margin-top: 2px; }
+.photos a:only-child { width: 70%; max-width: 280px; }
+.batch-photo { width: 76px; height: 76px; object-fit: cover; border-radius: 10px; flex: none; background: var(--cream); }

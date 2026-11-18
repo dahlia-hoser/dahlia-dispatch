@@ -32,6 +32,8 @@ async function main() {
   // Update 2 columns exist only after supabase/update-2.sql has been run.
   const v2 = await t.probe('farms', 'ships_to');
   if (!v2) console.log('Note: run supabase/update-2.sql in Supabase to turn on shipping details and new-introduction tracking.');
+  const v3 = await t.probe('listings', 'image');
+  if (!v3) console.log('Note: run supabase/update-3.sql in Supabase to turn on farm photos in the review list.');
   if (v2) await syncFarmDetails(t, farmDetails as any[]);
   const added = await syncSocieties(t, societies as any[]);
   if (added) console.log(`Added ${added} clubs and societies to the calendar.`);
@@ -64,7 +66,7 @@ async function main() {
         const known = new Set((await t.where('listings', { farm_id: f.id })).map((l) => String(l.product_key)));
         ({ products, allKeys } = await readWix(src, { known, perRun: why === 'sale day' ? 150 : 80 }));
       } else products = platform === 'woocommerce' ? await readWoo(src) : await readShopify(src);
-      const n = await save(t, book, f, products, allKeys, v2);
+      const n = await save(t, book, f, products, allKeys, v2, v3);
       if (v2) {
         const intros = await applyIntroYears(t, f.id, products);
         if (intros) console.log(`  ${f.name}: ${intros} new introductions spotted.`);

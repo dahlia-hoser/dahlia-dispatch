@@ -12,6 +12,7 @@ export type Product = {
   in_stock: boolean;
   kind: 'tuber' | 'cutting' | 'plant' | 'mix' | 'other';
   hints?: Hints; // tags and description, used to guess colour and form
+  image?: string; // the farm's main product photo (small size), for the review list
 };
 
 export type FarmSource = { name: string; site: string; platform: string; collection: string | null };
@@ -47,6 +48,7 @@ export function parseShopify(products: any[], site: string, collection: string |
       in_stock: variants.some((v) => v.available === true),
       kind: kindFromTitle(p.title ?? '', p.product_type ?? '', tagList(p.tags)),
       hints: { tags: [...tagList(p.tags), p.product_type ?? ''], text: stripHtml(String(p.body_html ?? '')) },
+      image: shopifyImage(p),
     };
     all.push(item);
     if (looksLikeDahlia(item.title, p.product_type ?? '', tagList(p.tags), collection)) dahlia.push(item);
@@ -54,6 +56,13 @@ export function parseShopify(products: any[], site: string, collection: string |
   // A farm that only sells dahlias may never write "dahlia" in titles: keep everything that isn't clearly something else.
   if (!dahlia.length) return { items: all.filter((i) => i.kind !== 'other'), unfiltered: all.length, fellBack: true };
   return { items: dahlia, unfiltered: all.length, fellBack: false };
+}
+
+/** First product photo, asked for at a small size so the review page loads fast. */
+export function shopifyImage(p: any): string | undefined {
+  const src: string | undefined = p.images?.[0]?.src ?? p.image?.src;
+  if (!src || !/^https:\/\//.test(src)) return undefined;
+  return src + (src.includes('?') ? '&' : '?') + 'width=400';
 }
 
 // Options that aren't one ordinary tuber: deposits, cuttings, potted plants, seconds, wholesale, gift wrap…
@@ -151,10 +160,13 @@ export function parseWoo(products: any[]): Product[] {
         tags: [...(p.tags ?? []).map((x: any) => String(x.name ?? '')), ...(p.categories ?? []).map((c: any) => String(c.name ?? ''))],
         text: stripHtml(decodeEntities(String(p.short_description ?? '') + ' ' + String(p.description ?? ''))),
       },
+      image: httpsOnly(p.images?.[0]?.thumbnail ?? p.images?.[0]?.src),
     });
   }
   return out;
 }
+
+const httpsOnly = (u: unknown) => (typeof u === 'string' && /^https:\/\//.test(u) ? u : undefined);
 
 function decodeEntities(s: string) {
   return s
