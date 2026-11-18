@@ -144,7 +144,18 @@ export async function reconcileNames(t: Tables, book: NameBook, keepSlugs: Set<s
   for (const a of aliases) spellings.get(a.variety_id)?.push(a.alias);
   let moved = 0;
   for (const l of listings) {
-    if (!l.variety_id || String(l.product_key).startsWith('manual-')) continue;
+    if (String(l.product_key).startsWith('manual-')) continue;
+    if (!l.variety_id) {
+      // Saved before it was recognised as one variety (e.g. "Bulk Cornel" used to count as a mix): link it now.
+      const kind = kindFromTitle(l.title);
+      if (!l.active || kind === 'mix' || kind === 'other') continue;
+      const id = await book.resolve(l.title, farmName.get(l.farm_id) ?? '');
+      if (id) {
+        await t.update('listings', { id: l.id }, { variety_id: id, kind });
+        moved++;
+      }
+      continue;
+    }
     if (kindFromTitle(l.title) === 'mix') {
       await t.update('listings', { id: l.id }, { variety_id: null, kind: 'mix' });
       moved++;

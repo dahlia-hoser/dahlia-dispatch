@@ -95,6 +95,10 @@ export function groupAll(data: AllData, now = Date.now()): Group[] {
   }
   const bySlug = new Map(data.varieties.map((v) => [v.slug, v.id]));
   const pending = new Map((data.pending ?? []).map((p) => [normalize(p.spelling), bySlug.get(p.slug)]));
+  // A listing not yet linked to a variety still joins it when the names match exactly.
+  const byName = new Map<string, number>();
+  for (const v of data.varieties) byName.set(normalize(v.name), v.id);
+  for (const a of data.aliases) if (!byName.has(normalize(a.alias))) byName.set(normalize(a.alias), a.variety_id);
   const groups = new Map<string, Group>();
   for (const v of data.varieties) {
     groups.set('v' + v.id, {
@@ -109,7 +113,7 @@ export function groupAll(data: AllData, now = Date.now()): Group[] {
     const farm = farmById.get(l.farm_id);
     if (!farm) continue;
     const clean = varietyNameFromTitle(l.title);
-    const guessId = l.variety_id ?? pending.get(normalize(clean)) ?? null;
+    const guessId = l.variety_id ?? byName.get(normalize(clean)) ?? pending.get(normalize(clean)) ?? null;
     const key = guessId && varietyById.has(guessId) ? 'v' + guessId : 't' + normalize(clean);
     if (!groups.has(key)) groups.set(key, { key, variety: null, name: clean, aka: [], rows: [] });
     const st = status(l, farm, data.sales, now);

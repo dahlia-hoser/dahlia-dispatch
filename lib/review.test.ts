@@ -182,3 +182,18 @@ test('blocked farms are hidden and decorative splits apply', async () => {
   assert.equal((await t.where('varieties', { id: v.id }))[0].form, 'Formal decorative');
   assert.equal((await t.where('varieties', { id: w.id }))[0].form, 'Ball');
 });
+
+import { NameBook as NB2 } from './name-ops';
+import { groupAll as groupAll2, loadAll as loadAll2, suggestions as sugg2 } from './catalogue';
+test('an unlinked "Bulk Cornel" joins Cornel instead of making a second Cornel', async () => {
+  const t = db();
+  const farm = (await t.all('farms')).find((f) => f.code === 'HS')!;
+  await t.insert('listings', { farm_id: farm.id, product_key: 'bulk-cornel', variety_id: null, title: 'Bulk Cornel', url: null, price_cents: 6000, in_stock: true, kind: 'tuber', active: true, first_seen: new Date().toISOString(), last_changed: new Date().toISOString() });
+  const count = async () => sugg2(await loadAll2(), groupAll2(await loadAll2())).filter((s) => s.kind === 'variety' && s.label === 'Cornel').length;
+  assert.equal(await count(), 1); // shown once even before it's linked
+  const book = await new NB2(t).load();
+  await reconcileNames(t, book, new Set());
+  const [l] = await t.where('listings', { product_key: 'bulk-cornel' });
+  assert.ok(l.variety_id);
+  assert.equal(await count(), 1);
+});
