@@ -257,3 +257,12 @@ footer .wrap { padding-bottom: 64px; }
 .plan-farm a { color: var(--text); text-decoration-color: var(--coral); text-underline-offset: 3px; }
 .plan ul { list-style: none; padding: 0; margin: 8px 0; display: flex; flex-direction: column; gap: 4px; }
 .plan li { display: flex; justify-content: space-between; gap: 10px; }
+
+/* "Show N more" on long favourites */
+.more-rows > summary { list-style: none; cursor: pointer; padding: 12px 20px; border-top: 1px solid #f1ece3; color: var(--accent); font-weight: 700; text-decoration: underline; text-decoration-color: var(--coral); text-underline-offset: 3px; }
+.more-rows > summary::-webkit-details-marker { display: none; }
+.more-rows .when-open { display: none; }
+.more-rows[open] .when-open { display: inline; }
+.more-rows[open] .when-closed { display: none; }
+.more-rows[open] > summary { order: 2; }
+.more-rows[open] { display: flex; flex-direction: column; }

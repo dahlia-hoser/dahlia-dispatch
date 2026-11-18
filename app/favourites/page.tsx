@@ -63,7 +63,7 @@ export default async function Favourites({ searchParams }: { searchParams: Promi
             inStock > 0 && <p className="note">{text.planHint}</p>
           )}
           <p className="note">{fill(text.priceNote, { time: ago(lastChecked(data)) })}</p>
-          {mine.map((g) => <GroupCard key={g.key} g={g} />)}
+          {mine.map((g) => <GroupCard key={g.key} g={g} limit={3} />)}
         </>
       )}
       {gone > 0 && mine.length > 0 && <p className="note">{fill(text.favGone, { n: gone })}</p>}

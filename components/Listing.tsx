@@ -43,7 +43,7 @@ export function ListingRow({ r, groupName }: { r: Row; groupName: string }) {
   );
 }
 
-export function GroupCard({ g }: { g: Group }) {
+export function GroupCard({ g, limit }: { g: Group; limit?: number }) {
   const v = g.variety;
   const colours = [v?.colour1, v?.colour2].filter(Boolean).join(' / ');
   const metaParts = [v?.form, colours].filter(Boolean) as string[];
@@ -62,7 +62,17 @@ export function GroupCard({ g }: { g: Group }) {
         {g.aka.length > 0 && <span className="meta">{text.alsoSoldAs}: {g.aka.join(', ')}</span>}
         <Badges g={g} />
       </div>
-      {g.rows.map((r) => <ListingRow key={r.listing.id} r={r} groupName={g.name} />)}
+      {(limit ? g.rows.slice(0, limit) : g.rows).map((r) => <ListingRow key={r.listing.id} r={r} groupName={g.name} />)}
+      {limit && g.rows.length > limit && (
+        // Rows are already in order: in stock first, then cheapest.
+        <details className="more-rows">
+          <summary>
+            <span className="when-closed">{fill(text.showMoreRows, { n: g.rows.length - limit })}</span>
+            <span className="when-open">{text.showFewerRows}</span>
+          </summary>
+          {g.rows.slice(limit).map((r) => <ListingRow key={r.listing.id} r={r} groupName={g.name} />)}
+        </details>
+      )}
     </section>
   );
 }
