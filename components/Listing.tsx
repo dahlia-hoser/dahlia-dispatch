@@ -1,5 +1,6 @@
 import type { Group, Row } from '../lib/catalogue';
 import { FavButton } from './Fav';
+import { bloomColours } from '../lib/bloom';
 import { money, gettingIt } from '../lib/catalogue';
 import { text, fill } from '../site-text';
 import { isBulk, normalize, packSize, varietyNameFromTitle } from '../lib/names';
@@ -46,15 +47,23 @@ export function GroupCard({ g, limit }: { g: Group; limit?: number }) {
   const v = g.variety;
   const colours = [v?.colour1, v?.colour2].filter(Boolean).join(' / ');
   const metaParts = [v?.form, colours].filter(Boolean) as string[];
+  const bloom = bloomColours(v?.colour1, v?.colour2);
   return (
-    <section className="group">
+    <section
+      className={bloom.length ? 'group has-bloom' : 'group'}
+      style={bloom.length ? ({ '--b1': bloom[0], '--b2': bloom[1] ?? bloom[0] } as React.CSSProperties) : undefined}
+    >
       <div className="group-head">
         <h3>{v ? <a href={`/v/${v.slug}`}>{g.name}</a> : g.name}</h3>
         {v && <FavButton slug={v.slug} name={g.name} />}
         {metaParts.length > 0 && (
           <span className="meta meta-row">
             {metaParts.map((m, i) => (
-              <span key={m} className="meta-row">{i > 0 && <LeafDot />}{m}</span>
+              <span key={m} className="meta-row">
+                {i > 0 && <LeafDot />}
+                {m === colours && bloom.map((b, j) => <span key={j} className="swatch" style={{ background: b }} aria-hidden="true" />)}
+                {m}
+              </span>
             ))}
           </span>
         )}
