@@ -33,7 +33,7 @@ export function isNewIntro(year: number | null | undefined, now = Date.now()): b
 // and known Canadian hybridizers. The owner can override any variety on its Edit page.
 const CANADIAN_PREFIXES = ['ferncliff', 'lulu island', 'vivas', 'meadows', 'hy '];
 // Anywhere in the name (e.g. the Letterkenny series).
-const CANADIAN_WORDS = ['letterkenny'];
+const CANADIAN_WORDS = ['letterkenny', 'skeena'];
 const CANADIAN_NAMES = ['ben huston', 'clara huston', 'elsie huston', 'hamilton lillian', 'colleen mooney', 'millennium', 'connie pei yang', 'r joan'];
 
 export function isCanadianBred(name: string, override: boolean | null | undefined): boolean {

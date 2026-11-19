@@ -9,8 +9,10 @@
   {
     "farm": "ABP",
     "fields": [
-      "form"
+      "form",
+      "colour1",
+      "colour2"
     ],
-    "why": "Au Beau Pré labels forms carefully (in French: décoratif formel = Formal decorative, etc.)"
+    "why": "Au Beau Pré labels forms and colours carefully (in French)"
   }
 ]

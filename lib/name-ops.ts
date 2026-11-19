@@ -259,6 +259,8 @@ export async function applyTrustedDetails(
       // Your answers stand. The one exception: plain "Decorative" can be narrowed to formal or informal.
       if (fields.includes('form') && v.form === 'Decorative' && /^(Formal|Informal) decorative$/.test(g.form ?? '')) patch.form = g.form!;
     } else for (const f of fields) if (g[f] && v[f] !== g[f]) patch[f] = g[f]!;
+    // A trusted farm's colours come as a pair: one colour named means no second colour.
+    if (v.status !== 'Confirmed' && fields.includes('colour2') && g.colour1 && !g.colour2 && v.colour2) patch.colour2 = null as any;
     if (!Object.keys(patch).length) continue;
     await t.update('varieties', { id: v.id }, patch);
     Object.assign(v, patch);
