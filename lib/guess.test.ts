@@ -22,3 +22,15 @@ test('formal and informal decoratives are told apart (short forms too)', () => {
   assert.equal(form([], 'Single blooms in bright red'), 'Anemone');
   assert.equal(form([], 'idle hands'), null);
 });
+
+test('French forms and colours (Au Beau Pré)', () => {
+  const g = (text: string) => guessDetails('x', { tags: [], text });
+  assert.equal(g('Forme : Décoratif formel').form, 'Formal decorative');
+  assert.equal(g('Dahlia décoratif informel, abricot et crème').form, 'Informal decorative');
+  assert.deepEqual(g('Dahlia décoratif informel, abricot et crème'), { colour1: 'Peach', colour2: 'Cream', form: 'Informal decorative' });
+  assert.equal(g('Type: Collerette').form, 'Collarette');
+  assert.equal(g('Anémone violette').form, 'Anemone');
+  assert.equal(g('Nymphéa lavande').form, 'Waterlily');
+  assert.equal(g('Orchidée étoilée jaune').form, 'Orchid');
+  assert.equal(g('Couleur : rose pâle').colour1, 'Blush');
+});

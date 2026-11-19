@@ -2,7 +2,20 @@
 // These are only suggestions: the owner confirms them in the review list.
 import { COLOURS, FORMS } from './types';
 
+// French words (Quebec farms like Au Beau Pré). Accented letters break \b, so these use letter lookarounds.
+const fr = (words: string) => new RegExp(`(?<!\\p{L})(?:${words})(?!\\p{L})`, 'u');
+
 const COLOUR_WORDS: [RegExp, string][] = [
+  [fr('rose (?:pâle|poudré|clair)|vieux rose'), 'Blush'],
+  [fr('bordeaux|bourgogne|pourpre|rouge (?:foncé|vin)|vin|chocolat|noire?'), 'Burgundy'],
+  [fr('blanc(?:he)?s?|ivoire'), 'White'],
+  [fr('crème'), 'Cream'],
+  [fr('jaunes?|doré(?:e)?s?|citron'), 'Yellow'],
+  [fr('abricot|saumon|corail|pêche'), 'Peach'],
+  [fr('rouges?|écarlate|cerise|framboise'), 'Red'],
+  [fr('violet(?:te)?s?|prune|aubergine'), 'Purple'],
+  [fr('lavande|lilas'), 'Lavender'],
+  [fr('rose|roses'), 'Pink'],
   [/\bbi-?colou?r(ed)?\b|\btwo[- ]tone\b|\bbicolore\b/, 'Bicolour'],
   [/\b(pale|light|soft) pink\b|\bblush\b/, 'Blush'],
   [/\b(dark|deep) red\b|\bburgundy\b|\bwine\b|\bmaroon\b|\boxblood\b|\bblack\b|\bchocolate\b|\bmerlot\b/, 'Burgundy'],
@@ -18,6 +31,16 @@ const COLOUR_WORDS: [RegExp, string][] = [
 ];
 
 const FORM_WORDS: [RegExp, string][] = [
+  [fr('décorati(?:f|ve)s? informel(?:le)?s?|informel(?:le)?s? décorati(?:f|ve)s?'), 'Informal decorative'],
+  [fr('décorati(?:f|ve)s? formel(?:le)?s?|formel(?:le)?s? décorati(?:f|ve)s?'), 'Formal decorative'],
+  [fr('semi-cactus|semi cactus'), 'Semi-cactus'],
+  [fr('nymphéas?|nénuphars?'), 'Waterlily'],
+  [fr('collerettes?|à collerette'), 'Collarette'],
+  [fr('anémones?'), 'Anemone'],
+  [fr('stellaires?|étoilée?s?'), 'Stellar'],
+  [fr('orchidées?'), 'Orchid'],
+  [fr('pivoines?'), 'Peony'],
+  [fr('laciniée?s?|frangée?s?'), 'Laciniated'],
   [/\bsemi[- ]?cactus\b/, 'Semi-cactus'],
   [/\bcactus\b/, 'Cactus'],
   [/\bwater ?lily\b|\bwaterlily\b|\bnénuphar\b/, 'Waterlily'],
@@ -45,7 +68,7 @@ function findAll(text: string, words: [RegExp, string][], max: number): string[]
   const taken: [number, number][] = [];
   const hits: { at: number; value: string }[] = [];
   for (const [re, value] of words) {
-    const g = new RegExp(re.source, 'g');
+    const g = new RegExp(re.source, re.flags.includes('g') ? re.flags : re.flags + 'g');
     for (const m of text.matchAll(g)) {
       const a = m.index!, b = a + m[0].length;
       if (taken.some(([x, y]) => a < y && b > x)) continue;
