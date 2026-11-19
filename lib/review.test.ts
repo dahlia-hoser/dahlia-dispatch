@@ -208,3 +208,11 @@ test('a price-list farm switches to reading its shop', async () => {
   assert.equal((await t.where('listings', { farm_id: f.id }))[0].active, false);
   assert.deepEqual(await syncFarmSources(t, [{ code: 'ZZ', platform: 'wix' }]), []);
 });
+
+test('a farm added to the list gets added to the database once', async () => {
+  const t = db();
+  const entry = { code: 'AR9', name: 'Test Rosa Florals', place: 'Squamish, BC', province: 'BC', site: 'https://shop.example', platform: 'shopify' };
+  assert.deepEqual(await syncFarmSources(t, [entry]), ['Test Rosa Florals']);
+  assert.equal((await t.where('farms', { code: 'AR9' })).length, 1);
+  assert.deepEqual(await syncFarmSources(t, [entry]), []);
+});

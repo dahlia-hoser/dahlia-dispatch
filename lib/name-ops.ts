@@ -383,11 +383,18 @@ export async function blockFarms(t: Tables, blocked: { name: string }[]): Promis
  * Farms whose shop we've learned to read since they were added (data/farms.json): switch the
  * database over from a hand-entered price list, and retire the hand-entered listings.
  */
-export async function syncFarmSources(t: Tables, list: { code: string; site?: string | null; platform: string; collection?: string | null }[]): Promise<string[]> {
+export async function syncFarmSources(t: Tables, list: { code: string; name?: string; place?: string | null; province?: string | null; site?: string | null; platform: string; collection?: string | null }[]): Promise<string[]> {
   const changed: string[] = [];
   const farms = await t.all('farms');
+  const names = new Set(farms.map((x) => String(x.name).toLowerCase()));
   for (const j of list) {
     const f = farms.find((x) => x.code === j.code);
+    // A farm added to the list since setup: add it (unless it's already there under another code).
+    if (!f && j.name && !names.has(j.name.toLowerCase())) {
+      await t.insert('farms', { code: j.code, name: j.name, place: j.place ?? null, province: j.province ?? null, site: j.site ?? null, platform: j.platform, collection: j.collection ?? null, active: !!j.site });
+      changed.push(j.name);
+      continue;
+    }
     if (!f || !['manual', 'unknown'].includes(f.platform) || ['manual', 'unknown'].includes(j.platform) || f.platform === j.platform) continue;
     await t.update('farms', { id: f.id }, { platform: j.platform, site: j.site ?? f.site, collection: j.collection ?? f.collection ?? null, last_checked_at: null });
     for (const l of await t.where('listings', { farm_id: f.id }))

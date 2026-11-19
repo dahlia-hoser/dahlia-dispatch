@@ -42,7 +42,7 @@ async function main() {
   const added = await syncSocieties(t, societies as any[]);
   if (added) console.log(`Added ${added} clubs and societies to the calendar.`);
   await applyOwnerDecisions(t, decisions as any[]);
-  for (const name of await syncFarmSources(t, farmList as any[])) console.log(`${name}: now read straight from its shop.`);
+  for (const name of await syncFarmSources(t, farmList as any[])) console.log(`${name}: added or now read straight from its shop.`);
   const blockedNow = await blockFarms(t, blockedFarms as any[]);
   if (blockedNow) console.log(`Removed ${blockedNow} farms or suggestions you ruled out.`);
   const split = await applyFormSplits(t, formSplits as any[]);

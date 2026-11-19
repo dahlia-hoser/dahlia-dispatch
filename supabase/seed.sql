@@ -3,6 +3,7 @@ begin;
 insert into farms (code, name, place, province, site, platform, collection, active) values
   ('LW', 'Longwoods Flower Farm', 'Bothwell, ON', 'ON', 'https://longwoodsflowerfarm.com', 'shopify', null, true),
   ('TW', 'Twyla’s Flower Farm', 'Victoria, BC', 'BC', 'https://twylasflowerfarm.com', 'shopify', 'dahlia-tubers', true),
+  ('AR', 'Aura Rosa Florals', 'Squamish, BC', 'BC', 'https://shop.aurarosaflorals.com', 'shopify', null, true),
   ('ABP', 'Au Beau Pré', 'Saint-Anicet, QC', 'QC', 'https://aubeaupre.com', 'shopify', null, true),
   ('DM', 'Dahlia May Flower Farm', 'Trenton, ON', 'ON', 'https://www.dahliamayflowerfarm.com', 'shopify', null, true),
   ('SM', 'Singing Meadows Farm', 'Orangeville, ON', 'ON', 'https://www.singingmeadowsfarm.com', 'wix', null, true),

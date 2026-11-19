@@ -1,6 +1,7 @@
 [
   {"code": "LW", "name": "Longwoods Flower Farm", "place": "Bothwell, ON", "province": "ON", "site": "https://longwoodsflowerfarm.com", "platform": "shopify", "collection": null},
   {"code": "TW", "name": "Twyla’s Flower Farm", "place": "Victoria, BC", "province": "BC", "site": "https://twylasflowerfarm.com", "platform": "shopify", "collection": "dahlia-tubers"},
+  {"code": "AR", "name": "Aura Rosa Florals", "place": "Squamish, BC", "province": "BC", "site": "https://shop.aurarosaflorals.com", "platform": "shopify"},
   {"code": "ABP", "name": "Au Beau Pré", "place": "Saint-Anicet, QC", "province": "QC", "site": "https://aubeaupre.com", "platform": "shopify", "collection": null},
   {"code": "DM", "name": "Dahlia May Flower Farm", "place": "Trenton, ON", "province": "ON", "site": "https://www.dahliamayflowerfarm.com", "platform": "shopify", "collection": null},
   {"code": "SM", "name": "Singing Meadows Farm", "place": "Orangeville, ON", "province": "ON", "site": "https://www.singingmeadowsfarm.com", "platform": "wix", "collection": null},
