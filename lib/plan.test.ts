@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { shoppingPlan } from './plan';
+import { shoppingPlan, gamePlan } from './plan';
 
 const farm = (id: number) => ({ id, code: 'F' + id, name: 'Farm ' + id } as any);
 const row = (f: number, cents: number, avail = 'in') => ({ farm: farm(f), avail, label: '', isNew: false, listing: { id: f * 100 + cents, kind: 'tuber', price_cents: cents, title: 'x' } } as any);
@@ -40,4 +40,39 @@ test('bulk lots and multi-packs are left out of the plan', () => {
   const plan = shoppingPlan(groups);
   assert.equal(plan.covered, 1);
   assert.equal(plan.stops[0].farm.id, 3);
+});
+
+test('shipping counts: a cheaper plan with one more farm is offered', () => {
+  const f = (id: number, ship: string) => ({ id, code: 'F' + id, name: 'Farm ' + id, ship_cost: ship } as any);
+  const r = (farm: any, cents: number) => ({ farm, avail: 'in', label: '', isNew: false, listing: { id: farm.id * 1000 + cents, kind: 'tuber', price_cents: cents, title: 'x' } } as any);
+  const big = f(1, '$60 flat'), a = f(2, 'Free shipping'), b = f(3, 'Free shipping');
+  const groups = [group('a', [r(big, 1000), r(a, 1000)]), group('b', [r(big, 1000), r(b, 1000)])];
+  const plan = shoppingPlan(groups);
+  assert.equal(plan.stops.length, 1); // fewest farms: the big farm alone
+  assert.equal(plan.totalCents, 2000 + 6000);
+  assert.ok(plan.cheaper);
+  assert.equal(plan.cheaper!.stops.length, 2);
+  assert.equal(plan.cheaper!.savesCents, 6000);
+});
+
+test('close to free shipping gets a nudge', () => {
+  const farm = { id: 9, code: 'F9', name: 'Farm 9', ship_cost: '$18, free over $100' } as any;
+  const r = (cents: number) => ({ farm, avail: 'in', label: '', isNew: false, listing: { id: cents, kind: 'tuber', price_cents: cents, title: 'x' } } as any);
+  const plan = shoppingPlan([group('a', [r(4000)]), group('b', [r(4000)])]);
+  assert.equal(plan.stops[0].shippingCents, 1800);
+  assert.equal(plan.stops[0].toFreeShippingCents, 2000);
+});
+
+test('game plan: sold-out favourites grouped by their next sale', () => {
+  const now = Date.parse('2026-11-19T12:00:00Z');
+  const tw = { id: 1, code: 'TW', name: 'Twyla' } as any, lbb = { id: 2, code: 'LBB', name: 'Little Black Bird' } as any, x = { id: 3, code: 'X', name: 'No date' } as any;
+  const r = (farm: any) => ({ farm, avail: 'out', label: '', isNew: false, listing: { id: farm.id, kind: 'tuber', price_cents: 1000, title: 'x' } } as any);
+  const sales = [
+    { id: 10, farm_id: 1, label: 'Preorder', starts_at: '2026-11-29T14:00:00Z', when_text: null, time_text: null, url: null, note: null },
+    { id: 11, farm_id: 2, label: 'Tuber sale', starts_at: '2027-01-02T18:00:00Z', when_text: null, time_text: null, url: null, note: null },
+  ] as any[];
+  const groups = [group('a', [r(tw), r(lbb)]), group('b', [r(lbb)]), group('c', [r(tw)]), group('d', [r(x)])];
+  const gp = gamePlan(groups, sales, now);
+  assert.deepEqual(gp.stops.map((s) => [s.farm.code, s.names.map((n) => n.slug)]), [['TW', ['a', 'c']], ['LBB', ['b']]]);
+  assert.deepEqual(gp.noDate.map((n) => n.slug), ['d']);
 });
