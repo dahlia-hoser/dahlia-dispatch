@@ -1,4 +1,5 @@
 'use server';
+import { bicolourFirst } from '../../lib/guess';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { db } from '../../lib/db';
@@ -30,10 +31,11 @@ export async function saveVariety(fd: FormData) {
   const id = Number(fd.get('id'));
   const [v] = await t.where('varieties', { id });
   if (!v) return;
+  const [c1, c2] = bicolourFirst(val(fd, 'colour1'), val(fd, 'colour2'));
   await t.update('varieties', { id }, {
     name: val(fd, 'name') ?? v.name,
-    colour1: val(fd, 'colour1'),
-    colour2: val(fd, 'colour2'),
+    colour1: c1,
+    colour2: c2,
     form: val(fd, 'form'),
     status: val(fd, 'status') ?? v.status,
     notes: val(fd, 'notes'),

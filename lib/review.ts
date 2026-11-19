@@ -1,3 +1,4 @@
+import { bicolourFirst } from './guess';
 // The review list: questions for the owner, and what each answer does.
 import { db } from './db';
 import { isCanadianProvince } from './canada';
@@ -172,7 +173,8 @@ export async function answer(id: number, a: Answer) {
     const [v] = await t.where('varieties', { slug: r.data.variety });
     if (v) {
       undo.variety = { id: v.id, colour1: v.colour1, colour2: v.colour2, form: v.form, status: v.status };
-      await t.update('varieties', { id: v.id }, { colour1: a.colour1, colour2: a.colour2, form: a.form, status: 'Confirmed' });
+      const [c1, c2] = bicolourFirst(a.colour1, a.colour2);
+      await t.update('varieties', { id: v.id }, { colour1: c1, colour2: c2, form: a.form, status: 'Confirmed' });
     }
   }
 

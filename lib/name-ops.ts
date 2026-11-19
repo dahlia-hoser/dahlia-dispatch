@@ -200,6 +200,11 @@ export async function tidyEmojiNames(t: Tables, canSetCanadian: boolean): Promis
 /** Form list changes: Single is now called Anemone; Bicolour moves from form to colour. */
 export async function tidyForms(t: Tables): Promise<number> {
   let n = 0;
+  // Bicolour always goes first ('Bicolour / Orange').
+  for (const v of await t.where('varieties', { colour2: 'Bicolour' })) {
+    await t.update('varieties', { id: v.id }, { colour1: 'Bicolour', colour2: v.colour1 ?? null });
+    n++;
+  }
   for (const v of await t.where('varieties', { form: 'Single' })) {
     await t.update('varieties', { id: v.id }, { form: 'Anemone' });
     n++;

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { guessDetails } from './guess';
+import { bicolourFirst, guessDetails } from './guess';
 
 test('guesses from tags first', () => {
   assert.deepEqual(guessDetails('X', { tags: ['Pink', 'Ball', 'Dahlia'], text: 'A lovely white flower' }), { colour1: 'Pink', colour2: null, form: 'Ball' });
@@ -33,4 +33,10 @@ test('French forms and colours (Au Beau Pré)', () => {
   assert.equal(g('Nymphéa lavande').form, 'Waterlily');
   assert.equal(g('Orchidée étoilée jaune').form, 'Orchid');
   assert.equal(g('Couleur : rose pâle').colour1, 'Blush');
+});
+
+test('Bicolour always comes first', () => {
+  assert.deepEqual(guessDetails('x', { tags: [], text: 'Orange bicolour blooms' }).colour1, 'Bicolour');
+  assert.deepEqual(bicolourFirst('Orange', 'Bicolour'), ['Bicolour', 'Orange']);
+  assert.deepEqual(bicolourFirst('Bicolour', 'Pink'), ['Bicolour', 'Pink']);
 });

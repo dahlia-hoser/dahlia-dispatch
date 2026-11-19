@@ -96,5 +96,12 @@ export function guessDetails(name: string, h: Hints, opts: { fullText?: boolean 
   if (!form) form = findAll(text, FORM_WORDS, 1)[0] ?? null;
   // Never guess from the variety's own name ("Cornel Bronze") without other evidence: skip.
   void name;
+  // Bicolour always goes first: 'Bicolour / Orange', never 'Orange / Bicolour'.
+  if (colours[1] === 'Bicolour') colours.reverse();
   return { colour1: colours[0] ?? null, colour2: colours[1] ?? null, form: form && FORMS.includes(form) ? form : null };
+}
+
+/** Bicolour always goes first: ('Orange', 'Bicolour') becomes ('Bicolour', 'Orange'). */
+export function bicolourFirst(c1: string | null, c2: string | null): [string | null, string | null] {
+  return c2 === 'Bicolour' ? ['Bicolour', c1 === 'Bicolour' ? null : c1] : [c1, c2];
 }
