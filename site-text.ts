@@ -194,6 +194,8 @@ export const text = {
   reviewNotDahlia: 'Not a dahlia: hide it',
   reviewFormFrom: 'from {farm}’s label',
   batchLink: 'Colours in a batch',
+  editBackToList: '← Back to the list',
+  editSavedBack: 'Saved {name}.',
   checkLink: 'Check a colour (e.g. Bicolour)',
   checkTitle: 'Check: {colour}',
   checkShow: 'Show',

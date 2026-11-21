@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { db } from '../../lib/db';
 import { answer, undoAnswer, type Answer } from '../../lib/review';
 import { normalize } from '../../lib/names';
+import { safeBack } from '../../lib/safe-back';
 import { requireAdmin } from '../../lib/is-admin';
 import { suggestFarms } from '../../checker/save';
 
@@ -69,6 +70,9 @@ export async function saveVariety(fd: FormData) {
     await t.insert('aliases', { alias: newName, variety_id: id, shown: null });
   }
   revalidatePath('/', 'layout');
+  // Came from a review page (colours in a batch, check a colour): go straight back to it.
+  const back = safeBack(String(fd.get('back') ?? ''));
+  if (back) redirect(`${back}${back.includes('?') ? '&' : '?'}saved=${encodeURIComponent(val(fd, 'name') ?? v.name)}#v-${v.slug}`);
   redirect(`/admin/varieties/${v.slug}?saved=1`);
 }
 

@@ -7,8 +7,8 @@ import { text, fill } from '../../../site-text';
 
 export const dynamic = 'force-dynamic';
 
-export default async function CheckColour({ searchParams }: { searchParams: Promise<{ colour?: string; done?: string }> }) {
-  const { colour: asked, done } = await searchParams;
+export default async function CheckColour({ searchParams }: { searchParams: Promise<{ colour?: string; done?: string; saved?: string }> }) {
+  const { colour: asked, done, saved } = await searchParams;
   const colour = COLOURS.includes(asked as any) ? (asked as string) : 'Bicolour';
   const t = db();
   const [varieties, listings, farms] = await Promise.all([t.all('varieties'), t.all('listings'), t.all('farms')]);
@@ -27,6 +27,7 @@ export default async function CheckColour({ searchParams }: { searchParams: Prom
         <button className="btn ghost" type="submit">{text.checkShow}</button>
       </form>
       {done && <p className="saved">{fill(text.checkDone, { n: done, colour })}</p>}
+      {saved && <p className="saved">{fill(text.editSavedBack, { name: saved })}</p>}
       <p className="note">{fill(marked.length === 1 ? text.checkIntroOne : text.checkIntro, { n: marked.length, colour })}</p>
       {marked.length > 0 && (
         <form action={removeColour} className="batch">
@@ -37,7 +38,7 @@ export default async function CheckColour({ searchParams }: { searchParams: Prom
               const photo = mine.find((l) => l.image)?.image;
               const cols = [v.colour1, v.colour2].filter(Boolean) as string[];
               return (
-                <label key={v.id} className="batch-tile">
+                <label key={v.id} className="batch-tile" id={`v-${v.slug}`}>
                   <input type="checkbox" name="wrong" value={v.id} aria-label={fill(text.checkNot, { colour })} />
                   {photo && (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -54,7 +55,7 @@ export default async function CheckColour({ searchParams }: { searchParams: Prom
                         <span key={l.id}>{i > 0 && ' · '}{l.url ? <a href={l.url} target="_blank" rel="noopener noreferrer">{farmName.get(l.farm_id)} ↗</a> : farmName.get(l.farm_id)}</span>
                       ))}
                     </span>
-                    <a href={`/admin/varieties/${v.slug}`}>{text.batchFix}</a>
+                    <a href={`/admin/varieties/${v.slug}?back=${encodeURIComponent(`/admin/check?colour=${colour}`)}`}>{text.batchFix}</a>
                   </span>
                 </label>
               );

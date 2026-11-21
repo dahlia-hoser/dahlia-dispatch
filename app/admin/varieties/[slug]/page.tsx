@@ -1,11 +1,14 @@
+import { text } from '../../../../site-text';
+import { safeBack } from '../../../../lib/safe-back';
 import { notFound } from 'next/navigation';
 import { db } from '../../../../lib/db';
 import { saveVariety } from '../../actions';
 import { COLOURS, FORMS } from '../../../../lib/types';
 
-export default async function EditVariety({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ saved?: string }> }) {
+export default async function EditVariety({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ saved?: string; back?: string }> }) {
   const { slug } = await params;
-  const { saved } = await searchParams;
+  const { saved, back: rawBack } = await searchParams;
+  const back = safeBack(rawBack);
   const t = db();
   const [v] = await t.where('varieties', { slug });
   if (!v) notFound();
@@ -20,11 +23,12 @@ export default async function EditVariety({ params, searchParams }: { params: Pr
 
   return (
     <>
-      <a className="back" href={`/v/${v.slug}`}>← Back to {v.name}</a>
+      {back ? <a className="back" href={back}>{text.editBackToList}</a> : <a className="back" href={`/v/${v.slug}`}>← Back to {v.name}</a>}
       <h1 style={{ fontSize: 32 }}>Edit {v.name}</h1>
       {saved && <p className="saved">Saved.</p>}
       <form className="form" action={saveVariety}>
         <input type="hidden" name="id" value={v.id} />
+        {back && <input type="hidden" name="back" value={back} />}
         <label>Name<input name="name" defaultValue={v.name} required /></label>
         <label>Also sold as (one spelling per line)<textarea name="aka" rows={3} defaultValue={aliases.map((a) => a.shown).join('\n')} /></label>
         <div className="inline">
