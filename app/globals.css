@@ -360,3 +360,7 @@ html { font-size: 100%; -webkit-text-size-adjust: 100%; }
 .morefarm, .hap-what a, .hap-all, .batch-body a, .back, .clear, .more-rows > summary, .suggest > summary, footer a { display: inline-block; padding-top: 8px; padding-bottom: 8px; }
 .tile-chips .chip { font-size: 0.8125rem; }
 .chip.size { background: #efe6f7; color: #4b2a6b; }
+
+/* Add to calendar on each sale */
+.add-cal { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.875rem; }
+.add-cal a { display: inline-block; padding: 8px 0; font-weight: 700; }

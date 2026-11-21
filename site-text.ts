@@ -205,6 +205,8 @@ export const text = {
   tileFrom: 'from {price}',
   tilePriceTba: 'Price TBA',
   tileNew: 'New',
+  addToCalendar: '📅 Add to calendar',
+  addToGoogle: 'Google Calendar',
   batchLink: 'Colours in a batch',
   reviewSuggestion: 'A visitor suggests a fix',
   reviewSuggestionNow: 'Now',

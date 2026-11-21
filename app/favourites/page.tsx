@@ -1,3 +1,4 @@
+import { canAddToCalendar, googleCalendarLink } from '../../lib/ics';
 import { loadAll, groupAll, lastChecked, ago, money, gettingIt, dateTime } from '../../lib/catalogue';
 import { shoppingPlan, gamePlan, inStockOptions, inStockOnlyAsPacks, PLAN_FROM, type PlanOption } from '../../lib/plan';
 import { GroupCard } from '../../components/Listing';
@@ -100,6 +101,12 @@ export default async function Favourites({ searchParams }: { searchParams: Promi
                       {g.sale.label && <span className="note"> · {g.sale.label}</span>}
                     </span>
                   </div>
+                  {canAddToCalendar(g.sale, now) && (
+                    <span className="add-cal">
+                      <a href={`/calendar/${g.sale.id}`} download>{text.addToCalendar}</a>
+                      <a href={googleCalendarLink(g.sale, g.farm)} target="_blank" rel="noopener noreferrer">{text.addToGoogle} ↗</a>
+                    </span>
+                  )}
                   <p className="game-names">
                     <span aria-hidden="true">♥ </span>
                     {g.names.map((n, i) => (

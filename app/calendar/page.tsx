@@ -1,3 +1,4 @@
+import { canAddToCalendar, googleCalendarLink } from '../../lib/ics';
 import { db } from '../../lib/db';
 import { dateTime } from '../../lib/catalogue';
 import type { Farm, SaleEvent } from '../../lib/types';
@@ -42,6 +43,12 @@ export default async function Calendar({ searchParams }: { searchParams: Promise
           <span>{[f?.place, s.label, s.note].filter(Boolean).join(' · ')}</span>
         </div>
         {s.url && <a className="shop" href={s.url} target="_blank" rel="noopener noreferrer">{club ? text.calendarMoreInfo : text.visitShop} ↗</a>}
+        {canAddToCalendar(s, now) && (
+          <span className="add-cal">
+            <a href={`/calendar/${s.id}`} download>{text.addToCalendar}</a>
+            <a href={googleCalendarLink(s, f)} target="_blank" rel="noopener noreferrer">{text.addToGoogle} ↗</a>
+          </span>
+        )}
       </article>
     );
   };
