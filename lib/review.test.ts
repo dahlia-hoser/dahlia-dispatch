@@ -280,3 +280,12 @@ test('not-a-dahlia list and spelling fixes', async () => {
   assert.equal(await renameVarieties(t, [{ from: 'Chimicum X', to: 'Chimacum X' }]), 1);
   assert.equal((await t.where('varieties', { id: w.id }))[0].name, 'Chimacum X');
 });
+
+test('merging two spellings that look alike loosely (Natalie/Nathalie)', async () => {
+  const t = db();
+  const [good] = await t.insert('varieties', { slug: 'sweet-nathalie-x', name: 'Sweet Nathalie X', status: 'Confirmed' });
+  const [dupe] = await t.insert('varieties', { slug: 'sweet-natalie-x', name: 'Sweet Natalie X', status: 'Suggested' });
+  assert.equal(await mergeVarieties(t, [{ from: 'Sweet Natalie X', into: 'Sweet Nathalie X' }]), 1);
+  assert.equal((await t.where('varieties', { id: dupe.id })).length, 0);
+  assert.equal((await t.where('varieties', { id: good.id })).length, 1);
+});

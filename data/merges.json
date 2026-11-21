@@ -20,5 +20,11 @@
   { "from": "BQ Sweet", "into": "Bloomquist Sweet" },
   { "from": "BQ Tory", "into": "Bloomquist Tory P" },
   { "from": "BQ Wild", "into": "Bloomquist Wild" },
-  { "from": "BQ York", "into": "Bloomquist York" }
+  { "from": "BQ York", "into": "Bloomquist York" },
+  { "from": "Café Au Lait (Rose)", "into": "Café Au Lait Rose" },
+  { "from": "Café Au Lait (Royal)", "into": "Cafe au Lait Royal" },
+  { "from": "Café Au Lait (Twist)", "into": "Café Au Lait Twist" },
+  { "from": "Cafe Supreme", "into": "Café Au Lait Supreme" },
+  { "from": "Sweet Natalie", "into": "Sweet Nathalie" },
+  { "from": "L.A.T.E. *New*", "into": "L.A.T.E" }
 ]

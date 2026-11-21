@@ -31,7 +31,7 @@ export const hasCanadaMark = (s: string) => /🇨🇦|🍁/u.test(s);
 
 export function varietyNameFromTitle(title: string): string {
   let t = stripEmoji(title);
-  t = t.replace(/\s+(?:NEW!?|New!)\s*$/, '').trim(); // shop badge, not part of the name
+  t = t.replace(/\s+(?:NEW!?|New!|\*\s*new\s*\*)\s*$/i, '').trim(); // shop badge, not part of the name
   // Text inside quotes is usually the variety name.
   const quoted = t.match(/(?:^|\s)[‘'"“]([^'’"”]{3,})['’"”](?=\s|$|[-–—,.|:])/);
   if (quoted) t = quoted[1];

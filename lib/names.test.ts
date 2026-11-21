@@ -165,6 +165,7 @@ test('emoji and flags are not part of a name', () => {
   assert.equal(varietyNameFromTitle('Letterkenny Wayne 🇨🇦'), 'Letterkenny Wayne');
   assert.equal(varietyNameFromTitle('🇨🇦 Ferncliff Copper'), 'Ferncliff Copper');
   assert.equal(varietyNameFromTitle('Rock Run Ashley ⭐️ NEW'), 'Rock Run Ashley');
+  assert.equal(varietyNameFromTitle('Snow Cap *NEW*'), 'Snow Cap');
   assert.equal(varietyNameFromTitle('Brand New Seedling'), 'Brand New Seedling');
 });
 

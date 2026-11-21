@@ -461,11 +461,10 @@ export async function markNotDahlias(t: Tables, names: string[]): Promise<number
  */
 export async function mergeVarieties(t: Tables, merges: { from: string; into: string }[]): Promise<number> {
   const varieties = await t.all('varieties');
-  const byKey = new Map(varieties.map((v) => [looseKey(v.name), v]));
   let n = 0;
   for (const m of merges) {
-    const from = byKey.get(looseKey(m.from));
-    const into = byKey.get(looseKey(m.into));
+    const from = findByName(varieties, m.from);
+    const into = findByName(varieties.filter((v) => v.id !== from?.id), m.into);
     if (!from || !into || from.id === into.id) continue;
     for (const l of await t.where('listings', { variety_id: from.id })) await t.update('listings', { id: l.id }, { variety_id: into.id });
     for (const a of await t.where('aliases', { variety_id: from.id })) await t.update('aliases', { alias: a.alias }, { variety_id: into.id });
@@ -478,6 +477,7 @@ export async function mergeVarieties(t: Tables, merges: { from: string; into: st
     for (const r of (await t.where('review_items', { kind: 'details' })).filter((r) => r.status !== 'done' && r.data?.variety === from.slug))
       await t.update('review_items', { id: r.id }, { status: 'done', resolved_at: new Date().toISOString(), answer: { choice: 'merged', auto: true } });
     await t.remove('varieties', { id: from.id });
+    varieties.splice(varieties.indexOf(from), 1);
     n++;
   }
   return n;
@@ -487,7 +487,7 @@ export async function mergeVarieties(t: Tables, merges: { from: string; into: st
 export async function renameVarieties(t: Tables, renames: { from: string; to: string }[]): Promise<number> {
   let n = 0;
   for (const r of renames) {
-    const v = (await t.all('varieties')).find((x) => looseKey(x.name) === looseKey(r.from));
+    const v = findByName(await t.all('varieties'), r.from);
     if (!v) continue;
     await t.update('varieties', { id: v.id }, { name: r.to });
     const alias = normalize(r.from);
@@ -495,4 +495,9 @@ export async function renameVarieties(t: Tables, renames: { from: string; to: st
     n++;
   }
   return n;
+}
+
+/** Exact name first, then the same letters, then a loose match (two spellings can share a loose match). */
+function findByName<T extends Record<string, any>>(list: T[], name: string): T | undefined {
+  return list.find((v) => v.name === name) ?? list.find((v) => normalize(v.name) === normalize(name)) ?? list.find((v) => looseKey(v.name) === looseKey(name));
 }
