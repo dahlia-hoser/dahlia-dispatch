@@ -193,3 +193,8 @@ test('arches, rentals and garden supplies are not dahlias', () => {
   for (const t of ['Wedding Arch Rental', 'Flower Arch', 'Garden Arches', 'Metal Obelisk', 'Dahlia Stakes', 'Plant Support Rings', 'Gift Basket', 'Trellis Netting', 'Rental: Flower Wall']) assert.equal(kindFromTitle(t, '', []), 'other', t);
   assert.equal(kindFromTitle('Archduke Joseph', '', []), 'tuber');
 });
+
+test('category placeholders are not dahlias', () => {
+  for (const t of ['Water Lily Varieties', 'Ball Varieties', 'Pompon Dahlias', 'Dinnerplate Dahlias']) assert.equal(kindFromTitle(t, '', []), 'other', t);
+  for (const t of ['Kelgai Ann', 'Cornel', 'Mystique']) assert.equal(kindFromTitle(t, '', []), 'tuber', t);
+});
