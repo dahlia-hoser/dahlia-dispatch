@@ -91,7 +91,7 @@ export const text = {
   clearFilters: 'Clear filters',
   availAll: 'All',
   availInStock: 'In stock',
-  availNotAvailable: 'Not available',
+  availNotAvailable: 'Not in stock right now',
   availComingSoon: 'Coming soon',
   availPriceList: 'Price list',
 
@@ -104,7 +104,7 @@ export const text = {
   showMore: 'Show more ({n})',
   resultsNone: 'Nothing matches yet. Try a different spelling, or clear the filters.',
   notAvailableNote:
-    '“Not available” can mean sold out, or that the farm’s shop hasn’t opened for the season yet. Check the sale calendar for opening dates.',
+    '“Not in stock right now” can mean sold out, or that the farm’s shop hasn’t opened for the season yet. Check the sale calendar for opening dates.',
   priceNote: 'Prices and stock from each farm’s shop, checked {time}. Always check their site in case we get it wrong!',
   visitShop: 'Visit shop',
   alsoSoldAs: 'Also sold as',
