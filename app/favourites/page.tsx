@@ -5,7 +5,7 @@ import { FavSync, CopyListLink } from '../../components/Fav';
 import { LeafDivider } from '../../components/Leaf';
 import { text, fill } from '../../site-text';
 
-export const metadata = { title: 'Favourites · The Hosers’ Dahlia Dispatch' };
+export const metadata = { title: 'Your favourites' };
 
 function Stops({ option }: { option: PlanOption }) {
   return (

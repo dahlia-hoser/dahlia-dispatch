@@ -8,6 +8,17 @@ import { text, fill } from '../../../site-text';
 import { FavButton } from '../../../components/Fav';
 import { isAdmin } from '../../../lib/is-admin';
 
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const g = groupAll(await loadAll()).find((x) => x.variety?.slug === slug);
+  if (!g) return { title: 'Dahlia not found' };
+  const farms = new Set(g.rows.map((r) => r.farm.id)).size;
+  return {
+    title: `${g.name} dahlia tubers in Canada: prices and stock`,
+    description: `Where to buy ${g.name} dahlia tubers from Canadian growers${farms ? `: ${farms} ${farms === 1 ? 'farm' : 'farms'}` : ''}, with prices, stock and sale dates.`,
+  };
+}
+
 export default async function VarietyPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ suggested?: string }> }) {
   const { suggested } = await searchParams;
   const { slug } = await params;

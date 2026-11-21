@@ -7,10 +7,12 @@ import { openReviewCount } from '../lib/review';
 import { isAdmin } from '../lib/is-admin';
 import { Leaf, LeafCluster } from '../components/Leaf';
 
+// Page titles lead with what people search for ("Café au Lait dahlia tubers in Canada"), then the name.
 export const metadata: Metadata = {
-  title: text.siteName,
+  title: { default: `${text.siteName} · Dahlia tubers from Canadian growers`, template: `%s · ${text.siteName}` },
   description: text.tagline,
-  robots: { index: false, follow: false },
+  openGraph: { siteName: text.siteName, locale: 'en_CA', type: 'website' },
+  robots: { index: false, follow: false }, // beta: hidden from search engines until launch
 };
 
 export const dynamic = 'force-dynamic';

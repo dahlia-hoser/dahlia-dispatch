@@ -6,6 +6,11 @@ import { isAdmin } from '../../lib/is-admin';
 import { LeafDivider } from '../../components/Leaf';
 import { splitSales } from '../../lib/sales';
 
+export const metadata = {
+  title: 'Dahlia tuber sale calendar for Canada',
+  description: 'When Canadian dahlia farms and clubs open their tuber sales, with times in your time zone.',
+};
+
 export default async function Calendar({ searchParams }: { searchParams: Promise<{ show?: string }> }) {
   const { show } = await searchParams;
   const t = db();

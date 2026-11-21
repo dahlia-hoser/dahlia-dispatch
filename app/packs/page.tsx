@@ -4,6 +4,11 @@ import { LeafDivider } from '../../components/Leaf';
 import { isAdmin } from '../../lib/is-admin';
 import { text } from '../../site-text';
 
+export const metadata = {
+  title: 'Dahlia tuber mixes and mystery packs',
+  description: 'Colour mixes and mystery packs of dahlia tubers from Canadian growers.',
+};
+
 export default async function Packs() {
   const [{ rainbows, roulette }, admin] = await Promise.all([loadPacks(), isAdmin()]);
   return (

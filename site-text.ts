@@ -6,7 +6,7 @@
 // ─────────────────────────────────────────────────────────────
 
 export const text = {
-  siteName: 'The Hosers’ Dahlia Dispatch',
+  siteName: 'The Dahlia Hoser',
   tagline: 'Dahlia tubers from Canadian growers & suppliers, all in one place.',
   byline: 'For Hosers by a Hoser',
   betaNote: 'Beta: we’re still testing, so some prices or names may be missing or wrong.',
@@ -196,7 +196,7 @@ export const text = {
   // Footer quotes: one shows at random on each page. Add more as { quote: '…', by: '…' }.
   // Only use real quotes from real people, with their OK.
   footerQuotes: [
-    { quote: 'Dahlia Dispatch is really great.', by: 'Dahlia Dispatch Creator' },
+    { quote: 'The Dahlia Hoser is really great.', by: 'The Dahlia Hoser Creator' },
   ] as { quote: string; by: string }[],
   batchLink: 'Colours in a batch',
   reviewSuggestion: 'A visitor suggests a fix',
