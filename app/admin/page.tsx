@@ -15,6 +15,7 @@ export default async function Admin() {
           <a href="/admin/check?colour=Bicolour">{text.checkLink}</a>
           <a href="/admin/farms">Farms</a>
           <a href="/admin/sales">Sale dates</a>
+          <a href="/admin/export" download>Download list</a>
         </span>
       </div>
       {preview && <p className="note-box">Preview mode: no database connected yet, so answers are forgotten when the site restarts.</p>}
