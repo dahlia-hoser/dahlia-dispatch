@@ -1,6 +1,6 @@
 // Deciding which variety a farm's listing belongs to, and asking the owner when unsure.
 import type { Tables } from './db';
-import { kindFromTitle, matchName, normalize, sameEnough, slugify, tidyName, varietyNameFromTitle, stripEmoji, hasCanadaMark } from './names';
+import { kindFromTitle, matchName, normalize, sameEnough, slugify, tidyName, varietyNameFromTitle, stripEmoji, hasCanadaMark, looseKey } from './names';
 import { guessDetails, type Hints } from './guess';
 
 export class NameBook {
@@ -407,4 +407,33 @@ export async function syncFarmSources(t: Tables, list: { code: string; name?: st
     changed.push(f.name);
   }
   return changed;
+}
+
+/**
+ * The owner's form corrections by name (data/form-fixes.json). They win over everything, even a
+ * confirmed form, but each is applied only once per variety, so a later change on the site stands.
+ * A name not on the site yet is applied when a farm first lists it.
+ */
+export async function applyFormFixes(t: Tables, fixes: { name: string; form: string }[]): Promise<number> {
+  const varieties = await t.all('varieties');
+  const aliases = await t.all('aliases');
+  const done = new Set((await t.where('review_items', { kind: 'formfix' })).map((r) => `${r.data?.slug}|${r.data?.form}`));
+  const byKey = new Map<string, any>();
+  for (const v of varieties) byKey.set(looseKey(v.name), v);
+  for (const a of aliases) {
+    const v = varieties.find((x) => x.id === a.variety_id);
+    if (v && !byKey.has(looseKey(a.alias))) byKey.set(looseKey(a.alias), v);
+  }
+  let n = 0;
+  const now = new Date().toISOString();
+  for (const f of fixes) {
+    const v = byKey.get(looseKey(f.name));
+    if (!v || done.has(`${v.slug}|${f.form}`)) continue;
+    if (v.form !== f.form) {
+      await t.update('varieties', { id: v.id }, { form: f.form });
+      n++;
+    }
+    await t.insert('review_items', { kind: 'formfix', status: 'done', resolved_at: now, data: { slug: v.slug, form: f.form, name: f.name } });
+  }
+  return n;
 }

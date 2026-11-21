@@ -2,9 +2,10 @@
 // Run it yourself with:  npm run check-farms            (farms that are due)
 //                        npm run check-farms -- --all   (every farm now)
 import { db } from '../lib/db';
-import { NameBook, autoAnswerSlips, hideNonDahlias, reconcileNames, syncSocieties, tidyForms, applyOwnerDecisions, applyFormSplits, blockFarms, syncFarmSources, tidyEmojiNames } from '../lib/name-ops';
+import { NameBook, autoAnswerSlips, hideNonDahlias, reconcileNames, syncSocieties, tidyForms, applyOwnerDecisions, applyFormSplits, applyFormFixes, blockFarms, syncFarmSources, tidyEmojiNames } from '../lib/name-ops';
 import decisions from '../data/owner-decisions.json';
 import formSplits from '../data/form-splits.json';
+import formFixes from '../data/form-fixes.json';
 import farmList from '../data/farms.json';
 import blockedFarms from '../data/blocked-farms.json';
 import trusted from '../data/trusted-sources.json';
@@ -45,6 +46,8 @@ async function main() {
   for (const name of await syncFarmSources(t, farmList as any[])) console.log(`${name}: added or now read straight from its shop.`);
   const blockedNow = await blockFarms(t, blockedFarms as any[]);
   if (blockedNow) console.log(`Removed ${blockedNow} farms or suggestions you ruled out.`);
+  const formsFixed = await applyFormFixes(t, formFixes as any[]);
+  if (formsFixed) console.log(`Set ${formsFixed} forms from your corrections list.`);
   const split = await applyFormSplits(t, formSplits as any[]);
   if (split) console.log(`Narrowed ${split} Decorative varieties to formal or informal.`);
   const unemoji = await tidyEmojiNames(t, v2);

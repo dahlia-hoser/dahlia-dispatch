@@ -216,3 +216,15 @@ test('a farm added to the list gets added to the database once', async () => {
   assert.equal((await t.where('farms', { code: 'AR9' })).length, 1);
   assert.deepEqual(await syncFarmSources(t, [entry]), []);
 });
+
+import { applyFormFixes } from './name-ops';
+test('owner form fixes win once, by loose name', async () => {
+  const t = db();
+  const [v] = await t.insert('varieties', { slug: 'creme-de-cognac', name: 'Creme de Cognac', form: 'Ball', status: 'Confirmed' });
+  assert.equal(await applyFormFixes(t, [{ name: 'Crème de Cognac', form: 'Informal decorative' }]), 1);
+  assert.equal((await t.where('varieties', { id: v.id }))[0].form, 'Informal decorative');
+  assert.equal((await t.where('varieties', { id: v.id }))[0].status, 'Confirmed');
+  await t.update('varieties', { id: v.id }, { form: 'Peony' }); // changed later on the site
+  assert.equal(await applyFormFixes(t, [{ name: 'Crème de Cognac', form: 'Informal decorative' }]), 0);
+  assert.equal((await t.where('varieties', { id: v.id }))[0].form, 'Peony');
+});
