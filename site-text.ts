@@ -79,7 +79,7 @@ export const text = {
   filterColour: 'Colour',
   filterProvince: 'Province',
   filterAny: 'Any',
-  filterGetIn: 'Can get it in',
+  filterGetIn: 'Ships to or pickup in',
   filterOnly: 'Show only',
   onlyNew: 'New introductions',
   onlyCanadian: 'Canadian-bred',
