@@ -252,6 +252,8 @@ export async function applyTrustedDetails(
   const varietyOf = new Map(listings.map((l) => [String(l.product_key), l.variety_id]));
   const varieties = new Map((await t.all('varieties')).map((v) => [v.id, v]));
   const openCards = (await t.where('review_items', { kind: 'details' })).filter((r) => r.status !== 'done');
+  // Forms set from your corrections list are never changed by a farm's description.
+  const lockedForm = new Set((await t.where('review_items', { kind: 'formfix' })).map((r) => r.data?.slug));
   let n = 0;
   for (const p of products) {
     const id = varietyOf.get(p.key);
@@ -264,6 +266,7 @@ export async function applyTrustedDetails(
       // Your answers stand. The one exception: plain "Decorative" can be narrowed to formal or informal.
       if (fields.includes('form') && v.form === 'Decorative' && /^(Formal|Informal) decorative$/.test(g.form ?? '')) patch.form = g.form!;
     } else for (const f of fields) if (g[f] && v[f] !== g[f]) patch[f] = g[f]!;
+    if (lockedForm.has(v.slug)) delete patch.form;
     // A trusted farm's colours come as a pair: one colour named means no second colour.
     if (v.status !== 'Confirmed' && fields.includes('colour2') && g.colour1 && !g.colour2 && v.colour2) patch.colour2 = null as any;
     if (!Object.keys(patch).length) continue;
