@@ -175,3 +175,11 @@ test('buckets of cut flowers are not dahlias', () => {
   assert.equal(kindFromTitle("Grower's Choice Dahlia Tubers", '', []), 'mix');
   assert.equal(kindFromTitle('Bulk Nicholas', '', []), 'tuber');
 });
+
+test('anemone flowers are not dahlias, anemone dahlias are', () => {
+  assert.equal(kindFromTitle('Anemone Carmel White', '', []), 'other');
+  assert.equal(kindFromTitle('Anemone Mistral Plus Blue', '', []), 'other');
+  assert.equal(kindFromTitle('Anemone Dahlia Blue Bayou', '', []), 'tuber');
+  assert.equal(kindFromTitle('Blue Bayou (Anemone)', '', []), 'tuber');
+  assert.equal(kindFromTitle('Anemone-flowered Dahlia Totally Tangerine', '', []), 'tuber');
+});
