@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseShopify, parseWoo, shopifyPrice } from './sources';
+import { parseShopify, parseWoo, shopifyPrice, cookiesFrom } from './sources';
 import { whyDue } from './schedule';
 import { save, weeklyHousekeeping } from './save';
 import { db } from '../lib/db';
@@ -166,4 +166,9 @@ test('a mostly-dahlia shop keeps products that never say "dahlia"', () => {
     { id: 2, title: 'Gift Card', handle: 'gc', product_type: 'Gift Card', tags: [], variants: [{ price: '25', available: true }] },
   ], 'https://x.ca', 'everything');
   assert.deepEqual(items.map((i) => i.title), ['Tangerine Dream']);
+});
+
+test('cookies from a shop are merged into one Cookie header', () => {
+  const c = cookiesFrom(['localization=CA; path=/; secure', 'cart_currency=CAD; path=/', 'cart=abc123; path=/'], 'cart_currency=USD; localization=US');
+  assert.equal(c, 'cart_currency=CAD; localization=CA; cart=abc123');
 });

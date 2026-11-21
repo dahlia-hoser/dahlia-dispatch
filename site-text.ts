@@ -157,9 +157,9 @@ export const text = {
   notFoundSearch: 'Back to search',
 
   // Rainbows & Roulette (mixed and mystery packs)
-  packsTitle: 'Rainbows & Roulette',
+  packsTitle: 'Rainbows & Mystery packs',
   packsIntro: 'Colour mixes, curated bundles and mystery bags from Canadian farms. Feeling lucky, eh?',
-  rouletteTitle: '🎲 Roulette',
+  rouletteTitle: '🎁 Mystery packs',
   rouletteIntro: 'Mystery packs and no-ID tubers. Let a farmer pick for you.',
   rainbowsTitle: '🌈 Rainbows',
   rainbowsIntro: 'Colour-themed mixes and curated collections.',

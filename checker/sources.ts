@@ -90,10 +90,10 @@ function tagList(tags: unknown): string[] {
   return [];
 }
 
-async function readAllPages(url: string): Promise<any[]> {
+async function readAllPages(url: string, headers: Record<string, string> = SHOPIFY_HEADERS): Promise<any[]> {
   const raw: any[] = [];
   for (let page = 1; page <= 20; page++) {
-    const data = await getJson(`${url}?limit=250&page=${page}&currency=CAD&country=CA`, SHOPIFY_HEADERS);
+    const data = await getJson(`${url}?limit=250&page=${page}&currency=CAD&country=CA`, headers);
     const products = data.products ?? [];
     raw.push(...products);
     if (products.length < 250) break;
@@ -116,7 +116,12 @@ export function pickDahliaCollections(collections: { handle: string; title: stri
  * collections are kept only if they look like dahlias.
  */
 export async function readShopify(farm: FarmSource, knownNames: Set<string> = new Set()): Promise<Product[]> {
-  const root = base(farm.site);
+  const site = base(farm.site);
+  // Shops that still answer in US dollars get switched to Canada first, as a Canadian shopper's browser would.
+  const ca = await goCanadian(site);
+  const root = ca.root;
+  const SHOPIFY_HEADERS = ca.headers;
+  if (ca.how !== 'plain') console.log(`  ${farm.name}: switched to Canadian prices (${ca.how})`);
   let handles = (farm.collection ?? '').split(',').map((h) => h.trim()).filter(Boolean);
   if (!handles.length) {
     try {
@@ -129,14 +134,14 @@ export async function readShopify(farm: FarmSource, knownNames: Set<string> = ne
   const byId = new Map<string, Product>();
   for (const h of handles) {
     try {
-      const raw = await readAllPages(`${root}/collections/${h}/products.json`);
+      const raw = await readAllPages(`${root}/collections/${h}/products.json`, SHOPIFY_HEADERS);
       for (const p of parseShopify(raw, farm.site, h).items) byId.set(p.key, p);
     } catch {
       /* a collection that has gone away: skip it */
     }
     await pause(1000);
   }
-  const all = await readAllPages(`${root}/products.json`);
+  const all = await readAllPages(`${root}/products.json`, SHOPIFY_HEADERS);
   const loose = parseShopify(all, farm.site, null);
   // Without any dahlia collection, fall back to everything that isn't clearly something else.
   if (!loose.fellBack || byId.size === 0) for (const p of loose.items) if (!byId.has(p.key)) byId.set(p.key, p);
@@ -151,18 +156,53 @@ export async function readShopify(farm: FarmSource, knownNames: Set<string> = ne
     if (mostlyDahlias || knownNames.has(normalize(varietyNameFromTitle(p.title)))) byId.set(p.key, p);
   }
   // Which currency the shop actually answered in. Prices in any other currency are not saved.
-  const currency = await shopifyCurrency(root);
+  const currency = await shopifyCurrency(root, SHOPIFY_HEADERS);
   return [...byId.values()].map((p) => ({ ...p, currency }));
 }
 
 /** The shop's cart says which currency this visitor is being shown. Unknown → assume Canadian. */
-export async function shopifyCurrency(root: string): Promise<string> {
+export async function shopifyCurrency(root: string, headers: Record<string, string> = SHOPIFY_HEADERS): Promise<string> {
   try {
-    const cart = await getJson(`${root}/cart.js?currency=CAD&country=CA`, SHOPIFY_HEADERS);
+    const cart = await getJson(`${root}/cart.js?currency=CAD&country=CA`, headers);
     return typeof cart.currency === 'string' && cart.currency ? cart.currency.toUpperCase() : 'CAD';
   } catch {
     return 'CAD';
   }
+}
+
+/** Cookies a shop hands back, as one Cookie header (name=value pairs only). */
+export function cookiesFrom(setCookies: string[], start = ''): string {
+  const jar = new Map<string, string>();
+  for (const part of start.split(';')) { const [k, ...v] = part.trim().split('='); if (k) jar.set(k, v.join('=')); }
+  for (const c of setCookies) { const [pair] = c.split(';'); const [k, ...v] = pair.trim().split('='); if (k) jar.set(k, v.join('=')); }
+  return [...jar].map(([k, v]) => `${k}=${v}`).join('; ');
+}
+
+/**
+ * Get a Shopify shop to show Canadian prices. Tries, in order: the plain request; the shop's own
+ * "change country" form (what the country picker on the site does); the shop's /en-ca address.
+ */
+export async function goCanadian(site: string): Promise<{ root: string; headers: Record<string, string>; how: string }> {
+  const plain = { root: site, headers: SHOPIFY_HEADERS, how: 'plain' };
+  if ((await shopifyCurrency(site)) === 'CAD') return plain;
+  try {
+    const res = await fetch(`${site}/localization`, {
+      method: 'POST',
+      redirect: 'manual',
+      headers: { ...SHOPIFY_HEADERS, 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'text/html' },
+      body: 'form_type=localization&_method=put&return_to=%2F&country_code=CA&language_code=en',
+      signal: AbortSignal.timeout(30000),
+    });
+    const set = typeof (res.headers as any).getSetCookie === 'function' ? (res.headers as any).getSetCookie() : [];
+    const headers = { ...SHOPIFY_HEADERS, Cookie: cookiesFrom(set, SHOPIFY_HEADERS.Cookie) };
+    if ((await shopifyCurrency(site, headers)) === 'CAD') return { root: site, headers, how: 'country picker' };
+    for (const prefix of ['/en-ca', '/en-CA']) {
+      if ((await shopifyCurrency(site + prefix, headers)) === 'CAD') return { root: site + prefix, headers, how: prefix };
+    }
+  } catch {
+    /* fall through: prices stay blank rather than wrong */
+  }
+  return plain;
 }
 
 // ───────── WooCommerce ─────────
