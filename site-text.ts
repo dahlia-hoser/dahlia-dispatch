@@ -14,8 +14,8 @@ export const text = {
 
   // Top menu
   navSearch: 'Search',
-  navCalendar: 'Sale calendar',
-  navPacks: 'Rainbows & Roulette',
+  navCalendar: 'Calendar',
+  navPacks: 'Packs',
   navFavs: 'Favourites',
   favCopyLink: 'Copy my list link',
   favCopied: 'Link ready. Open it on your other phone or computer and your favourites come along.',

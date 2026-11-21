@@ -367,3 +367,6 @@ html { font-size: 100%; -webkit-text-size-adjust: 100%; }
 .search-how { font-weight: 700; margin: 4px 0 10px; }
 .empty { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px 18px; margin: 10px 0; }
 .empty p { margin: 6px 0; }
+
+/* Menu fits one line on phones */
+@media (max-width: 480px) { .nav { gap: 2px; } .nav a { padding: 10px 11px; } }
