@@ -34,7 +34,7 @@ export function isNewIntro(year: number | null | undefined, now = Date.now()): b
 const CANADIAN_PREFIXES = ['ferncliff', 'lulu island', 'vivas', 'meadows', 'hy '];
 // Anywhere in the name (e.g. the Letterkenny series).
 const CANADIAN_WORDS = ['letterkenny', 'skeena'];
-const CANADIAN_NAMES = ['ben huston', 'clara huston', 'elsie huston', 'hamilton lillian', 'colleen mooney', 'millennium', 'connie pei yang', 'r joan'];
+const CANADIAN_NAMES = ['ben huston', 'clara huston', 'elsie huston', 'hamilton lillian', 'colleen mooney', 'millennium', 'connie pei yang', 'r joan', 'blackberry ripple'];
 
 export function isCanadianBred(name: string, override: boolean | null | undefined): boolean {
   if (override === true || override === false) return override;

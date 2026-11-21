@@ -36,3 +36,7 @@ test('Skeena dahlias are Canadian-bred', () => {
   assert.equal(isCanadianBred('Skeena Sunrise', null), true);
   assert.equal(isCanadianBred('Bright Skeena', null), true);
 });
+
+test('Blackberry Ripple is Canadian-bred (Willoughby, Victoria BC, 1993)', () => {
+  assert.equal(isCanadianBred('Blackberry Ripple', null), true);
+});
