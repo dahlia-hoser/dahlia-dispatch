@@ -45,6 +45,8 @@ export type Listing = {
   active: boolean;
   first_seen: string;
   last_changed: string;
+  description?: string | null; // the farm's own description (after update-2.sql)
+  image?: string | null; // the farm's photo (after update-3.sql)
 };
 
 export type SaleEvent = {

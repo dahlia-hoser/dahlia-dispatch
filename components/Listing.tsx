@@ -86,11 +86,12 @@ export function GroupCard({ g, limit }: { g: Group; limit?: number }) {
 }
 
 export function Badges({ g }: { g: Group }) {
-  if (!g.newIntro && !g.canadian) return null;
+  if (!g.newIntro && !g.canadian && !g.dinnerplate) return null;
   return (
     <span className="inline" style={{ gap: 6 }}>
       {g.newIntro && <span className="chip intro">{fill(text.badgeNewIntro, { year: g.variety?.intro_year ?? '' })}</span>}
       {g.canadian && <span className="chip canada">{text.badgeCanadian}</span>}
+      {g.dinnerplate && <span className="chip size">{text.badgeDinnerplate}</span>}
     </span>
   );
 }

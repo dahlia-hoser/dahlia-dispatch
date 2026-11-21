@@ -56,7 +56,7 @@ const FORM_WORDS: [RegExp, string][] = [
   [/\bnovelty\b/, 'Novelty'],
   [/\binformal dec(?:orative)?\b\.?|\binf\.? ?dec\b\.?|\bi\.d\.(?=\s|$|,)|(?:^|\| )id(?= \||$)|\bform\s*:\s*id\b|\bdecorative\s*[(:–-]\s*informal\b/, 'Informal decorative'],
   [/\bformal dec(?:orative)?\b\.?|\bf\.d\.(?=\s|$|,)|(?:^|\| )fd(?= \||$)|\bform\s*:\s*fd\b|\bdecorative\s*[(:–-]\s*formal\b/, 'Formal decorative'],
-  [/\bdecorative\b|\bdécoratif\b|\bdinnerplate\b|\bdinner plate\b/, 'Decorative'],
+  [/\bdecorative\b|\bdécoratif\b/, 'Decorative'], // dinnerplate is a size, not a form (lib/size.ts)
 ];
 
 export function stripHtml(html: string): string {

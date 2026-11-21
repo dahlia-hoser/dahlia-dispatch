@@ -15,7 +15,7 @@ test('formal and informal decoratives are told apart (short forms too)', () => {
   const form = (tags: string[], text = '') => guessDetails('x', { tags, text }).form;
   assert.equal(form(['Informal Decorative']), 'Informal decorative');
   assert.equal(form(['Form: FD']), 'Formal decorative');
-  assert.equal(form(['Dinnerplate']), 'Decorative');
+  assert.equal(form(['Dinnerplate']), null); // a size, not a form
   assert.equal(form([], 'Decorative (informal), blush'), 'Informal decorative');
   assert.equal(form([], 'Formal dec. in soft peach'), 'Formal decorative');
   assert.equal(form([], 'This listing is for a single tuber. Informal decorative, coral.'), 'Informal decorative');

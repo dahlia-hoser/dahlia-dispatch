@@ -34,6 +34,7 @@ export function Tile({ g }: { g: Group }) {
           {best && <StatusChip r={best} />}
           {g.canadian && <span className="chip canada" title={text.badgeCanadian}>🍁</span>}
           {g.newIntro && <span className="chip intro">{text.tileNew}</span>}
+          {g.dinnerplate && <span className="chip size">{text.badgeDinnerplate}</span>}
         </span>
       </a>
     </article>

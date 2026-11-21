@@ -1,3 +1,4 @@
+import { isDinnerplate } from './size';
 // Reading the data for the public pages: statuses, search, grouping by variety.
 import { db } from './db';
 import { isBulk, kindFromTitle, normalize, packSize, varietyNameFromTitle, stripEmoji, hasCanadaMark } from './names';
@@ -80,7 +81,7 @@ export function status(l: Listing, farm: Farm, sales: SaleEvent[], now = Date.no
 }
 
 export type Row = { listing: Listing; farm: Farm; avail: Avail; label: string; isNew: boolean };
-export type Group = { key: string; variety: Variety | null; name: string; aka: string[]; rows: Row[]; newIntro?: boolean; canadian?: boolean };
+export type Group = { key: string; variety: Variety | null; name: string; aka: string[]; rows: Row[]; newIntro?: boolean; canadian?: boolean; dinnerplate?: boolean };
 
 export type Filters = { q?: string; farm?: string; avail?: string; form?: string; colour?: string; prov?: string; get?: string; only?: string };
 
@@ -139,6 +140,7 @@ export function groupAll(data: AllData, now = Date.now()): Group[] {
   }
   for (const g of groups.values()) {
     g.newIntro = isNewIntro(g.variety?.intro_year, now);
+    g.dinnerplate = g.rows.some((r) => isDinnerplate(`${r.listing.title} ${r.listing.description ?? ''}`));
     g.canadian = isCanadianBred(g.name, g.variety?.canadian_bred) || (g.variety?.canadian_bred !== false && g.rows.some((r) => hasCanadaMark(r.listing.title)));
   }
   return [...groups.values()].sort((a, b) => a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }));
@@ -179,6 +181,7 @@ export function search(groups: Group[], f: Filters): Group[] {
     if (f.only === 'packs') rows = rows.filter((r) => packSize(r.listing.title) > 1 || isBulk(r.listing.title));
     if (f.only === 'new' && !g.newIntro) continue;
     if (f.only === 'canadian' && !g.canadian) continue;
+    if (f.only === 'dinnerplate' && !g.dinnerplate) continue;
     if (f.avail && f.avail !== 'all') rows = rows.filter((r) => r.avail === f.avail);
     if (!rows.length) continue;
     if (q) {

@@ -64,6 +64,7 @@ export function Filters({ f, farmName }: { f: F; farmName?: string }) {
           <option value="canadian">{text.onlyCanadian}</option>
           <option value="pickup">{text.onlyPickup}</option>
           <option value="packs">{text.onlyPacks}</option>
+          <option value="dinnerplate">{text.onlyDinnerplate}</option>
         </select>
       </label>
       <noscript><button className="btn ghost" type="submit">{text.searchButton}</button></noscript>

@@ -85,6 +85,8 @@ export const text = {
   onlyCanadian: 'Canadian-bred',
   onlyPickup: 'Farm pickup',
   onlyPacks: 'Multi-packs',
+  onlyDinnerplate: 'Dinnerplates (8" blooms and up)',
+  badgeDinnerplate: 'Dinnerplate',
   getInNote: 'Farms we don’t have shipping details for yet are left out of this filter.',
   clearFilters: 'Clear filters',
   availAll: 'All',
