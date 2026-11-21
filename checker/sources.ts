@@ -145,6 +145,9 @@ export async function readShopify(farm: FarmSource, knownNames: Set<string> = ne
   const mostlyDahlias = byId.size > 0 && byId.size >= 0.6 * all.length;
   for (const p of parseShopify(all, farm.site, 'everything').items) {
     if (byId.has(p.key)) continue;
+    // Its own description saying daffodil, tulip and so on (and never dahlia) rules it out.
+    const text = `${p.hints?.text ?? ''}`;
+    if (/\b(?:daffodils?|narcissus|tulips?|hyacinths?|alliums?|ranunculus|peonies|lilies|gladiol(?:us|i))\b/i.test(text) && !/dahlia/i.test(text)) continue;
     if (mostlyDahlias || knownNames.has(normalize(varietyNameFromTitle(p.title)))) byId.set(p.key, p);
   }
   // Which currency the shop actually answered in. Prices in any other currency are not saved.

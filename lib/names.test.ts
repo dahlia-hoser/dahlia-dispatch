@@ -198,3 +198,10 @@ test('category placeholders are not dahlias', () => {
   for (const t of ['Water Lily Varieties', 'Ball Varieties', 'Pompon Dahlias', 'Dinnerplate Dahlias']) assert.equal(kindFromTitle(t, '', []), 'other', t);
   for (const t of ['Kelgai Ann', 'Cornel', 'Mystique']) assert.equal(kindFromTitle(t, '', []), 'tuber', t);
 });
+
+test('daffodils and other spring bulbs are not dahlias', () => {
+  for (const t of ['Daffodil Pink Charm', 'Narcissus Tete-a-Tete', 'Jonquil Mix', 'Hyacinth Blue Jacket']) assert.equal(kindFromTitle(t, '', []), 'other', t);
+  assert.equal(kindFromTitle('Pink Charm', '', ['Daffodils', 'Spring']), 'other');
+  assert.equal(kindFromTitle('Pink Charm', '', ['Daffodils', 'Dahlia']), 'tuber'); // says dahlia too: keep
+  assert.equal(kindFromTitle('Café au Lait', '', ['Peach', 'Dinnerplate']), 'tuber');
+});
