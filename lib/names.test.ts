@@ -188,3 +188,8 @@ test('wreaths and other holiday decor are not dahlias', () => {
   for (const t of ['Dried Flower Wreath', 'Fresh Evergreen Wreath', 'Wreaths', 'Dahlia Wreath', 'Winter Garland', 'Holiday Centrepiece', 'Cedar Swag']) assert.equal(kindFromTitle(t, '', []), 'other', t);
   assert.equal(kindFromTitle('Café au Lait', '', []), 'tuber');
 });
+
+test('arches, rentals and garden supplies are not dahlias', () => {
+  for (const t of ['Wedding Arch Rental', 'Flower Arch', 'Garden Arches', 'Metal Obelisk', 'Dahlia Stakes', 'Plant Support Rings', 'Gift Basket', 'Trellis Netting', 'Rental: Flower Wall']) assert.equal(kindFromTitle(t, '', []), 'other', t);
+  assert.equal(kindFromTitle('Archduke Joseph', '', []), 'tuber');
+});
