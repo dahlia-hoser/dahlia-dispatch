@@ -183,3 +183,8 @@ test('anemone flowers are not dahlias, anemone dahlias are', () => {
   assert.equal(kindFromTitle('Blue Bayou (Anemone)', '', []), 'tuber');
   assert.equal(kindFromTitle('Anemone-flowered Dahlia Totally Tangerine', '', []), 'tuber');
 });
+
+test('wreaths and other holiday decor are not dahlias', () => {
+  for (const t of ['Dried Flower Wreath', 'Fresh Evergreen Wreath', 'Wreaths', 'Dahlia Wreath', 'Winter Garland', 'Holiday Centrepiece', 'Cedar Swag']) assert.equal(kindFromTitle(t, '', []), 'other', t);
+  assert.equal(kindFromTitle('Café au Lait', '', []), 'tuber');
+});
