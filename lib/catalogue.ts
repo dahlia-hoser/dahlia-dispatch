@@ -1,3 +1,4 @@
+import { parseLook, lookIsEmpty, closeTo, distance, type Look } from './query';
 import { isDinnerplate } from './size';
 // Reading the data for the public pages: statuses, search, grouping by variety.
 import { db } from './db';
@@ -165,9 +166,22 @@ export function gettingIt(farm: Farm): string {
   return parts.join(' · ');
 }
 
-export function search(groups: Group[], f: Filters): Group[] {
+export type SearchResult = Group[] & { how?: 'name' | 'look' | 'close'; look?: Look };
+
+/** Does this dahlia look the way the search describes ("pink ball", "orange dinnerplate")? */
+function looksLike(g: Group, l: Look): boolean {
+  const v = g.variety;
+  if (l.colours.some((c) => v?.colour1 !== c && v?.colour2 !== c)) return false;
+  if (l.forms.some((fm) => v?.form !== fm && !(fm === 'Decorative' && /decorative$/i.test(v?.form ?? '')))) return false;
+  if (l.dinnerplate && !g.dinnerplate) return false;
+  if (l.canadian && !g.canadian) return false;
+  return true;
+}
+
+export function search(groups: Group[], f: Filters): SearchResult {
   const q = f.q ? normalize(f.q) : '';
-  const out: Group[] = [];
+  // 1. Filters (form, colour, farm, province, availability…), keeping only matching listings.
+  const pool: Group[] = [];
   for (const g of groups) {
     const v = g.variety;
     // "Decorative" finds formal and informal decoratives too.
@@ -184,20 +198,61 @@ export function search(groups: Group[], f: Filters): Group[] {
     if (f.only === 'dinnerplate' && !g.dinnerplate) continue;
     if (f.avail && f.avail !== 'all') rows = rows.filter((r) => r.avail === f.avail);
     if (!rows.length) continue;
-    if (q) {
-      const names = [g.name, ...g.aka].map(normalize);
-      const nameHit = names.some((n) => n.includes(q));
-      const farmRows = rows.filter((r) => normalize(r.farm.name).includes(q) || normalize(r.farm.place ?? '').includes(q));
-      if (nameHit) {
-        /* keep all rows */
-      } else if (farmRows.length) rows = farmRows;
-      else continue;
+    pool.push({ ...g, rows });
+  }
+
+  // 2. The search words.
+  let out: Group[] = pool;
+  let how: SearchResult['how'];
+  let look: Look | undefined;
+  if (q) {
+    // Names (and farm names) containing what was typed.
+    const byName: Group[] = [];
+    for (const g of pool) {
+      const nameHit = [g.name, ...g.aka].map(normalize).some((n) => n.includes(q));
+      const farmRows = g.rows.filter((r) => normalize(r.farm.name).includes(q) || normalize(r.farm.place ?? '').includes(q));
+      if (nameHit) byName.push(g);
+      else if (farmRows.length) byName.push({ ...g, rows: farmRows });
     }
-    out.push({ ...g, rows });
+    look = parseLook(f.q!);
+    const restMatches = (g: Group) => !look!.rest || [g.name, ...g.aka].some((n) => normalize(n).includes(look!.rest) || closeTo(look!.rest, n));
+    const byLook = lookIsEmpty(look) ? [] : pool.filter((g) => looksLike(g, look!) && restMatches(g));
+    if (!lookIsEmpty(look) && !look.rest) {
+      // Just a description ("orange", "pink ball"): everything that looks like that, plus any names that contain the words.
+      const seen = new Set(byLook.map((g) => g.key));
+      out = [...byLook, ...byName.filter((g) => !seen.has(g.key))];
+      how = byLook.length ? 'look' : 'name';
+    } else if (byName.length) {
+      out = byName;
+      how = 'name';
+    } else if (byLook.length) {
+      out = byLook;
+      how = 'look';
+    } else {
+      // Close spellings ("labirynth" → Labyrinth).
+      out = pool.filter((g) => [g.name, ...g.aka].some((n) => closeTo(q, n)));
+      how = out.length ? 'close' : undefined;
+    }
   }
   // What you can buy now first, then what's opening soon, then the rest (alphabetical within each).
   const rank = (g: Group) => Math.min(...g.rows.map((r) => ({ in: 0, soon: 1, list: 2, out: 3 })[r.avail]));
-  return out.map((g, i) => ({ g, i, r: rank(g) })).sort((a, b) => a.r - b.r || a.i - b.i).map((x) => x.g);
+  const sorted = out.map((g, i) => ({ g, i, r: rank(g) })).sort((a, b) => a.r - b.r || a.i - b.i).map((x) => x.g) as SearchResult;
+  sorted.how = how;
+  sorted.look = look;
+  return sorted;
+}
+
+/** Names close to what was typed, for "Did you mean…?" when nothing matches. */
+export function nearNames(groups: Group[], q: string, n = 3): string[] {
+  const t = normalize(q);
+  if (!t) return [];
+  return groups
+    .filter((g) => g.variety && g.rows.length) // only dahlias someone actually sells
+    .map((g) => ({ name: g.name, d: Math.min(...[g.name, ...g.aka].map((x) => distance(t, normalize(x).slice(0, Math.max(t.length, 3))))) }))
+    .sort((a, b) => a.d - b.d)
+    .filter((x) => x.d <= Math.max(2, Math.floor(t.length / 3)))
+    .slice(0, n)
+    .map((x) => x.name);
 }
 
 export type Suggestion = { label: string; alts: string[]; sub: string; href: string; kind: 'variety' | 'farm' };

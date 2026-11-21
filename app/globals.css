@@ -364,3 +364,6 @@ html { font-size: 100%; -webkit-text-size-adjust: 100%; }
 /* Add to calendar on each sale */
 .add-cal { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.875rem; }
 .add-cal a { display: inline-block; padding: 8px 0; font-weight: 700; }
+.search-how { font-weight: 700; margin: 4px 0 10px; }
+.empty { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px 18px; margin: 10px 0; }
+.empty p { margin: 6px 0; }

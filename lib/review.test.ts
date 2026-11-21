@@ -244,3 +244,15 @@ test('visitor suggestions: approve applies and confirms, undo restores, deny cha
   [now] = await t.where('varieties', { id: v.id });
   assert.equal(now.colour1, 'Pink');
 });
+
+import { search as search2, groupAll as groupAll3, loadAll as loadAll3 } from './catalogue';
+test('search by look and close spellings', async () => {
+  const g = groupAll3(await loadAll3());
+  const orange = search2(g, { q: 'orange' });
+  assert.equal(orange.how, 'look');
+  assert.ok(orange.length > 0 && orange.every((x) => x.variety?.colour1 === 'Orange' || x.variety?.colour2 === 'Orange' || /orange/i.test(x.name)));
+  const typo = search2(g, { q: 'cafe au liat' });
+  assert.equal(typo.how, 'close');
+  assert.equal(typo[0].name, 'Café au Lait');
+  assert.equal(search2(g, { q: 'Cornel Bronze' }).length, 1);
+});
