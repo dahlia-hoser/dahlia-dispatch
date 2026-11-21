@@ -37,8 +37,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <LeafCluster corner="top-right" />
           <div className="wrap">
             <a className="brand" href="/">
-              {text.siteName}
-              <span className="byline"><Leaf size={12} />{text.byline}</span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className="brand-logo" src="/logo-120.png" alt="" width={60} height={60} />
+              <span className="brand-words">
+                {text.siteName}
+                <span className="byline"><Leaf size={12} />{text.byline}</span>
+              </span>
             </a>
             <Nav reviewCount={count} admin={admin} />
           </div>
