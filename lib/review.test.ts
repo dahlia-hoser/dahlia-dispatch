@@ -228,3 +228,19 @@ test('owner form fixes win once, by loose name', async () => {
   assert.equal(await applyFormFixes(t, [{ name: 'Crème de Cognac', form: 'Informal decorative' }]), 0);
   assert.equal((await t.where('varieties', { id: v.id }))[0].form, 'Peony');
 });
+
+test('visitor suggestions: approve applies and confirms, undo restores, deny changes nothing', async () => {
+  const t = db();
+  const [v] = await t.insert('varieties', { slug: 'suggest-me', name: 'Suggest Me', colour1: 'Pink', colour2: null, form: 'Ball', status: 'Suggested' });
+  const [s1] = await t.insert('review_items', { kind: 'suggestion', status: 'open', data: { variety: 'suggest-me', colour1: 'Orange', colour2: 'Bicolour', form: 'Formal decorative', note: 'Clearly orange' } });
+  await answer(s1.id, { choice: 'yes' } as any);
+  let [now] = await t.where('varieties', { id: v.id });
+  assert.deepEqual([now.colour1, now.colour2, now.form, now.status], ['Bicolour', 'Orange', 'Formal decorative', 'Confirmed']);
+  await undoAnswer(s1.id);
+  [now] = await t.where('varieties', { id: v.id });
+  assert.deepEqual([now.colour1, now.form, now.status], ['Pink', 'Ball', 'Suggested']);
+  const [s2] = await t.insert('review_items', { kind: 'suggestion', status: 'open', data: { variety: 'suggest-me', colour1: 'Red', colour2: null, form: null, note: null } });
+  await answer(s2.id, { choice: 'no' } as any);
+  [now] = await t.where('varieties', { id: v.id });
+  assert.equal(now.colour1, 'Pink');
+});

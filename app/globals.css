@@ -317,3 +317,13 @@ footer .wrap { padding-bottom: 64px; }
 .game-names { margin: 6px 0 0; }
 .game-names > span[aria-hidden] { color: var(--heart); }
 .batch-tile.just-saved { outline: 3px solid var(--sage-text); outline-offset: 2px; transition: outline-color 1s; }
+
+/* Visitor suggestions: the form on a dahlia's page, and the card on the Review list */
+.suggest { margin-top: 10px; }
+.suggest > summary { cursor: pointer; color: var(--accent); font-size: 15px; text-decoration: underline; text-decoration-color: var(--coral); text-underline-offset: 3px; }
+.suggest[open] > summary { margin-bottom: 8px; }
+.trap { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.suggest-photo { width: 100%; max-width: 280px; aspect-ratio: 1; object-fit: cover; border-radius: 12px; }
+.suggest-table { border-collapse: collapse; width: 100%; font-size: 15px; }
+.suggest-table th, .suggest-table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+.suggest-table tr.changed td:last-child { font-weight: 700; color: var(--sage-text); background: var(--sage); }

@@ -45,6 +45,7 @@ export type Card =
   | { id: number; kind: 'feedback'; message: string; contact: string | null; page: string | null; at: string }
   | { id: number; kind: 'farm'; name: string; place: string | null; site: string | null; platform: string | null; canadian: boolean }
   | { id: number; kind: 'name'; spelling: string; farm: string; note: string | null; suggestion: { slug: string; name: string; detail: string } | null }
+  | { id: number; kind: 'suggestion'; slug: string; name: string; now: { colour1: string | null; colour2: string | null; form: string | null }; suggested: { colour1: string | null; colour2: string | null; form: string | null }; note: string | null; image: string | null; at: string }
   | { id: number; kind: 'details'; slug: string; name: string; isNew: boolean; guessed: boolean; formFrom: string | null; colour1: string | null; colour2: string | null; form: string | null; seenAt: { farm: string; title: string; url: string | null; image: string | null }[] };
 
 export async function waitingDetails(): Promise<number> {
@@ -64,7 +65,7 @@ export async function reviewCards(): Promise<Card[]> {
   ]);
   const vBySlug = new Map(varieties.map((v) => [v.slug, v]));
   const farmName = new Map(farms.map((f) => [f.id, f.name]));
-  const order = { feedback: 0, farm: 1, name: 2, details: 3 } as Record<string, number>;
+  const order = { feedback: 0, suggestion: 1, farm: 2, name: 3, details: 4 } as Record<string, number>;
   const vIdBySlug = new Map(varieties.map((v) => [v.slug, v.id]));
   const sellers = new Map<number, number>();
   for (const l of listings) if (l.active && l.variety_id) sellers.set(l.variety_id, (sellers.get(l.variety_id) ?? 0) + 1);
@@ -76,6 +77,15 @@ export async function reviewCards(): Promise<Card[]> {
   for (const r of items) {
     if (r.kind === 'feedback') {
       cards.push({ id: r.id, kind: 'feedback', message: r.data.message, contact: r.data.contact ?? null, page: r.data.page ?? null, at: r.created_at });
+    } else if (r.kind === 'suggestion') {
+      const v = vBySlug.get(r.data.variety);
+      if (!v) continue;
+      const photo = listings.find((x) => x.variety_id === v.id && x.active && x.image)?.image ?? null;
+      cards.push({
+        id: r.id, kind: 'suggestion', slug: v.slug, name: v.name, note: r.data.note ?? null, image: photo, at: r.created_at,
+        now: { colour1: v.colour1 ?? null, colour2: v.colour2 ?? null, form: v.form ?? null },
+        suggested: { colour1: r.data.colour1 ?? null, colour2: r.data.colour2 ?? null, form: r.data.form ?? null },
+      });
     } else if (r.kind === 'farm') {
       const c = candidates.find((x) => x.id === r.data.candidate);
       if (c) cards.push({ id: r.id, kind: 'farm', name: c.name, place: c.place, site: c.site, platform: c.platform, canadian: isCanadianProvince(c.province) });
@@ -169,6 +179,15 @@ export async function answer(id: number, a: Answer) {
     }
   }
 
+  if (r.kind === 'suggestion' && a.choice === 'yes') {
+    const [v] = await t.where('varieties', { slug: r.data.variety });
+    if (v) {
+      undo.variety = { id: v.id, colour1: v.colour1, colour2: v.colour2, form: v.form, status: v.status };
+      const [c1, c2] = bicolourFirst(r.data.colour1 ?? null, r.data.colour2 ?? null);
+      await t.update('varieties', { id: v.id }, { colour1: c1, colour2: c2, form: r.data.form ?? v.form ?? null, status: 'Confirmed' });
+    }
+  }
+
   if (r.kind === 'details' && a.choice === 'save') {
     const [v] = await t.where('varieties', { slug: r.data.variety });
     if (v) {
@@ -202,7 +221,7 @@ export async function undoAnswer(id: number) {
       await t.remove('varieties', { id: vid });
     }
   }
-  if (r.kind === 'details' && u.variety) {
+  if ((r.kind === 'details' || r.kind === 'suggestion') && u.variety) {
     const { id: vid, ...prev } = u.variety;
     await t.update('varieties', { id: vid }, prev);
   }

@@ -84,6 +84,7 @@ class MemoryTables implements Tables {
     const list = (Array.isArray(rows) ? rows : [rows]).map((r) => ({
       ...(table === 'aliases' ? {} : { id: this.next++ }),
       created_at: new Date().toISOString(),
+      ...(table === 'review_items' ? { status: 'open' } : {}), // same default as the real database
       ...r,
     }));
     this.rows(table).push(...list);

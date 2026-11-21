@@ -54,6 +54,7 @@ export function ReviewDeck({ cards, more = 0 }: { cards: Card[]; more?: number }
       ) : (
         <div className="rcard" aria-busy={busy} key={card.id}>
           {card.kind === 'feedback' && <FeedbackCard card={card} busy={busy} go={go} />}
+          {card.kind === 'suggestion' && <SuggestionCard card={card} busy={busy} go={go} />}
           {card.kind === 'farm' && <FarmCard card={card} busy={busy} go={go} />}
           {card.kind === 'name' && <NameCard card={card} busy={busy} go={go} />}
           {card.kind === 'details' && <DetailsCard card={card} busy={busy} go={go} />}
@@ -77,6 +78,41 @@ function FeedbackCard({ card, busy, go }: { card: Extract<Card, { kind: 'feedbac
       </p>
       <div className="choices">
         <button className="btn" disabled={busy} onClick={() => go({ choice: 'yes' })}>{text.reviewFeedbackDone}</button>
+        <button className="linkbtn" disabled={busy} onClick={() => go({ choice: 'later' })}>{text.reviewLater}</button>
+      </div>
+    </>
+  );
+}
+
+function SuggestionCard({ card, busy, go }: { card: Extract<Card, { kind: 'suggestion' }>; busy: boolean; go: Go }) {
+  const show = (c: { colour1: string | null; colour2: string | null; form: string | null }) => ({
+    colour: [c.colour1, c.colour2].filter(Boolean).join(' / ') || text.varietyUnknown,
+    form: c.form ?? text.varietyUnknown,
+  });
+  const now = show(card.now);
+  const next = show(card.suggested);
+  return (
+    <>
+      <span className="kicker">{text.reviewSuggestion}</span>
+      <h2>
+        <a href={`/v/${card.slug}`} target="_blank" rel="noopener noreferrer">{card.name} ↗</a>
+      </h2>
+      {card.image && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img className="suggest-photo" src={card.image} alt={card.name} loading="lazy" referrerPolicy="no-referrer" />
+      )}
+      <table className="suggest-table">
+        <thead><tr><th></th><th>{text.reviewSuggestionNow}</th><th>{text.reviewSuggestionNew}</th></tr></thead>
+        <tbody>
+          <tr className={now.colour !== next.colour ? 'changed' : ''}><th>{text.varietyColour}</th><td>{now.colour}</td><td>{next.colour}</td></tr>
+          <tr className={now.form !== next.form ? 'changed' : ''}><th>{text.varietyForm}</th><td>{now.form}</td><td>{next.form}</td></tr>
+        </tbody>
+      </table>
+      {card.note && <p style={{ whiteSpace: 'pre-wrap' }}>“{card.note}”</p>}
+      <p className="note">{new Date(card.at).toLocaleString('en-CA', { timeZone: 'America/Toronto', dateStyle: 'medium', timeStyle: 'short' })}</p>
+      <div className="choices">
+        <button className="btn" disabled={busy} onClick={() => go({ choice: 'yes' })}>{text.reviewApprove}</button>
+        <button className="btn ghost" disabled={busy} onClick={() => go({ choice: 'no' })}>{text.reviewDeny}</button>
         <button className="linkbtn" disabled={busy} onClick={() => go({ choice: 'later' })}>{text.reviewLater}</button>
       </div>
     </>
