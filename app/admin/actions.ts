@@ -147,3 +147,21 @@ export async function confirmBatch(fd: FormData) {
   revalidatePath('/', 'layout');
   redirect(`/admin/colours?done=${n}`);
 }
+
+/** Check page: take one colour off every ticked variety (the other colour stays, moved to first). */
+export async function removeColour(fd: FormData) {
+  await requireAdmin();
+  const t = db();
+  const colour = String(fd.get('colour') ?? '');
+  const ids = fd.getAll('wrong').map(Number).filter(Boolean);
+  let n = 0;
+  for (const id of ids) {
+    const [v] = await t.where('varieties', { id });
+    if (!v || (v.colour1 !== colour && v.colour2 !== colour)) continue;
+    const left = [v.colour1, v.colour2].filter((c) => c && c !== colour);
+    await t.update('varieties', { id }, { colour1: left[0] ?? null, colour2: left[1] ?? null });
+    n++;
+  }
+  revalidatePath('/', 'layout');
+  redirect(`/admin/check?colour=${encodeURIComponent(colour)}&done=${n}`);
+}

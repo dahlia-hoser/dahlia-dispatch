@@ -12,6 +12,7 @@ export default async function Admin() {
         <h1 style={{ fontSize: 32 }}>{text.reviewTitle}</h1>
         <span className="inline">
           <a href="/admin/colours">{text.batchLink}</a>
+          <a href="/admin/check?colour=Bicolour">{text.checkLink}</a>
           <a href="/admin/farms">Farms</a>
           <a href="/admin/sales">Sale dates</a>
         </span>
