@@ -1,7 +1,7 @@
 import { loadAll, groupAll, search, suggestions, lastChecked, ago, gettingIt, type Filters as F } from '../lib/catalogue';
 import { SearchBox } from '../components/SearchBox';
 import { Filters } from '../components/Filters';
-import { GroupCard } from '../components/Listing';
+import { Tile } from '../components/Tile';
 import { FavsHere } from '../components/FavsHere';
 import { Happening } from '../components/Happening';
 import { LeafDivider } from '../components/Leaf';
@@ -52,7 +52,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<Rec
       {f.get && <p className="note">{text.getInNote}</p>}
 
       {found.length === 0 && <p>{text.resultsNone}</p>}
-      {shown.map((g) => <GroupCard key={g.key} g={g} />)}
+      <div className="tiles">{shown.map((g) => <Tile key={g.key} g={g} />)}</div>
       {found.length > shown.length && (
         <a className="btn ghost more" href={`/?${moreParams}`}>{fill(text.showMore, { n: found.length - shown.length })}</a>
       )}

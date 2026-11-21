@@ -198,6 +198,11 @@ export const text = {
   footerQuotes: [
     { quote: 'The Dahlia Hoser is really great.', by: 'The Dahlia Hoser Creator' },
   ] as { quote: string; by: string }[],
+  tileFarms: '{n} farms',
+  tileFarmsOne: '1 farm',
+  tileFrom: 'from {price}',
+  tilePriceTba: 'Price TBA',
+  tileNew: 'New',
   batchLink: 'Colours in a batch',
   reviewSuggestion: 'A visitor suggests a fix',
   reviewSuggestionNow: 'Now',
