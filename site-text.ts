@@ -193,6 +193,11 @@ export const text = {
   reviewSave: 'Save',
   reviewNotDahlia: 'Not a dahlia: hide it',
   reviewFormFrom: 'from {farm}’s label',
+  // Footer quotes: one shows at random on each page. Add more as { quote: '…', by: '…' }.
+  // Only use real quotes from real people, with their OK.
+  footerQuotes: [
+    { quote: 'Dahlia Hoser is really great!', by: 'Dahlia Hoser Creator' },
+  ] as { quote: string; by: string }[],
   batchLink: 'Colours in a batch',
   reviewSuggestion: 'A visitor suggests a fix',
   reviewSuggestionNow: 'Now',

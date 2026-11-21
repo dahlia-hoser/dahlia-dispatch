@@ -1,3 +1,4 @@
+import { FooterQuote } from '../components/FooterQuote';
 import './globals.css';
 import type { Metadata } from 'next';
 import { text } from '../site-text';
@@ -44,6 +45,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <footer>
           <LeafCluster corner="bottom-right" />
           <div className="wrap inline" style={{ justifyContent: 'space-between' }}>
+            <FooterQuote />
             <span>{text.footer}</span>
             <a href="/feedback">{text.footerFeedback}</a>
           </div>
