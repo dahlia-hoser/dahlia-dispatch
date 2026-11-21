@@ -49,6 +49,7 @@ export const text = {
   planNote: 'Stock changes fast on sale days. Check each shop before you count on it.',
   planHint: 'Once 5 of your favourites are in stock, we’ll work out the fewest farms to order from.',
   favPacksOnly: '{n} more are in stock only in bulk or multi-packs.',
+  favPacksOnlyOne: '1 more is in stock only in a bulk or multi-pack.',
   favsHere: '{n} of your favourites are in stock here: {names}',
   favsHereOne: '1 of your favourites is in stock here: {names}',
   favsHereOut: '{n} of your favourites are listed here but not in stock right now.',
@@ -129,7 +130,7 @@ export const text = {
   varietyNoListings: 'No farm we follow has listed this one right now.',
   varietyColour: 'Colour',
   varietyForm: 'Form',
-  varietyUnknown: 'Not set yet',
+  varietyUnknown: 'Unknown',
   editButton: 'Edit',
 
   // Calendar

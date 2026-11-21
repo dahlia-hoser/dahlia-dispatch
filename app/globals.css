@@ -370,3 +370,9 @@ html { font-size: 100%; -webkit-text-size-adjust: 100%; }
 
 /* Menu fits one line on phones */
 @media (max-width: 480px) { .nav { gap: 2px; } .nav a { padding: 10px 11px; } }
+
+/* Same filled shop button on pack cards as on listings */
+.pack .shop { background: var(--accent); border-color: var(--accent); color: #fff; }
+.pack .shop:hover { background: var(--text); color: #fff; }
+/* Owner's farm table scrolls sideways on phones instead of pushing the page */
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }

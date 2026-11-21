@@ -33,7 +33,7 @@ export default async function Calendar({ searchParams }: { searchParams: Promise
       <article className={`cal-item ${club ? 'is-club' : 'is-farm'}`}>
         <div className="cal-when">
           <b>{s.starts_at && new Date(s.starts_at).getTime() > now ? dateTime(s.starts_at) : s.when_text}</b>
-          <span>{s.time_text}</span>
+          <span>{s.starts_at && new Date(s.starts_at).getTime() > now ? (s.time_text?.match(/\(([^)]*)\)/)?.[1] ?? '') : s.time_text}</span>
         </div>
         <div className="cal-what">
           <span className="inline" style={{ gap: 8 }}>

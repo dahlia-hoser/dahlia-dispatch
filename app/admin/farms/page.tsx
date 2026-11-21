@@ -64,6 +64,7 @@ export default async function Farms({ searchParams }: { searchParams: Promise<{ 
         </form>
       )}
 
+      <div className="table-wrap">
       <table className="table">
         <thead>
           <tr><th>Farm</th><th>Shop type</th><th>Listings</th><th>Last checked</th><th>Problem</th><th></th></tr>
@@ -81,6 +82,7 @@ export default async function Farms({ searchParams }: { searchParams: Promise<{ 
           ))}
         </tbody>
       </table>
+      </div>
     </>
   );
 }

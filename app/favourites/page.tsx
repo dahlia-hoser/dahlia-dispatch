@@ -71,7 +71,7 @@ export default async function Favourites({ searchParams }: { searchParams: Promi
           <p className="fav-summary">
             {inStock ? fill(text.favSummary, { in: inStock, total: mine.length }) : fill(text.favSummaryNone, { total: mine.length })}
           </p>
-          {packsOnly > 0 && <p className="note">{fill(text.favPacksOnly, { n: packsOnly })}</p>}
+          {packsOnly > 0 && <p className="note">{packsOnly === 1 ? text.favPacksOnlyOne : fill(text.favPacksOnly, { n: packsOnly })}</p>}
           {plan ? (
             <section className="plan">
               <h2>{plan.stops.length === 1 ? text.planTitleOne : fill(text.planTitle, { n: plan.stops.length })}</h2>
