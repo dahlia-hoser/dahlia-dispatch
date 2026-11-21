@@ -1,4 +1,6 @@
 import { canAddToCalendar, googleCalendarLink } from '../../lib/ics';
+import merges from '../../data/merges.json';
+import { looseKey, slugify } from '../../lib/names';
 import { loadAll, groupAll, lastChecked, ago, money, gettingIt, dateTime } from '../../lib/catalogue';
 import { shoppingPlan, gamePlan, inStockOptions, inStockOnlyAsPacks, PLAN_FROM, type PlanOption } from '../../lib/plan';
 import { GroupCard } from '../../components/Listing';
@@ -50,7 +52,12 @@ export default async function Favourites({ searchParams }: { searchParams: Promi
   const groups = groupAll(data);
   const bySlug = new Map(groups.filter((g) => g.variety).map((g) => [g.variety!.slug, g]));
   // In the order they were hearted, newest first.
-  const mine = [...slugs].reverse().map((x) => bySlug.get(x)).filter(Boolean) as typeof groups;
+  // Favourites saved under a spelling that has since been merged follow it to the right name.
+  for (const m of merges as { from: string; into: string }[]) {
+    const to = groups.find((g) => g.variety && looseKey(g.variety.name) === looseKey(m.into));
+    if (to && !bySlug.has(slugify(m.from))) bySlug.set(slugify(m.from), to);
+  }
+  const mine = [...new Set([...slugs].reverse().map((x) => bySlug.get(x)).filter(Boolean))] as typeof groups;
   const gone = slugs.length - mine.length;
   const inStock = inStockOptions(mine).size;
   const packsOnly = inStockOnlyAsPacks(mine);

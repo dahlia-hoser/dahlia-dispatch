@@ -256,3 +256,27 @@ test('search by look and close spellings', async () => {
   assert.equal(typo[0].name, 'Café au Lait');
   assert.equal(search2(g, { q: 'Cornel Bronze' }).length, 1);
 });
+
+import { mergeVarieties, markNotDahlias, renameVarieties } from './name-ops';
+test('merging a duplicate spelling moves listings, remembers the spelling, removes the old entry', async () => {
+  const t = db();
+  const [good] = await t.insert('varieties', { slug: 'karma-choc-x', name: 'Karma Choc X', form: null, status: 'Confirmed' });
+  const [dupe] = await t.insert('varieties', { slug: 'karma-chocolate-x', name: 'Karma Chocolate X', form: 'Waterlily', status: 'Suggested' });
+  const [l] = await t.insert('listings', { farm_id: 1, product_key: 'kcx', title: 'Karma Chocolate X', variety_id: dupe.id, active: true });
+  assert.equal(await mergeVarieties(t, [{ from: 'Karma Chocolate X', into: 'Karma Choc X' }]), 1);
+  assert.equal((await t.where('listings', { id: l.id }))[0].variety_id, good.id);
+  assert.equal((await t.where('varieties', { id: dupe.id })).length, 0);
+  assert.equal((await t.where('varieties', { id: good.id }))[0].form, 'Waterlily');
+  assert.ok((await t.where('aliases', { variety_id: good.id })).length >= 1);
+  assert.equal(await mergeVarieties(t, [{ from: 'Karma Chocolate X', into: 'Karma Choc X' }]), 0);
+});
+
+test('not-a-dahlia list and spelling fixes', async () => {
+  const t = db();
+  const [v] = await t.insert('varieties', { slug: 'stazon-ink-x', name: 'StazOn Ink X', status: 'Suggested' });
+  assert.equal(await markNotDahlias(t, ['StazOn Ink X']), 1);
+  assert.equal((await t.where('varieties', { id: v.id }))[0].status, 'Not a dahlia');
+  const [w] = await t.insert('varieties', { slug: 'chimicum-x', name: 'Chimicum X', status: 'Suggested' });
+  assert.equal(await renameVarieties(t, [{ from: 'Chimicum X', to: 'Chimacum X' }]), 1);
+  assert.equal((await t.where('varieties', { id: w.id }))[0].name, 'Chimacum X');
+});

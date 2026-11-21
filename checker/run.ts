@@ -6,6 +6,10 @@ import { NameBook, autoAnswerSlips, hideNonDahlias, reconcileNames, syncSocietie
 import decisions from '../data/owner-decisions.json';
 import formSplits from '../data/form-splits.json';
 import formFixes from '../data/form-fixes.json';
+import merges from '../data/merges.json';
+import renames from '../data/renames.json';
+import notDahlias from '../data/not-dahlias.json';
+import { markNotDahlias, mergeVarieties, renameVarieties } from '../lib/name-ops';
 import farmList from '../data/farms.json';
 import blockedFarms from '../data/blocked-farms.json';
 import trusted from '../data/trusted-sources.json';
@@ -48,6 +52,12 @@ async function main() {
   if (blockedNow) console.log(`Removed ${blockedNow} farms or suggestions you ruled out.`);
   const formsFixed = await applyFormFixes(t, formFixes as any[]);
   if (formsFixed) console.log(`Set ${formsFixed} forms from your corrections list.`);
+  const merged = await mergeVarieties(t, merges as any[]);
+  if (merged) console.log(`Merged ${merged} duplicate spellings into one name.`);
+  const renamed = await renameVarieties(t, renames as any[]);
+  if (renamed) console.log(`Fixed the spelling of ${renamed} variety names.`);
+  const notD = await markNotDahlias(t, notDahlias as string[]);
+  if (notD) console.log(`Hid ${notD} things that aren't dahlias.`);
   const split = await applyFormSplits(t, formSplits as any[]);
   if (split) console.log(`Narrowed ${split} Decorative varieties to formal or informal.`);
   const unemoji = await tidyEmojiNames(t, v2);

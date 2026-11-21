@@ -1,6 +1,8 @@
 import { suggestFix } from './actions';
 import { COLOURS, FORMS } from '../../../lib/types';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
+import merges from '../../../data/merges.json';
+import { looseKey, slugify } from '../../../lib/names';
 import { loadAll, groupAll, lastChecked, ago, suggestions } from '../../../lib/catalogue';
 import { SearchBox } from '../../../components/SearchBox';
 import { ListingRow, Badges } from '../../../components/Listing';
@@ -25,7 +27,13 @@ export default async function VarietyPage({ params, searchParams }: { params: Pr
   const [data, admin] = await Promise.all([loadAll(), isAdmin()]);
   const groups = groupAll(data);
   const g = groups.find((x) => x.variety?.slug === slug);
-  if (!g || !g.variety) notFound();
+  if (!g || !g.variety) {
+    // An old spelling that was merged into another name (saved favourites, old links): go to the right page.
+    const m = (merges as { from: string; into: string }[]).find((x) => slugify(x.from) === slug);
+    const to = m && groups.find((x) => x.variety && looseKey(x.variety.name) === looseKey(m.into))?.variety?.slug;
+    if (to) redirect(`/v/${to}`);
+    notFound();
+  }
   const v = g.variety;
   const colours = [v.colour1, v.colour2].filter(Boolean).join(' / ');
 

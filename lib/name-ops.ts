@@ -440,3 +440,59 @@ export async function applyFormFixes(t: Tables, fixes: { name: string; form: str
   }
   return n;
 }
+
+/** Things you said aren't dahlias (data/not-dahlias.json): hidden, and their questions closed. */
+export async function markNotDahlias(t: Tables, names: string[]): Promise<number> {
+  const want = new Set(names.map(looseKey));
+  const review = (await t.where('review_items', { kind: 'details' })).filter((r) => r.status !== 'done');
+  let n = 0;
+  for (const v of await t.all('varieties')) {
+    if (v.status === 'Not a dahlia' || !want.has(looseKey(v.name))) continue;
+    await t.update('varieties', { id: v.id }, { status: 'Not a dahlia' });
+    for (const r of review) if (r.data?.variety === v.slug) await t.update('review_items', { id: r.id }, { status: 'done', resolved_at: new Date().toISOString(), answer: { choice: 'notdahlia', auto: true } });
+    n++;
+  }
+  return n;
+}
+
+/**
+ * Two spellings of one flower (data/merges.json): the listings move to the right name,
+ * the old spelling is remembered so it never comes back, and the old entry goes away.
+ */
+export async function mergeVarieties(t: Tables, merges: { from: string; into: string }[]): Promise<number> {
+  const varieties = await t.all('varieties');
+  const byKey = new Map(varieties.map((v) => [looseKey(v.name), v]));
+  let n = 0;
+  for (const m of merges) {
+    const from = byKey.get(looseKey(m.from));
+    const into = byKey.get(looseKey(m.into));
+    if (!from || !into || from.id === into.id) continue;
+    for (const l of await t.where('listings', { variety_id: from.id })) await t.update('listings', { id: l.id }, { variety_id: into.id });
+    for (const a of await t.where('aliases', { variety_id: from.id })) await t.update('aliases', { alias: a.alias }, { variety_id: into.id });
+    const alias = normalize(from.name);
+    if (!(await t.where('aliases', { alias })).length) await t.insert('aliases', { alias, variety_id: into.id, shown: from.name });
+    // Fill in anything the right name is missing, without overwriting what it has.
+    const fill: Record<string, any> = {};
+    for (const f of ['form', 'colour1', 'colour2'] as const) if (!into[f] && from[f]) fill[f] = from[f];
+    if (Object.keys(fill).length) await t.update('varieties', { id: into.id }, fill);
+    for (const r of (await t.where('review_items', { kind: 'details' })).filter((r) => r.status !== 'done' && r.data?.variety === from.slug))
+      await t.update('review_items', { id: r.id }, { status: 'done', resolved_at: new Date().toISOString(), answer: { choice: 'merged', auto: true } });
+    await t.remove('varieties', { id: from.id });
+    n++;
+  }
+  return n;
+}
+
+/** Spelling fixes for a variety's own name (data/renames.json). The page address stays the same. */
+export async function renameVarieties(t: Tables, renames: { from: string; to: string }[]): Promise<number> {
+  let n = 0;
+  for (const r of renames) {
+    const v = (await t.all('varieties')).find((x) => looseKey(x.name) === looseKey(r.from));
+    if (!v) continue;
+    await t.update('varieties', { id: v.id }, { name: r.to });
+    const alias = normalize(r.from);
+    if (!(await t.where('aliases', { alias })).length) await t.insert('aliases', { alias, variety_id: v.id, shown: r.from });
+    n++;
+  }
+  return n;
+}
