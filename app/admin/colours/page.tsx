@@ -1,3 +1,4 @@
+import { ScrollBack } from '../../../components/ScrollBack';
 import { reviewCards, waitingDetails } from '../../../lib/review';
 import { confirmBatch } from '../actions';
 import { text, fill } from '../../../site-text';
@@ -7,8 +8,8 @@ const SWATCH: Record<string, string> = {
   Blush: '#f6d3cf', Red: '#c8352f', Burgundy: '#6d1f33', Purple: '#7b4a9a', Lavender: '#c9b6e4', Bicolour: '#e8e0d3',
 };
 
-export default async function BatchColours({ searchParams }: { searchParams: Promise<{ done?: string; saved?: string }> }) {
-  const { done, saved } = await searchParams;
+export default async function BatchColours({ searchParams }: { searchParams: Promise<{ done?: string; saved?: string; at?: string; near?: string }> }) {
+  const { done, saved, at, near } = await searchParams;
   const [cards, more] = await Promise.all([reviewCards(), waitingDetails()]);
   const details = cards.filter((c) => c.kind === 'details') as Extract<(typeof cards)[number], { kind: 'details' }>[];
   return (
@@ -17,6 +18,7 @@ export default async function BatchColours({ searchParams }: { searchParams: Pro
       <h1 style={{ fontSize: 32 }}>{text.batchTitle}</h1>
       {done && <p className="saved">{fill(text.batchDone, { n: done })}</p>}
       {saved && <p className="saved">{fill(text.editSavedBack, { name: saved })}</p>}
+      <ScrollBack at={at} near={near} />
       <p className="note">{text.batchIntro}</p>
       {details.length === 0 ? (
         <div className="done">
@@ -27,7 +29,7 @@ export default async function BatchColours({ searchParams }: { searchParams: Pro
       ) : (
         <form action={confirmBatch} className="batch">
           <div className="batch-grid">
-            {details.map((c) => {
+            {details.map((c, i) => {
               const cols = [c.colour1, c.colour2].filter(Boolean) as string[];
               return (
                 <label key={c.id} className="batch-tile" id={`v-${c.slug}`}>
@@ -46,7 +48,7 @@ export default async function BatchColours({ searchParams }: { searchParams: Pro
                     <span className="note">
                       {c.seenAt.map((s, i) => <span key={i}>{i > 0 && ' · '}{s.url ? <a href={s.url} target="_blank" rel="noopener noreferrer">{s.farm} ↗</a> : s.farm}</span>)}
                     </span>
-                    <a href={`/admin/varieties/${c.slug}?back=${encodeURIComponent('/admin/colours')}`}>{text.batchFix}</a>
+                    <a href={`/admin/varieties/${c.slug}?back=${encodeURIComponent(`/admin/colours?near=${details[i + 1]?.slug ?? ''}`)}`}>{text.batchFix}</a>
                   </span>
                 </label>
               );

@@ -72,7 +72,7 @@ export async function saveVariety(fd: FormData) {
   revalidatePath('/', 'layout');
   // Came from a review page (colours in a batch, check a colour): go straight back to it.
   const back = safeBack(String(fd.get('back') ?? ''));
-  if (back) redirect(`${back}${back.includes('?') ? '&' : '?'}saved=${encodeURIComponent(val(fd, 'name') ?? v.name)}#v-${v.slug}`);
+  if (back) redirect(`${back}${back.includes('?') ? '&' : '?'}saved=${encodeURIComponent(val(fd, 'name') ?? v.name)}&at=${encodeURIComponent(v.slug)}`);
   redirect(`/admin/varieties/${v.slug}?saved=1`);
 }
 

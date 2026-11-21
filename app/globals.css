@@ -316,3 +316,4 @@ footer .wrap { padding-bottom: 64px; }
 .game-when { font-weight: 700; font-size: 14px; color: var(--accent); }
 .game-names { margin: 6px 0 0; }
 .game-names > span[aria-hidden] { color: var(--heart); }
+.batch-tile.just-saved { outline: 3px solid var(--sage-text); outline-offset: 2px; transition: outline-color 1s; }

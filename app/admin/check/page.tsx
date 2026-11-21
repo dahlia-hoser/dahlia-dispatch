@@ -1,3 +1,4 @@
+import { ScrollBack } from '../../../components/ScrollBack';
 // Owner check: every dahlia with one colour (Bicolour by default), to untick the ones that aren't.
 import { db } from '../../../lib/db';
 import { COLOURS } from '../../../lib/types';
@@ -7,8 +8,8 @@ import { text, fill } from '../../../site-text';
 
 export const dynamic = 'force-dynamic';
 
-export default async function CheckColour({ searchParams }: { searchParams: Promise<{ colour?: string; done?: string; saved?: string }> }) {
-  const { colour: asked, done, saved } = await searchParams;
+export default async function CheckColour({ searchParams }: { searchParams: Promise<{ colour?: string; done?: string; saved?: string; at?: string; near?: string }> }) {
+  const { colour: asked, done, saved, at, near } = await searchParams;
   const colour = COLOURS.includes(asked as any) ? (asked as string) : 'Bicolour';
   const t = db();
   const [varieties, listings, farms] = await Promise.all([t.all('varieties'), t.all('listings'), t.all('farms')]);
@@ -28,12 +29,13 @@ export default async function CheckColour({ searchParams }: { searchParams: Prom
       </form>
       {done && <p className="saved">{fill(text.checkDone, { n: done, colour })}</p>}
       {saved && <p className="saved">{fill(text.editSavedBack, { name: saved })}</p>}
+      <ScrollBack at={at} near={near} />
       <p className="note">{fill(marked.length === 1 ? text.checkIntroOne : text.checkIntro, { n: marked.length, colour })}</p>
       {marked.length > 0 && (
         <form action={removeColour} className="batch">
           <input type="hidden" name="colour" value={colour} />
           <div className="batch-grid">
-            {marked.map((v) => {
+            {marked.map((v, i) => {
               const mine = listings.filter((l) => l.variety_id === v.id && l.active);
               const photo = mine.find((l) => l.image)?.image;
               const cols = [v.colour1, v.colour2].filter(Boolean) as string[];
@@ -55,7 +57,7 @@ export default async function CheckColour({ searchParams }: { searchParams: Prom
                         <span key={l.id}>{i > 0 && ' · '}{l.url ? <a href={l.url} target="_blank" rel="noopener noreferrer">{farmName.get(l.farm_id)} ↗</a> : farmName.get(l.farm_id)}</span>
                       ))}
                     </span>
-                    <a href={`/admin/varieties/${v.slug}?back=${encodeURIComponent(`/admin/check?colour=${colour}`)}`}>{text.batchFix}</a>
+                    <a href={`/admin/varieties/${v.slug}?back=${encodeURIComponent(`/admin/check?colour=${colour}&near=${marked[i + 1]?.slug ?? ''}`)}`}>{text.batchFix}</a>
                   </span>
                 </label>
               );
