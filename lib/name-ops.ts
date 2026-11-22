@@ -245,7 +245,8 @@ export async function applyTrustedDetails(
   t: Tables,
   farm: { id: number; name: string },
   products: { key: string; title: string; hints?: { tags: string[]; text: string } }[],
-  fields: string[]
+  fields: string[],
+  opts: { onlyBlank?: boolean } = {}
 ): Promise<number> {
   const { guessDetails } = await import('./guess');
   const listings = await t.where('listings', { farm_id: farm.id });
@@ -265,10 +266,12 @@ export async function applyTrustedDetails(
     if (v.status === 'Confirmed') {
       // Your answers stand. The one exception: plain "Decorative" can be narrowed to formal or informal.
       if (fields.includes('form') && v.form === 'Decorative' && /^(Formal|Informal) decorative$/.test(g.form ?? '')) patch.form = g.form!;
-    } else for (const f of fields) if (g[f] && v[f] !== g[f]) patch[f] = g[f]!;
+    } else for (const f of fields) if (g[f] && v[f] !== g[f] && (!opts.onlyBlank || !v[f])) patch[f] = g[f]!;
     if (lockedForm.has(v.slug)) delete patch.form;
     // A trusted farm's colours come as a pair: one colour named means no second colour.
-    if (v.status !== 'Confirmed' && fields.includes('colour2') && g.colour1 && !g.colour2 && v.colour2) patch.colour2 = null as any;
+    if (!opts.onlyBlank && v.status !== 'Confirmed' && fields.includes('colour2') && g.colour1 && !g.colour2 && v.colour2) patch.colour2 = null as any;
+    // Filling blanks: a second colour only goes in alongside the first one it belongs with.
+    if (opts.onlyBlank && patch.colour2 && v.colour1 && v.colour1 !== g.colour1) delete patch.colour2;
     if (!Object.keys(patch).length) continue;
     await t.update('varieties', { id: v.id }, patch);
     Object.assign(v, patch);

@@ -14,5 +14,15 @@
       "colour2"
     ],
     "why": "Au Beau Pré labels forms and colours carefully (in French)"
+  },
+  {
+    "farm": "Makayla’s Meadow",
+    "fields": [
+      "form",
+      "colour1",
+      "colour2"
+    ],
+    "onlyBlank": true,
+    "why": "Makayla's Meadow writes good descriptions: used to fill in blank colours and forms as suggestions, never to replace them"
   }
 ]

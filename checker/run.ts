@@ -108,9 +108,10 @@ async function main() {
         const intros = await applyIntroYears(t, f.id, products);
         if (intros) console.log(`  ${f.name}: ${intros} new introductions spotted.`);
       }
-      const trust = (trusted as any[]).find((x) => x.farm === f.code);
+      const plain = (s: string) => s.toLowerCase().replace(/[’']/g, "'").trim();
+      const trust = (trusted as any[]).find((x) => x.farm === f.code || plain(x.farm) === plain(f.name));
       if (trust) {
-        const updated = await applyTrustedDetails(t, f as any, products, trust.fields);
+        const updated = await applyTrustedDetails(t, f as any, products, trust.fields, { onlyBlank: trust.onlyBlank === true });
         if (updated) console.log(`  ${f.name}: used its labels for ${updated} varieties (${trust.fields.join(', ')}).`);
       }
       changes += n;

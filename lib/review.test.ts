@@ -302,3 +302,20 @@ test('KA varieties lead with the flower name; the KA spelling shows as also sold
   assert.deepEqual(g.aka, ["KA's Cinder Rose X"]);
   assert.ok(search(groups, { q: "ka's cinder rose x" }).some((x) => x.variety?.id === v.id));
 });
+
+test('fill-only farms fill blanks and never replace', async () => {
+  const t = db();
+  const [f] = await t.insert('farms', { code: 'MMX', name: 'Fill Farm', active: true });
+  const [a] = await t.insert('varieties', { slug: 'blank-one-x', name: 'Blank One X', status: 'Suggested', form: null, colour1: null, colour2: null });
+  const [b] = await t.insert('varieties', { slug: 'set-one-x', name: 'Set One X', status: 'Suggested', form: 'Ball', colour1: 'Red', colour2: null });
+  await t.insert('listings', { farm_id: f.id, product_key: 'a', title: 'Blank One X', variety_id: a.id, active: true });
+  await t.insert('listings', { farm_id: f.id, product_key: 'b', title: 'Set One X', variety_id: b.id, active: true });
+  const text = 'A lovely waterlily with bright pink petals.';
+  await applyTrustedDetails(t, f as any, [{ key: 'a', title: 'Blank One X', hints: { tags: [], text } }, { key: 'b', title: 'Set One X', hints: { tags: [], text } }], ['form', 'colour1', 'colour2'], { onlyBlank: true });
+  const A = (await t.where('varieties', { id: a.id }))[0], B = (await t.where('varieties', { id: b.id }))[0];
+  assert.equal(A.form, 'Waterlily');
+  assert.equal(A.colour1, 'Pink');
+  assert.equal(B.form, 'Ball');
+  assert.equal(B.colour1, 'Red');
+  assert.equal(A.status, 'Suggested');
+});
