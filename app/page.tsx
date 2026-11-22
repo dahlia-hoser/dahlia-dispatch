@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { nearNames, loadAll, groupAll, search, suggestions, lastChecked, ago, gettingIt, type Filters as F } from '../lib/catalogue';
 import { SearchBox } from '../components/SearchBox';
 import { Filters } from '../components/Filters';
@@ -83,7 +84,8 @@ export default async function Home({ searchParams }: { searchParams: Promise<Rec
       )}
       <div className="tiles">{shown.map((g) => <Tile key={g.key} g={g} />)}</div>
       {found.length > shown.length && (
-        <a className="btn ghost more" href={`/?${moreParams}`}>{fill(text.showMore, { n: found.length - shown.length })}</a>
+        // Loads the next tiles in place: the page stays where you are instead of jumping to the top.
+        <Link className="btn ghost more" href={`/?${moreParams}`} scroll={false}>{fill(text.showMore, { n: found.length - shown.length })}</Link>
       )}
     </>
   );
