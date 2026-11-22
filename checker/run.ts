@@ -10,7 +10,8 @@ import merges from '../data/merges.json';
 import renames from '../data/renames.json';
 import notDahlias from '../data/not-dahlias.json';
 import extraNames from '../data/extra-names.json';
-import { markNotDahlias, mergeVarieties, renameVarieties, addExtraNames } from '../lib/name-ops';
+import unmerges from '../data/unmerges.json';
+import { markNotDahlias, mergeVarieties, renameVarieties, addExtraNames, unmergeVarieties } from '../lib/name-ops';
 import farmList from '../data/farms.json';
 import blockedFarms from '../data/blocked-farms.json';
 import trusted from '../data/trusted-sources.json';
@@ -53,6 +54,8 @@ async function main() {
   if (blockedNow) console.log(`Removed ${blockedNow} farms or suggestions you ruled out.`);
   const formsFixed = await applyFormFixes(t, formFixes as any[]);
   if (formsFixed) console.log(`Set ${formsFixed} forms from your corrections list.`);
+  const unmerged = await unmergeVarieties(t, unmerges as any[]);
+  if (unmerged) console.log(`Split ${unmerged} flowers back onto their own pages.`);
   const merged = await mergeVarieties(t, merges as any[]);
   if (merged) console.log(`Merged ${merged} duplicate spellings into one name.`);
   const renamed = await renameVarieties(t, renames as any[]);

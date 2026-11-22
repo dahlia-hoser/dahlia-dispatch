@@ -257,7 +257,7 @@ test('search by look and close spellings', async () => {
   assert.equal(search2(g, { q: 'Cornel Bronze' }).length, 1);
 });
 
-import { mergeVarieties, markNotDahlias, renameVarieties } from './name-ops';
+import { mergeVarieties, markNotDahlias, renameVarieties, unmergeVarieties } from './name-ops';
 test('merging a duplicate spelling moves listings, remembers the spelling, removes the old entry', async () => {
   const t = db();
   const [good] = await t.insert('varieties', { slug: 'karma-choc-x', name: 'Karma Choc X', form: null, status: 'Confirmed' });
@@ -318,4 +318,19 @@ test('fill-only farms fill blanks and never replace', async () => {
   assert.equal(B.form, 'Ball');
   assert.equal(B.colour1, 'Red');
   assert.equal(A.status, 'Suggested');
+});
+
+test('undoing a same-flower answer gives the other spelling its own page again', async () => {
+  const t = db();
+  const [m] = await t.insert('varieties', { slug: 'connie-marion-x', name: 'Connie Marion X', status: 'Confirmed' });
+  await t.insert('aliases', { alias: 'connie marion x', variety_id: m.id, shown: null });
+  await t.insert('aliases', { alias: 'connie marilyn x', variety_id: m.id, shown: 'Connie Marilyn X' });
+  await t.insert('listings', { farm_id: 1, product_key: 'cm1', title: 'Connie Marion X', variety_id: m.id, active: true });
+  const [l2] = await t.insert('listings', { farm_id: 1, product_key: 'cm2', title: 'Dahlia Connie Marilyn X', variety_id: m.id, active: true });
+  assert.equal(await unmergeVarieties(t, [{ name: 'Connie Marilyn X', from: 'Connie Marion X' }]), 1);
+  const own = (await t.all('varieties')).find((v) => v.name === 'Connie Marilyn X')!;
+  assert.ok(own);
+  assert.equal((await t.where('listings', { id: l2.id }))[0].variety_id, own.id);
+  assert.equal((await t.where('aliases', { alias: 'connie marilyn x' }))[0].variety_id, own.id);
+  assert.equal(await unmergeVarieties(t, [{ name: 'Connie Marilyn X', from: 'Connie Marion X' }]), 0);
 });

@@ -518,3 +518,33 @@ export async function addExtraNames(t: Tables, extra: { name: string; for: strin
   }
   return n;
 }
+
+/**
+ * Undo a "same flower" answer (data/unmerges.json): the other spelling gets its own page again,
+ * and the listings sold under that spelling move back to it.
+ */
+export async function unmergeVarieties(t: Tables, list: { name: string; from: string }[]): Promise<number> {
+  let n = 0;
+  for (const u of list) {
+    const varieties = await t.all('varieties');
+    const from = findByName(varieties.filter((v) => looseKey(v.name) !== looseKey(u.name)), u.from);
+    if (!from) continue;
+    const alias = normalize(u.name);
+    const [a] = await t.where('aliases', { alias });
+    let own = varieties.find((v) => looseKey(v.name) === looseKey(u.name));
+    if (a && a.variety_id === from.id) await t.remove('aliases', { alias });
+    if (!own) {
+      const book = await new NameBook(t).load();
+      const id = await book.create(u.name);
+      own = (await t.where('varieties', { id }))[0];
+    }
+    let moved = 0;
+    for (const l of await t.where('listings', { variety_id: from.id }))
+      if (looseKey(varietyNameFromTitle(l.title)) === looseKey(u.name)) {
+        await t.update('listings', { id: l.id }, { variety_id: own!.id });
+        moved++;
+      }
+    if (moved || (a && a.variety_id === from.id)) n++;
+  }
+  return n;
+}
