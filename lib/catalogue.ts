@@ -1,4 +1,5 @@
 import { parseLook, lookIsEmpty, closeTo, distance, type Look } from './query';
+import { isKa, withoutKa } from './breeder';
 import { isDinnerplate } from './size';
 // Reading the data for the public pages: statuses, search, grouping by variety.
 import { db } from './db';
@@ -137,6 +138,15 @@ export function groupAll(data: AllData, now = Date.now()): Group[] {
         have.add(k);
         g.aka.push(n);
       }
+    }
+  }
+  for (const g of groups.values()) {
+    // KA varieties lead with the flower's own name; the KA's spelling shows as "Also sold as".
+    if (isKa(g.name)) {
+      const base = withoutKa(g.name);
+      const others = [g.name, ...g.aka].filter((a) => normalize(a) !== normalize(base));
+      g.aka = others.filter((a, i) => others.findIndex((x) => normalize(x) === normalize(a)) === i);
+      g.name = base;
     }
   }
   for (const g of groups.values()) {

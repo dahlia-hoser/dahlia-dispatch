@@ -26,5 +26,8 @@
   { "from": "Café Au Lait (Twist)", "into": "Café Au Lait Twist" },
   { "from": "Cafe Supreme", "into": "Café Au Lait Supreme" },
   { "from": "Sweet Natalie", "into": "Sweet Nathalie" },
-  { "from": "L.A.T.E. *New*", "into": "L.A.T.E" }
+  { "from": "L.A.T.E. *New*", "into": "L.A.T.E" },
+  { "from": "Café Mauve", "into": "KA's Cafe Mauve" },
+  { "from": "Cinder Rose", "into": "KA's Cinder Rose" },
+  { "from": "Coral Sea", "into": "KA Coral Sea" }
 ]

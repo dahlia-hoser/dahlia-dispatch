@@ -289,3 +289,16 @@ test('merging two spellings that look alike loosely (Natalie/Nathalie)', async (
   assert.equal((await t.where('varieties', { id: dupe.id })).length, 0);
   assert.equal((await t.where('varieties', { id: good.id })).length, 1);
 });
+
+test('KA varieties lead with the flower name; the KA spelling shows as also sold as, and still finds it', async () => {
+  const t = db();
+  const [v] = await t.insert('varieties', { slug: 'kas-cinder-rose-x', name: "KA's Cinder Rose X", status: 'Confirmed' });
+  await t.insert('aliases', { alias: 'cinder rose x', variety_id: v.id, shown: 'Cinder Rose X' });
+  const [f] = await t.insert('farms', { code: 'KAX', name: 'KA Test Farm', place: 'Here', province: 'BC', active: true });
+  await t.insert('listings', { farm_id: f.id, product_key: 'kax1', title: "KA's Cinder Rose X", variety_id: v.id, active: true, kind: 'tuber', in_stock: true, first_seen: new Date().toISOString() });
+  const groups = groupAll(await loadAll());
+  const g = groups.find((x) => x.variety?.id === v.id)!;
+  assert.equal(g.name, 'Cinder Rose X');
+  assert.deepEqual(g.aka, ["KA's Cinder Rose X"]);
+  assert.ok(search(groups, { q: "ka's cinder rose x" }).some((x) => x.variety?.id === v.id));
+});
