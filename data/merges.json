@@ -29,5 +29,10 @@
   { "from": "L.A.T.E. *New*", "into": "L.A.T.E" },
   { "from": "Café Mauve", "into": "KA's Cafe Mauve" },
   { "from": "Cinder Rose", "into": "KA's Cinder Rose" },
-  { "from": "Coral Sea", "into": "KA Coral Sea" }
+  { "from": "Coral Sea", "into": "KA Coral Sea" },
+  { "from": "Strawberries and Cream", "into": "Strawberry Cream" },
+  { "from": "Evelyn", "into": "Eveline" },
+  { "from": "CT Babycakes", "into": "Coseytown Babycakes" },
+  { "from": "CT Gale", "into": "Coseytown Gale" },
+  { "from": "CT Sangria", "into": "Coseytown Sangria" }
 ]
