@@ -34,5 +34,8 @@
   { "from": "Evelyn", "into": "Eveline" },
   { "from": "CT Babycakes", "into": "Coseytown Babycakes" },
   { "from": "CT Gale", "into": "Coseytown Gale" },
-  { "from": "CT Sangria", "into": "Coseytown Sangria" }
+  { "from": "CT Sangria", "into": "Coseytown Sangria" },
+  { "from": "Café au Royal", "into": "Cafe au Lait Royal" },
+  { "from": "Mr. Franz", "into": "Mister Frans" },
+  { "from": "Isabelle", "into": "Isabel" }
 ]
