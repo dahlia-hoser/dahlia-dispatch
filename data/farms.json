@@ -22,5 +22,7 @@
   {"code": "GP", "name": "Greener Pastures Farm", "place": "Annapolis Valley, NS", "province": "NS", "site": "https://greenerpasturesns.ca", "platform": "shopify", "collection": null},
   {"code": "NSF", "name": "North Shore Flower Co.", "place": "Portapique, NS", "province": "NS", "site": "https://northshoreflowerco.ca", "platform": "shopify", "collection": null},
   {"code": "SHF", "name": "Stoney Hill Farm", "place": "Northwestern NB", "province": "NB", "site": "https://www.stoneyhillfarm.ca", "platform": "shopify", "collection": null},
-  {"code": "VH", "name": "Valhaven Farm", "place": "Hockley Valley, ON", "province": "ON", "site": "https://www.valhavenfarm.ca", "platform": "shopify", "collection": "dahlia-tubers"}
+  {"code": "VH", "name": "Valhaven Farm", "place": "Hockley Valley, ON", "province": "ON", "site": "https://www.valhavenfarm.ca", "platform": "shopify", "collection": "dahlia-tubers"},
+  {"code": "CFF", "name": "Carlisle Flower Farm", "place": "Hamilton, ON", "province": "ON", "site": "https://carlisleflowerfarm.ca", "platform": "shopify", "collection": null},
+  {"code": "MBD", "name": "Moore Blooms Dahlias", "place": "Chilliwack, BC", "province": "BC", "site": "https://moorebloomsdahlias.com", "platform": "shopify", "collection": null}
 ]
