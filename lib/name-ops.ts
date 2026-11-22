@@ -501,3 +501,17 @@ export async function renameVarieties(t: Tables, renames: { from: string; to: st
 function findByName<T extends Record<string, any>>(list: T[], name: string): T | undefined {
   return list.find((v) => v.name === name) ?? list.find((v) => normalize(v.name) === normalize(name)) ?? list.find((v) => looseKey(v.name) === looseKey(name));
 }
+
+/** Other names a flower goes by, from data/extra-names.json, shown as "Also sold as" and found by search. */
+export async function addExtraNames(t: Tables, extra: { name: string; for: string }[]): Promise<number> {
+  const varieties = await t.all('varieties');
+  let n = 0;
+  for (const e of extra) {
+    const v = findByName(varieties, e.for);
+    const alias = normalize(e.name);
+    if (!v || (await t.where('aliases', { alias })).length) continue;
+    await t.insert('aliases', { alias, variety_id: v.id, shown: e.name });
+    n++;
+  }
+  return n;
+}

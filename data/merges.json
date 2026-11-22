@@ -37,5 +37,9 @@
   { "from": "CT Sangria", "into": "Coseytown Sangria" },
   { "from": "Café au Royal", "into": "Cafe au Lait Royal" },
   { "from": "Mr. Franz", "into": "Mister Frans" },
-  { "from": "Isabelle", "into": "Isabel" }
+  { "from": "Isabelle", "into": "Isabel" },
+  { "from": "Jolene (Cafe Au Lait Mini)", "into": "Jolene" },
+  { "from": "Cafe Au Lait Mini", "into": "Jolene" },
+  { "from": "Dazzling Sunset", "into": "Dazzling Sun" },
+  { "from": "Bracken Rose (North American)", "into": "Bracken Rose" }
 ]
