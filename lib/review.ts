@@ -1,4 +1,5 @@
 import { bicolourFirst } from './guess';
+import { kindFromTitle } from './names';
 // The review list: questions for the owner, and what each answer does.
 import { db } from './db';
 import { isCanadianProvince } from './canada';
@@ -90,6 +91,8 @@ export async function reviewCards(): Promise<Card[]> {
       const c = candidates.find((x) => x.id === r.data.candidate);
       if (c) cards.push({ id: r.id, kind: 'farm', name: c.name, place: c.place, site: c.site, platform: c.platform, canadian: isCanadianProvince(c.province) });
     } else if (r.kind === 'name') {
+      // Not a dahlia (a mentorship, a class...): nothing to ask. The checker closes these too.
+      if (kindFromTitle(String(r.data?.spelling ?? '')) !== 'tuber') continue;
       const v = vBySlug.get(r.data.suggestion);
       cards.push({
         id: r.id,

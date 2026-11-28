@@ -11,7 +11,7 @@ import renames from '../data/renames.json';
 import notDahlias from '../data/not-dahlias.json';
 import extraNames from '../data/extra-names.json';
 import unmerges from '../data/unmerges.json';
-import { markNotDahlias, mergeVarieties, renameVarieties, addExtraNames, unmergeVarieties } from '../lib/name-ops';
+import { markNotDahlias, mergeVarieties, renameVarieties, addExtraNames, unmergeVarieties, closeNonDahliaCards } from '../lib/name-ops';
 import farmList from '../data/farms.json';
 import blockedFarms from '../data/blocked-farms.json';
 import trusted from '../data/trusted-sources.json';
@@ -70,6 +70,8 @@ async function main() {
   if (unemoji) console.log(`Took emoji and flags out of ${unemoji} variety names.`);
   const reformed = await tidyForms(t);
   if (reformed) console.log(`Updated ${reformed} varieties to the new form list.`);
+  const junkCards = await closeNonDahliaCards(t, notDahlias as string[]);
+  if (junkCards) console.log(`Closed ${junkCards} name questions about things that aren't dahlias.`);
   const slips = await autoAnswerSlips(t);
   if (slips) console.log(`Merged ${slips} small spelling slips without asking.`);
   const book = await new NameBook(t).load();

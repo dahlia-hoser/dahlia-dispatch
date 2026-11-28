@@ -548,3 +548,16 @@ export async function unmergeVarieties(t: Tables, list: { name: string; from: st
   }
   return n;
 }
+
+/** "Same flower?" cards about things that aren't dahlias (or are packs) are closed without asking. */
+export async function closeNonDahliaCards(t: Tables, extra: string[] = []): Promise<number> {
+  const listed = new Set(extra.map(looseKey));
+  let n = 0;
+  for (const r of (await t.where('review_items', { kind: 'name' })).filter((r) => r.status !== 'done')) {
+    const sp = String(r.data?.spelling ?? '');
+    if (!sp || (kindFromTitle(sp) === 'tuber' && !listed.has(looseKey(sp)))) continue;
+    await t.update('review_items', { id: r.id }, { status: 'done', resolved_at: new Date().toISOString(), answer: { choice: 'notdahlia', auto: true } });
+    n++;
+  }
+  return n;
+}

@@ -334,3 +334,13 @@ test('undoing a same-flower answer gives the other spelling its own page again',
   assert.equal((await t.where('aliases', { alias: 'connie marilyn x' }))[0].variety_id, own.id);
   assert.equal(await unmergeVarieties(t, [{ name: 'Connie Marilyn X', from: 'Connie Marion X' }]), 0);
 });
+
+import { closeNonDahliaCards } from './name-ops';
+test('name questions about non-dahlias close themselves', async () => {
+  const t = db();
+  const [a] = await t.insert('review_items', { kind: 'name', status: 'open', data: { spelling: 'Bloom Blueprint Mentorship 2099' } });
+  const [b] = await t.insert('review_items', { kind: 'name', status: 'open', data: { spelling: 'Connie Marilyn Z' } });
+  assert.ok((await closeNonDahliaCards(t)) >= 1);
+  assert.equal((await t.where('review_items', { id: a.id }))[0].status, 'done');
+  assert.equal((await t.where('review_items', { id: b.id }))[0].status, 'open');
+});
